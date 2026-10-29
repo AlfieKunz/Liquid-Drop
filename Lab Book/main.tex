@@ -230,6 +230,13 @@
 	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle) \todo{cite: Evans, L. C. (2010). Partial Differential Equations}
 	\todo[inline]{Would this form a nice extension for the problem? We don't really care about the pressure inside the liquid, only at the boundary (so we can use Bernoulli to prescribe it as a boundary for the gas too!) But then use the Dirichlet Principle or something else to solve the pressure inside the drop and hence make a cool heatmap inside the droplet? :O}
 	
+	To reduce this to a boundary integral, which can be solved to generate an ODE for $h(r,t)$, we use the concept of Green's functions. Intuitively, these are the responses to Dirac Delta functions
+	Green's Second Identity states\todo{CITE: Partial Differential Equations: An Introduction, 2nd Edition}
+	\begin{equation}
+		\label{Green2}
+		\iiint_\Omega \left(\phi \nabla'^2 G - G \nabla'^2 \phi\right) r' dr' d\theta' dz' = \iint_{\partial\Omega} \left(\phi \frac{\partial G}{\partial n'} - G \frac{\partial \phi}{\partial n'}\right) dS'
+	\end{equation}
+	
 	
 	
 	\subsection{Formation of the Problem}
@@ -239,6 +246,7 @@
 	
 	Again, we can consider normal impact as even oblique impacts are normal to leading order!
 	Also, assume that the initial pressure in the gas is $p = 0$.
+
 	
 	
 	
