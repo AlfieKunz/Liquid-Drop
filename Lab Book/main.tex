@@ -1,13 +1,47 @@
 \documentclass[11pt,a4paper]{article}
+\usepackage{cite}
+\usepackage{parskip}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{xtab}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{esint}
+\usepackage{stmaryrd}
+\usepackage{tikz}
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \geometry{margin=1in}
-\usepackage{graphicx}
-\usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{float}
-\usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{charter}
+\usepackage{microtype}
+\definecolor{darkbg}{HTML}{1A1A1A}
+\definecolor{lighttext}{HTML}{F2F2F2}
+\definecolor{accentlink}{HTML}{4FC1FF}
+\definecolor{pageborder}{HTML}{404040}
+\pagecolor{darkbg}
+\color{lighttext}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor  = accentlink,
+	citecolor  = accentlink,
+	urlcolor   = accentlink
+}
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+	\begin{tikzpicture}[remember picture, overlay]
+		\draw[color=pageborder, line width=1.2pt] 
+		([xshift=1.5mm, yshift=1.5mm]current page.south west) 
+		rectangle 
+		([xshift=-1.5mm, yshift=-1.5mm]current page.north east);
+	\end{tikzpicture}%
+}
 
 \title{Dissertation Learning Notes \& Resources}
 \author{Alfie Kunz - u5514994}
@@ -16,6 +50,17 @@
 	
 	\maketitle
 	\tableofcontents
+	
+	\section{Reference Sheet}
+	
+	Stokes' Equations:
+	\begin{subequations}
+		\label{Stokes}
+		\begin{align}
+			\nabla p = \mu \nabla ^2 \underline{u},\\
+			\nabla \cdot \underline{u} = 0.
+		\end{align}
+	\end{subequations}
 	
 	\section{Pre-Reading \& Project Brief}
 	
@@ -48,8 +93,12 @@
 	But now we generalise to $y \to \pm h(x,t)/2$ and $p(x,t)$ - same thing otherwise. Moving to cylindrical coordinates (coordinates $\{x, h(r,t)\}$, pressure $p(r,t)$) gives the planar Reynolds equation (in polar):
 	\begin{equation}
 		\label{PlanarReynolds}
-		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r} \left( r \frac{h(r,t)^3}{12 \mu_g} \frac{\partial p(r,t)}{\partial t} \right)
+		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r} \left( r \frac{h(r,t)^3}{12 \mu_g} \frac{\partial p(r,t)}{\partial r} \right).
 	\end{equation}
+	
+	\subsubsection{Visualisation}
+	Writing $h(r,t) = h_0(t) + r^2/2R$, with $\frac{dh_0}{dt} = V < 0$, we can integrate \eqref{PlanarReynolds} to get:
+	
 	
 	
 	\subsection{Global Model}
