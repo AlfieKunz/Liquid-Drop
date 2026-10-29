@@ -34,8 +34,7 @@
 	Reynolds Number: $\text{Re} = \frac{\rho UR}{\mu}$.
 	
 	Bernoulli's Equations:
-	\begin{subequations}
-		\label{Bernoulli}
+	\begin{subequations}\label{Bernoulli}
 		\begin{align}
 			\tilde{B}(\underline{x}) &= \left( \frac{\rho}{2} |u(x)|^2 + p  + \rho gz \right),\quad&\text{(Steady, Inviscid. Constant on streamlines)} \label{Bernoulli1}\\
 			\hat{B}(t) &= \left( {\rho \frac{\partial \phi}{\partial t}} + \frac{\rho}{2} |u(x,t)|^2 + p + \rho gz \right).\quad&\text{(Potential. Constant in space)} \label{Bernoulli2}
@@ -64,7 +63,7 @@
 	
 	
 	\subsection{Key Assumptions}
-	We don't really care about the droplet itself - it is high Reynolds number compared to the air film, much denser, and deforms not easily (surface tension acts perpendicular to the surface normal, and takes lots of energy to shape). Combined with the fact that we initially model the drop's surface as a weak parabola (no 1st order terms), this means that we approximate the water's surface as locally smooth, and thus we can approximate the height of the film, $h(x)$ via linear functions. Similarly, at the simulation's middle (drop is closest to surface - pressure is largest - most of the maths and scaling happens here), we can assume that the drop's surface is locally flat (Plane-Poiseuille).
+	We don't really care about the droplet itself - it is high Reynolds number compared to the air film, much denser, and deforms not easily (surface tension acts perpendicular to the surface normal, and takes lots of energy to shape)\todo{"Events before droplet splashing on a solid surface" says: The major simplifications for a typical millimetre-sized droplet with impact velocity of order $1ms^{-1}$ are (i) slender geometry for the gas film, (ii) the neglect of viscous forces in the liquid, (iii) the neglect of surface tension forces at the liquid–gas interface and (iv) the neglect of nonlinear inertia in the liquid. With respect to viscous forces, the liquid Reynolds number is of order $\text{Re} = \rho R V / \mu \sim 1000$, where $\mu,\rho$ are the liquid viscosity and density respectively; hence inertial forces in the fluid initially overwhelm viscous forces, and we therefore neglect viscosity. Similarly, $\text{We} = \rho V^2/\sigma \sim 100$ shows surface tension is negligible}. Combined with the fact that we initially model the drop's surface as a weak parabola (no 1st order terms), this means that we approximate the water's surface as locally smooth, and thus we can approximate the height of the film, $h(x)$ via linear functions. Similarly, at the simulation's middle (drop is closest to surface - pressure is largest - most of the maths and scaling happens here), we can assume that the drop's surface is locally flat (Plane-Poiseuille).
 	Further assumptions on the liquid: inviscid and potential (Bernoulli, and $\nabla ^2p = 0$ - Laplace Equation, Green's function, etc).
 	
 	On the other side, the gas is viscous-dominated rather than inertia dominated, and the height is much smaller than the x extent. Hence, we assume that the pressure does not change in $y$ (Plane-Poiseuille), and that we can use the Lubrication equations.	
@@ -72,6 +71,11 @@
 	We also imbue no-slip boundary conditions onto the gas film, via the solid and the moving water drop's boundary.
 	
 	Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. Also, we are in the low Reynolds regime in the air, such that we don't get cushioning until the air layer is sufficiently thin?
+	
+	\subsection{Further Assumptions Worth Commenting on!}
+	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo{From "Events before droplet splashing on a solid surface}.
+	Also, assume the gas is incompressible?? This seems a bit weird... see equation 2.3 in HP
+	
 	
 	
 	\subsection{Recap of Plane-Poiseuille Flow, and Lubrication Theory}
@@ -131,24 +135,71 @@
 	\todo[inline]{This dimple is "rimmed by a razor-thin circular neck of minimum thickness $h_{\text{neck}}$ (labelled $h_{pd}$). I have no idea what this means.}
 	
 	\subsection{Non-Dimensionalisation}
-	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get:
+	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get\todo{Meseguer, A., \& Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}:
+	\begin{subequations}\label{NavierStokesND}
+		\begin{align}
+			\frac{1}{r} \frac{\partial (r u_r)}{\partial r} + \frac{1}{r} \frac{\partial u_\theta}{\partial \theta} + \frac{\partial u_z}{\partial z} &= 0, \label{NavierStokesND:continuity} \\
+			\frac{\partial u_r}{\partial t} + (\underline{u} \cdot \nabla) u_r - \frac{u_\theta^2}{r} &= -\frac{\partial p}{\partial r} + \frac{1}{\text{Re}} \left( \nabla^2 u_r - \frac{u_r}{r^2} - \frac{2}{r^2} \frac{\partial u_\theta}{\partial \theta} \right), \label{NavierStokesND:r} \\
+			\frac{\partial u_\theta}{\partial t} + (\underline{u} \cdot \nabla) u_\theta + \frac{u_r u_\theta}{r} &= -\frac{1}{r} \frac{\partial p}{\partial \theta} + \frac{1}{\text{Re}} \left( \nabla^2 u_\theta - \frac{u_\theta}{r^2} + \frac{2}{r^2} \frac{\partial u_r}{\partial \theta} \right), \label{NavierStokesND:theta} \\
+			\frac{\partial u_z}{\partial t} + (\underline{u} \cdot \nabla) u_z &= -\frac{\partial p}{\partial z} + \frac{1}{\text{Re}} \nabla^2 u_z. \label{NavierStokesND:z}
+		\end{align}
+	\end{subequations}
+	
+	By the axisymmetric conditions, $\partial / \partial \theta = 0$ and $u_\theta = 0$ \todo{From "Stability of nonswirl axisymmetric solutions to the Navier-Stokes equations"}, and thus we get $\underline{u}(r,z)$. Hence, in the absence of external forces (including gravity), we get:
+	
+	\begin{subequations}\label{NavierStokesAXI}
+		\begin{align}
+			\frac{1}{r} \frac{\partial (r u_r)}{\partial r} + \frac{\partial u_z}{\partial z} &= 0, \label{NavierStokesAXI:continuity} \\
+			\rho_g \left( \frac{\partial u_r}{\partial t} + u_r \frac{\partial u_r}{\partial r} + u_z \frac{\partial u_r}{\partial z} \right) &= -\frac{\partial p_g}{\partial r} + \mu_g \left[ \frac{\partial}{\partial r}\left( \frac{1}{r} \frac{\partial (r u_r)}{\partial r} \right) + \frac{\partial^2 u_r}{\partial z^2} \right], \label{NavierStokesAXI:r} \\
+			\rho_g \left( \frac{\partial u_z}{\partial t} + u_r \frac{\partial u_z}{\partial r} + u_z \frac{\partial u_z}{\partial z} \right) &= -\frac{\partial p_g}{\partial z} + \mu_g \left[ \frac{1}{r}\frac{\partial}{\partial r}\left( r \frac{\partial u_z}{\partial r} \right) + \frac{\partial^2 u_z}{\partial z^2} \right]. \label{NavierStokesAXI:z}
+		\end{align}
+	\end{subequations}
+	
+	Rescaling the momentum equations under the regime of $h / R \ll 1$ (ie: locally flat), we conclude that, to leading order\todo{cite Schlichting, 1968, Long-scale evolution of thin liquid films}:
+	\begin{subequations}\label{BoundaryLayerScaling}
+		\begin{align}
+			\frac{\partial p_g}{\partial r} = \mu_g \frac{\partial^2 u_r}{\partial z^2},\label{BLScaling} \\
+			\frac{\partial p_g}{\partial z} = 0.
+		\end{align}
+	\end{subequations}
+	This directly concludes that $p_g$ is a function of $r$ and $t$ only! Hence, via the symmetry $\underline{u}(r,z,t) = u_r(r,z,t)$! We will hence notate $u = u_r$ from this point onwards. Using th boundary conditions of $u(r,0) = u(r,h(r,t)) = 0$, we can integrate \eqref{BLScaling} to get the Plane Poiseuille velocity profile \todo{CITE: Long-scale evolution of thin liquid films}:
 	\begin{equation}
-		\label{NavierStokesND}
-			\frac{1}{r} \frac{\partial (r u_r)}{\partial r} + \frac{1}{r} \frac{\partial u_\theta}{\partial \theta} + \frac{\partial u_z}{\partial z} = 0,\\
-			
-			\frac{\partial u_r}{\partial t} + (\mathbf{u} \cdot \nabla) u_r - \frac{u_\theta^2}{r} = -\frac{\partial p}{\partial r} + \frac{1}{\text{Re}} \left( \nabla^2 u_r - \frac{u_r}{r^2} - \frac{2}{r^2} \frac{\partial u_\theta}{\partial \theta} \right),\\
-			
-			\frac{\partial u_\theta}{\partial t} + (\mathbf{u} \cdot \nabla) u_\theta + \frac{u_r u_\theta}{r} = -\frac{1}{r} \frac{\partial p}{\partial \theta} + \frac{1}{\mathrm{Re}} \left( \nabla^2 u_\theta - \frac{u_\theta}{r^2} + \frac{2}{r^2} \frac{\partial u_r}{\partial \theta} \right),\\
-			
-			\frac{\partial u_z}{\partial t} + (\mathbf{u} \cdot \nabla) u_z = -\frac{\partial p}{\partial z} + \frac{1}{\text{Re}} \nabla^2 u_z.
+		u(r,z,t) = \frac{z(z-h(r,t))}{2\mu_g} \frac{\partial p_g(r,t)}{\partial r},
 	\end{equation}
-	\todo{Meseguer, Á., & Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}
+	with velocity flux,
+	\begin{equation}
+		Q = \int^{h,r,t}_0 u\ dz = -\frac{h^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r}.
+	\end{equation}
+	As this is a conserved quantity, we must have that $\nabla Q = \frac{1}{r}\frac{\partial Q}{\partial r} = 0$\todo{CITE: Long-scale evolution of thin liquid films}, which gives the Lubrication Equation
+	\begin{equation}
+		\frac{1}{r}\frac{\partial }{\partial r}\left( \frac{rh^3}{12\mu_g} \frac{\partial p(r,t)}{\partial t} \right) = \frac{\partial h(r,t)}{\partial t},
+	\end{equation}
+	or, written in non-dimensional form,
+	\begin{equation}\label{LubricationND}
+		\frac{1}{r}\frac{\partial }{\partial r}\left( \frac{\text{St}}{12} rh^3 \frac{\partial p(r,t)}{\partial t} \right) = \frac{\partial h(r,t)}{\partial t},
+	\end{equation}
+	where $\text{St} = \frac{\rho_g RU}{\mu_g}$ is the Stokes number.
+	
+	
+	
+	
+	
+	As for boundary conditions, impermeability and no-slip at the solid says $\underline{u}_g(r,0) = (0,0)$.
+	
+	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$\todo{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}. This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
+	
+	, and no slip
+	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}.
+	
+	
+	And the boundary conditions $\underline{u}(r,0) = (0,0)$, $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$, $\underline{u}(r,z) = \underline{u}_\text{liquid}$, $p = p_\text{liquid}$ at the interface.
+	
 	
 	
 	\subsection{Formation of the Problem}
 	Now we have non-dimensionalisd, we turn to the symmetries that allow for a simpler argument.
 	The whole problem is axisymmetric in the z axis, hence we can perform the maths on the 2D version of the problem, then convert to a 3D problem by integrating the solution over $\theta$. Hence, it is natural to use polar coordinates $(r,z)$ for this: if we used $(x,y)$, the geometry would represent a infinitely long cylinder, rather than a circular drop.
-	\todo[inline]{Papers on 2D problem, for comparison: Mandre, Mani & Brenner, Precursors to splashing of liquid droplets on a solid surface}
+	\todo[inline]{Papers on 2D problem, for comparison: Mandre, Mani \& Brenner, Precursors to splashing of liquid droplets on a solid surface}
 	
 	\subsection{Here we go!}
 	Boundary conditions come from matching $p_\text{liquid} = p_\text{gas}$ at the boundary, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
