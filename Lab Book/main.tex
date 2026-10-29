@@ -70,7 +70,10 @@
 	Assume the gas is a continuous fluid.
 	We also imbue no-slip boundary conditions onto the gas film, via the solid and the moving water drop's boundary.
 	
-	Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. Also, we are in the low Reynolds regime in the air, such that we don't get cushioning until the air layer is sufficiently thin?
+	\todo[inline]{Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. The former of these assumptions only really holds as the interface is smooth and flat, but this breaks down under high curvatures (interface wants to pull itself back together! HP doesn't go into this but we might!) The latter of these holds (CITE Mandre et al 2009) that this holds when $P_a \sqrt[3]{\frac{\mu_g}{\rho_lUR}} \gg 1$. This seams really easy to surpass! - Thoroddsen et al (2005) and Dam and Le Clerc (2004)! - what do we do about this?}
+	I think we're using the fact that, above a critical Reynolds Number (Smith et al. (2003) showed this is $\sim 10^7$), the interaction between air and liquid is purely inviscid. I think this means that the air cushion doesn't form? But it could also mean that the cushioning effect does not occur until the air layer is sufficiently thin? Ahhh, assume we are slow enough such that the pressure build-up isn't felt until late?
+	
+	HP shows that the Froude number is large, and therefore we neglect gravity.
 	
 	\subsection{Further Assumptions Worth Commenting on!}
 	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo{From "Events before droplet splashing on a solid surface}.
@@ -145,6 +148,28 @@
 		\end{align}
 	\end{subequations}
 	
+	\subsection{Boundary Conditions}
+	As for boundary conditions, impermeability and no-slip at the solid says
+	\begin{equation}
+		\label{BCNoSlip}
+		\underline{u}_g(r,0) = (0,0).
+	\end{equation}	
+	
+	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to\todo{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}
+	\begin{equation}
+		\label{BCKinetic}
+		u_z(r,h) = \frac{\partial h}{\partial t} + u_r \frac{\partial h}{\partial r}.
+	\end{equation}
+	This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
+	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
+	
+	Crucially, as the liquid is in the high Reynolds number regime (ie: the velocity $\underline{u} = \nabla \phi$, for some potential $\phi$), we cannot enforce no slip for the liquid at the interface... BUT WHAT ABOUT THE GAS!?!? We have the kinematic equation, but doesn't this mean that the tangential velocity of the gas moves the same as the tangential velocity of the gas? And therefore, no slip? But the boundary is controlled by the gas, so no?? Maybe we do get slip? Talk about boundary layer effect in the report? (as it is a liquid-liquid interface vs a liquid-solid interface? Is it just the difference in viscosity, or the absolute magnitude of the liquid viscosity)
+	\todo[inline]{Ask James about this!! do we have slip at the interface between liquid and gas? Inviscid so yes? Supported by kinematic boundary conditon? But then, what about the gas? (Slip, Immiscibility, and Boundary Conditions at the Liquid-Liquid Interface paper says there is no slip?)}
+	
+	
+	And the boundary conditions $\underline{u}(r,0) = (0,0)$, $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$, $\underline{u}(r,z) = \underline{u}_\text{liquid}$, $p = p_\text{liquid}$ at the interface.
+	
+	\subsection{Lubrication Equation Derivation}
 	By the axisymmetric conditions, $\partial / \partial \theta = 0$ and $u_\theta = 0$ \todo{From "Stability of nonswirl axisymmetric solutions to the Navier-Stokes equations"}, and thus we get $\underline{u}(r,z)$. Hence, in the absence of external forces (including gravity), we get:
 	
 	\begin{subequations}\label{NavierStokesAXI}
@@ -162,37 +187,48 @@
 			\frac{\partial p_g}{\partial z} = 0.
 		\end{align}
 	\end{subequations}
-	This directly concludes that $p_g$ is a function of $r$ and $t$ only! Hence, via the symmetry $\underline{u}(r,z,t) = u_r(r,z,t)$! We will hence notate $u = u_r$ from this point onwards. Using th boundary conditions of $u(r,0) = u(r,h(r,t)) = 0$, we can integrate \eqref{BLScaling} to get the Plane Poiseuille velocity profile \todo{CITE: Long-scale evolution of thin liquid films}:
+	This directly concludes that $p_g$ is a function of $r$ and $t$ only! Using the boundary conditions of $\underline{u}(r,0) = \underline{u}(r,h(r,t)) = 0$, we can integrate \eqref{BLScaling} to get the Plane Poiseuille velocity profile \todo{CITE: Long-scale evolution of thin liquid films}:
 	\begin{equation}
-		u(r,z,t) = \frac{z(z-h(r,t))}{2\mu_g} \frac{\partial p_g(r,t)}{\partial r},
+		u_r(r,z,t) = \frac{z(z-h(r,t))}{2\mu_g} \frac{\partial p_g(r,t)}{\partial r},
 	\end{equation}
 	with velocity flux,
 	\begin{equation}
-		Q = \int^{h,r,t}_0 u\ dz = -\frac{h^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r}.
+		\label{Flux}
+		Q(r,t) = \int^{h(r,t)}_0 u_r\, dz = -\frac{h^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r}.
 	\end{equation}
-	As this is a conserved quantity, we must have that $\nabla Q = \frac{1}{r}\frac{\partial Q}{\partial r} = 0$\todo{CITE: Long-scale evolution of thin liquid films}, which gives the Lubrication Equation
+	To determine the evolution of the film thickness $h(r,t)$, we integrate the continuity equation \eqref{NavierStokesAXI:continuity} inside the entire $z$ domain \todo{CITE NOTES 2 DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS} to get,
 	\begin{equation}
-		\frac{1}{r}\frac{\partial }{\partial r}\left( \frac{rh^3}{12\mu_g} \frac{\partial p(r,t)}{\partial t} \right) = \frac{\partial h(r,t)}{\partial t},
+		\label{ContInt}
+		\int_0^{h(r,t)} \frac{1}{r} \frac{\partial (r u_r)}{\partial r}\ dz + \int_0^{h(r,t)} \frac{\partial u_z}{\partial z} \ dz = 0.
 	\end{equation}
-	or, written in non-dimensional form,
+	Recalling Leibniz Integration Rule, and applying \eqref{BCKinetic}\todo{CITE: BJ Hamrock, Fundamentals of Fluid Film Lubrication}, the first term in \eqref{ContInt} evaluates to
+	\begin{equation}
+		\label{ContInt1}
+		\frac{1}{r} \frac{\partial}{\partial r}\left( r \int_0^h u_r\, dz \right) - u_r(r,h)\frac{\partial h}{\partial r} \ =\ \frac{1}{r} \frac{\partial (r Q)}{\partial r} - \left( u_z(r,h) - \frac{\partial h}{\partial t} \right),
+	\end{equation}
+	whilst the Fundamental Theorem of Calculus and boundary condition \eqref{BCNoSlip} can be used to evaluate the second term in \eqref{ContInt} as merely $u_z(r,h)$. Combining this with \eqref{ContInt1} in continuity equation \eqref{ContInt}, whilst subbing in \eqref{Flux} for $Q$, we retrieve the axisymmetric Reynolds lubrication equation \todo{CITE: Modelling and closed loop control of near-field acoustically levitated objects, A rotational traveling wave based levitation device - Modelling, design, and control }:
+	\begin{equation}
+		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r}\left( \frac{rh^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r} \right).
+	\end{equation}
+	Scaling radial lengths by the drop radius $R$, film thickness by $H$, time by $R/U$, and pressures by the liquid inertial scale $\rho_l U^2$, this can be expressed in non-dimensional form as:
 	\begin{equation}\label{LubricationND}
-		\frac{1}{r}\frac{\partial }{\partial r}\left( \frac{\text{St}}{12} rh^3 \frac{\partial p(r,t)}{\partial t} \right) = \frac{\partial h(r,t)}{\partial t},
+		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r}\left( \frac{\text{St}}{12} rh^3 \frac{\partial p_g(r,t)}{\partial r} \right),
 	\end{equation}
-	where $\text{St} = \frac{\rho_g RU}{\mu_g}$ is the Stokes number.
+	where $\text{St} = \frac{\rho_l R U}{\mu_g}$ is the Stokes number.
 	
-	
-	
-	
-	
-	As for boundary conditions, impermeability and no-slip at the solid says $\underline{u}_g(r,0) = (0,0)$.
-	
-	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$\todo{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}. This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
-	
-	, and no slip
-	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}.
-	
-	
-	And the boundary conditions $\underline{u}(r,0) = (0,0)$, $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$, $\underline{u}(r,z) = \underline{u}_\text{liquid}$, $p = p_\text{liquid}$ at the interface.
+	\subsection{Droplet Equations Formation}
+	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), we approximate the interface as flat to leading order. We recover that as $z \to 0$, the material derivative $\frac{D}{Dt}$ loses it's advective terms \todo{CITE: HP, Air cushioning with a lubrication/inviscid balance}, and thus by the high Reynolds Number approximation, the axisymmetric version of \eqref{NavierStokesND} becomes
+	\begin{equation}
+		\label{NSHarmonic}
+		\frac{\partial \underline{u}_l}{\partial t} = -\left( \frac{\partial p_l}{\partial r}, \frac{\partial p_l}{\partial z} \right),
+	\end{equation}
+	and so taking the cylindrical divergence of \eqref{NSHarmonic}, and equating to \eqref{NavierStokesAXI:continuity} gives \todo{CITE: HP, Air cushioning with a lubrication/inviscid balance},
+	\begin{equation}
+		\label{PressureLaplace}
+		\nabla ^2 p_l = 0.
+	\end{equation}
+	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle) \todo{cite: Evans, L. C. (2010). Partial Differential Equations}
+	\todo[inline]{Would this form a nice extension for the problem? We don't really care about the pressure inside the liquid, only at the boundary (so we can use Bernoulli to prescribe it as a boundary for the gas too!) But then use the Dirichlet Principle or something else to solve the pressure inside the drop and hence make a cool heatmap inside the droplet? :O}
 	
 	
 	
@@ -201,8 +237,8 @@
 	The whole problem is axisymmetric in the z axis, hence we can perform the maths on the 2D version of the problem, then convert to a 3D problem by integrating the solution over $\theta$. Hence, it is natural to use polar coordinates $(r,z)$ for this: if we used $(x,y)$, the geometry would represent a infinitely long cylinder, rather than a circular drop.
 	\todo[inline]{Papers on 2D problem, for comparison: Mandre, Mani \& Brenner, Precursors to splashing of liquid droplets on a solid surface}
 	
-	\subsection{Here we go!}
-	Boundary conditions come from matching $p_\text{liquid} = p_\text{gas}$ at the boundary, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
+	Again, we can consider normal impact as even oblique impacts are normal to leading order!
+	Also, assume that the initial pressure in the gas is $p = 0$.
 	
 	
 	
