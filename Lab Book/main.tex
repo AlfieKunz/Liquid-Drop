@@ -1,57 +1,24 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage{cite}
-\usepackage{parskip}
-\usepackage{amsfonts}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{amssymb}
-\usepackage{mathrsfs}
-\usepackage{xtab}
-\usepackage{cancel}
-\usepackage{graphicx}
-\usepackage{esint}
-\usepackage{stmaryrd}
-\usepackage{tikz}
-\usepackage[utf8]{inputenc}
-\usepackage{geometry}
-\geometry{margin=1in}
-\usepackage{booktabs}
-\usepackage{float}
-\usepackage{xcolor}
-\usepackage{charter}
-\usepackage{microtype}
-\definecolor{darkbg}{HTML}{1A1A1A}
-\definecolor{lighttext}{HTML}{F2F2F2}
-\definecolor{accentlink}{HTML}{4FC1FF}
-\definecolor{pageborder}{HTML}{404040}
-\pagecolor{darkbg}
-\color{lighttext}
-\usepackage{hyperref}
-\hypersetup{
-	colorlinks = true,
-	linkcolor  = accentlink,
-	citecolor  = accentlink,
-	urlcolor   = accentlink
-}
-\usepackage{eso-pic}
-\AddToShipoutPictureBG{%
-	\begin{tikzpicture}[remember picture, overlay]
-		\draw[color=pageborder, line width=1.2pt] 
-		([xshift=1.5mm, yshift=1.5mm]current page.south west) 
-		rectangle 
-		([xshift=-1.5mm, yshift=-1.5mm]current page.north east);
-	\end{tikzpicture}%
-}
-
-\title{Dissertation Learning Notes \& Resources}
-\author{Alfie Kunz - u5514994}
-
+\input{preamble}
 \begin{document}
-	
 	\maketitle
 	\tableofcontents
 	
 	\section{Reference Sheet}
+	Force per unit area on fluid element: $\underline{F} = \int p \underline{n}\cdot d\underline{S} = \int_\Omega\nabla \cdot \mathbf{T} \ dV = \int_A \mathbf{T}\cdot \underline{n}\ dA$, where $\mathbf{T}\cdot \underline{n}$ is the stress on a surface normal to $\underline{n}$.
+	
+	$T_{ij} = -p\delta_{ij} + 2\mu e_{ij}$ is the Stress Tensor. Components $\{i,j\}$ is the stress along $i$ on the surface normal to $j$.
+		
+	Material Derivative: ${\frac{D}{Dt}} := {\frac{\partial }{\partial t} + (\underline{u}\cdot \nabla )}$.
+
+	Navier Stokes Equations:
+	\begin{subequations}
+		\label{NavierStokes}
+		\begin{align}
+			\nabla \cdot \underline{u} = 0,\\
+			\underbrace{\rho\left( \frac{\partial \underline{u}}{\partial t} + \overbrace{(\underline{u}\cdot \nabla) \underline{u}}^\text{inertial} \right)}_{ma} = \underbrace{\overbrace{\mu\nabla ^2 \underline{u}}^\text{viscous} - \nabla p + \rho \underline{g}}_{\sum \underline{F}}.
+		\end{align}
+	\end{subequations}
 	
 	Stokes' Equations:
 	\begin{subequations}
@@ -62,25 +29,49 @@
 		\end{align}
 	\end{subequations}
 	
-	\section{Pre-Reading \& Project Brief}
+	Streamlines: $\frac{\partial \underline{x}(s)}{\partial s} = \underline{u}(\underline{x}(s),t)$.
 	
-	\subsection{Intro}
+	Reynolds Number: $\text{Re} = \frac{\rho UR}{\mu}$.
+	
+	Bernoulli's Equations:
+	\begin{subequations}
+		\label{Bernoulli}
+		\begin{align}
+			\tilde{B}(\underline{x}) &= \left( \frac{\rho}{2} |u(x)|^2 + p  + \rho gz \right),\quad&\text{(Steady, Inviscid. Constant on streamlines)}\\
+			\hat{B}(t) &= \left( {\rho \frac{\partial \phi}{\partial t}} + \frac{\rho}{2} |u(x,t)|^2 + p + \rho gz \right).\quad&\text{(Potential. Constant in space)}
+		\end{align}
+	\end{subequations}
+	
+	Potential / Irrotational Flows: $\underline{u} = \nabla \phi(\underline{x},t) = \left( \frac{\partial \phi}{\partial r}, \frac{1}{r}\frac{\partial \phi}{\partial \theta} \right)$, with $\nabla ^2\phi = 0$.
+	
+	Incompressible Flows: $\underline{u} = \left( \frac{\partial \psi}{\partial y}, -\frac{\partial \psi}{\partial x} \right) = \left( \frac{1}{r}\frac{\partial \psi}{\partial \theta}, -\frac{\partial \psi}{\partial r} \right)$.
+	
+	These link via: $\{\partial _x\phi = \partial _y\psi,\ \partial _y\phi = -\partial _x\psi\}$.
+	
+	
+	
+	
+	
+	\section{Problem Overview}
 	Bounces are modelled specifically via the thin air film that coats the drop - lubrication theory. The drop bounces on it's \textit{own air cushion}.
 	Collisions with solids don't happen unless the solid is nano-smooth - small ridges puncture air film and reaches the liquid, sticking to it. Hence, drop-drop collisions (or symmetric to halve computation?).
 	
-	Weber number $\text{We} = \frac{\rho RU^2}{\gamma}$, ratio of inertia (wants to deform) to surface tension (wants no deform) determines behaviour - middle ground only for bouncing.
+	The closer the drop gets to the barrier (and the thinner the air film gets), the more pressure forms. With no attractive forces, this pressure builds up until it repels the drop.
+	\todo[inline]{The drop is able to reach the barrier for two reasons: at small scales, the attract each other through van der Waals forces, and if the film height drops below the mean free path of gas molecules, pressure decreases, causing the gas molecules to slip along the boundary (Knudsen Gas-Kinetic Slip). If this happens, the the film ruptures and the drops merge.}
+	\todo[inline]{Does this have something to do with the $1/r$ interaction distance from the summer reading?? Make notes on this!!}
 	
-	When bouncing, the droplet flattens and dimples (from an initially parabolic shape) - we are modelling the shape evolution.
 	
-	\subsection{Method \& Key Assumptions}
-	Assume the side of the drop colliding with the surface begins as a weak parabola (no 1st order terms).
+	\subsection{Key Assumptions}
+	We don't really care about the droplet itself - it is high Reynolds number compared to the air film, much denser, and deforms not easily (surface tension acts perpendicular to the surface normal, and takes lots of energy to shape). Combined with the fact that we initially model the drop's surface as a weak parabola (no 1st order terms), this means that we approximate the water's surface as locally smooth, and thus we can approximate the height of the film, $h(x)$ via linear functions. Similarly, at the simulation's middle (drop is closest to surface - pressure is largest - most of the maths and scaling happens here), we can assume that the drop's surface is locally flat (Plane-Poiseuille).
+	Further assumptions on the liquid: inviscid and potential (Bernoulli, and $\nabla ^2p = 0$ - Laplace Equation, Green's function, etc).
+	
+	On the other side, the gas is viscous-dominated rather than inertia dominated, and the height is much smaller than the x extent. Hence, we assume that the pressure does not change in $y$ (Plane-Poiseuille), and that we can use the Lubrication equations.	
 	Assume the gas is a continuous fluid.
+	We also imbue no-slip boundary conditions onto the gas film, via the solid and the moving water drop's boundary.
 	
-	\subsection{Part I: no attraction forces between the films}
-	The closer the drop gets to the barrier (and the thinner the air film gets), the more pressure forms. With no attractive forces, this pressure builds up until it repels the drop. 
 	
-	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, fine assumption is Poiseuille profile: $x,x^2 \to 0$ in film and we get a strip. Note that MA3D1 gives:
-	
+	\subsection{Recap of Plane-Poiseuille Flow and Lubrication Theory}
+	The Plane-Poiseuille flow is the flow between two stationary plates of separation $h \sim \hat{\underline{z}}$.
 	\begin{itemize}
 		\item By the profile, we write $\underline{u} = u(y)\underline{\hat{x}}$. Via 1D nature, \textcolor[RGB]{255, 170, 0}{conservation of momentum} gives \underline{no inertial terms}, and:
 		\begin{itemize}
@@ -89,32 +80,64 @@
 		\item As $\color{lime}p(x)$, $u(y)$, we just \textcolor[RGB]{85, 255, 255}{integrate} to get $u(y) = \left( \frac{1}{2\mu} \frac{d p}{d x} \right) y^2 + Ay + B$.
 		\item Using $u(y = \pm h/2) = 0$ (\underline{no-slip}, viscous), we get the \textbf{parabola} $\underline{u(y) = \frac{1}{2\mu} \frac{d p}{d x}\left( y^2 - \frac{h^2}{4} \right)}$.
 	\end{itemize}
-	
-	But now we generalise to $y \to \pm h(x,t)/2$ and $p(x,t)$ - same thing otherwise. Moving to cylindrical coordinates (coordinates $\{x, h(r,t)\}$, pressure $p(r,t)$) gives the planar Reynolds equation (in polar):
+	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, a fine assumption in this simple case is that the Poiseuille profile holds: $x,x^2 \to 0$ in the gas film, and we get a strip. This resolves to:
 	\begin{equation}
-		\label{PlanarReynolds}
-		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r} \left( r \frac{h(r,t)^3}{12 \mu_g} \frac{\partial p(r,t)}{\partial r} \right).
+		\label{LubricationPlanePoiseuille}
+		\frac{d}{dx}\left(\frac{h^{3}}{12\mu }\frac{dp}{dx}\right)=U\frac{dh}{dx}.
 	\end{equation}
+	\todo[inline]{DERIVE THIS!! Comment on the $h^3$ interaction distance - this is important.}
 	
-	\subsection{Hicks \& Purvis Method}
-	At the parabolic film's minimum, the pressure is largest and the fluid moves rapidly - to leading order it can be thought of as inviscid (wait what? I thought we were dealing with low Reynolds flow? But now its high Reynolds, but in this small region? Seems a bit strange - can no longer use \eqref{Stokes}?)
-	Also, the interface is locally flat so therefore voodoo magic and we can neglect inertial terms?? BUT THAT MEANS LOW REYNOLDS NUMBERS EH!??!?!
+
 	
-	Anyway, voodoo shenanigans therefore says that $\nabla ^2p = 0$ in this local area of the liquid: problem determined purely by boundary conditions (ie: underbelly shape). We call these functions \textbf{harmonic} - gradients blend smoothly towards the centre.
+	
+	
+	\section{Techniques}
+	The problem is basically trying to figure out the complex boundary conditions, given by the height of the drop's surface $h(x,t)$. We need the pressure at these points, as well as enforcing no-slip on the film. Matching these for both fluids gives a coupled 1D system.
+	
+	In the drop, we are wanting to solve $\nabla ^2p = 0$, which means that the problem is determined purely by boundary conditions (ie: underbelly shape). We call these functions ($p$) \textbf{harmonic} - gradients blend smoothly towards the centre.
+	\todo[inline]{Methods of Note: Laplace equation, Half-Space Green's Functions, method of images, Dirichlet-to-Neumann (DtN) Maps, Cauchy PV, singularity subtraction, elliptical integrals}
+	
+	In the film, we are wanting so solve the lubrication equation, also known as Reynolds Equation. Via the smooth-ness of the drop's surface, and the fact that $h \ll R$, we can approximate $h$ via linear functions at each point.
+	\todo[inline]{viscous shear against the wall dominates?? Hydraulic resistance scales as $1/h^3$, so it will eventually act like a stiff fluid?? What does this mean?}
+	
+	
 	
 	\subsubsection{Green's Functions}
-	A Dirac-Delta is a single 'prick' in space, which ripples outwards 
-	
+	A Dirac-Delta is a single 'prick' in space, which ripples outwards.
 	Like how we can build a solution to 
 	
 	
 	
-	\subsection{Global Model}
-	We add a small rarefaction (slip) correction to the gas.
 	
 	
-	\begin{enumerate}
-		\item 
-	\end{enumerate}
+	\section{Hicks \& Purvis Method}
+	
+	\subsection{Formation of the Problem}
+	
+	
+	\subsection{Intro}
+	Weber number $\text{We} = \frac{\rho RU^2}{\gamma}$, ratio of inertia (wants to deform) to surface tension (wants no deform) determines behaviour - middle ground only for bouncing.
+	
+	We are modelling the shape of the drop's surface (from an initially parabolic shape). As the pressure increases as the drop descends, the drop is forced to flatten out over the surface (entropy - wants the pressure everywhere to be equal, but the surface is smooth). At the middle, where we have a large pressure spike, this 'pushing' forms a dimple! (imagine punching a balloon - the vast amount of the force is at the centre where the fist is, so this forces everything into a flat shape but pushes the inside more and deforms it! The difference here is that the pressure acts on the entire surface, but more so at the centre)
+	\todo[inline]{Get shape of pressure profile!! Does it follow a Gaussian?? Maybe this will help the analogy.}
+	The droplet's fate is determined by this film: whether it bounces cleanly or ruptures the film.
+	\todo[inline]{This dimple is "rimmed by a razor-thin circular neck of minimum thickness $h_{\text{neck}}$ (labelled $h_{pd}$). I have no idea what this means.}
+	
+	
+	
+	
+	
+	
+	\section{Additions to Purvis-Hicks}
+	Disjoining Pressure (microscopic van der Waals attraction) pulls interfaces together. Knudsen Gas-Kinetic Slip (as h goes to mean free path, the cushion strength is reduced as the molecules begin to slip)...
+	
+	
+	
+	\section{Report Layout}
+	\subsection{Introduction}
+	Say how we can discuss the 3D problem using the language of axi-symmetric-ness and therefore turn things into a 2D problem.
+	
+	\subsection{Work to Delegate to Jiya}
+	Non dimensionalisation and scaling for $St^{-1/3}$, Asymptotic scale separation, ...
 	
 \end{document}
