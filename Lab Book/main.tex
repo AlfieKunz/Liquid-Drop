@@ -63,20 +63,22 @@
 	
 	
 	\subsection{Key Assumptions}
-	We don't really care about the droplet itself - it is high Reynolds number compared to the air film, much denser, and deforms not easily (surface tension acts perpendicular to the surface normal, and takes lots of energy to shape)\todo{"Events before droplet splashing on a solid surface" says: The major simplifications for a typical millimetre-sized droplet with impact velocity of order $1ms^{-1}$ are (i) slender geometry for the gas film, (ii) the neglect of viscous forces in the liquid, (iii) the neglect of surface tension forces at the liquid–gas interface and (iv) the neglect of nonlinear inertia in the liquid. With respect to viscous forces, the liquid Reynolds number is of order $\text{Re} = \rho R V / \mu \sim 1000$, where $\mu,\rho$ are the liquid viscosity and density respectively; hence inertial forces in the fluid initially overwhelm viscous forces, and we therefore neglect viscosity. Similarly, $\text{We} = \rho V^2/\sigma \sim 100$ shows surface tension is negligible}. Combined with the fact that we initially model the drop's surface as a weak parabola (no 1st order terms), this means that we approximate the water's surface as locally smooth, and thus we can approximate the height of the film, $h(x)$ via linear functions. Similarly, at the simulation's middle (drop is closest to surface - pressure is largest - most of the maths and scaling happens here), we can assume that the drop's surface is locally flat (Plane-Poiseuille).
+	We don't really care about the droplet itself - it is high Reynolds number compared to the air film, much denser, and deforms not easily (surface tension acts perpendicular to the surface normal, and takes lots of energy to shape)\todo[inline,color=cyan]{"Events before droplet splashing on a solid surface" says: The major simplifications for a typical millimetre-sized droplet with impact velocity of order $1ms^{-1}$ are (i) slender geometry for the gas film, (ii) the neglect of viscous forces in the liquid, (iii) the neglect of surface tension forces at the liquid–gas interface and (iv) the neglect of nonlinear inertia in the liquid. With respect to viscous forces, the liquid Reynolds number is of order $\text{Re} = \rho R V / \mu \sim 1000$, where $\mu,\rho$ are the liquid viscosity and density respectively; hence inertial forces in the fluid initially overwhelm viscous forces, and we therefore neglect viscosity. Similarly, $\text{We} = \rho V^2/\sigma \sim 100$ shows surface tension is negligible}. Combined with the fact that we initially model the drop's surface as a weak parabola (no 1st order terms), this means that we approximate the water's surface as locally smooth, and thus we can approximate the height of the film, $h(x)$ via linear functions. Similarly, at the simulation's middle (drop is closest to surface - pressure is largest - most of the maths and scaling happens here), we can assume that the drop's surface is locally flat (Plane-Poiseuille).
 	Further assumptions on the liquid: inviscid and potential (Bernoulli, and $\nabla ^2p = 0$ - Laplace Equation, Green's function, etc).
 	
 	On the other side, the gas is viscous-dominated rather than inertia dominated, and the height is much smaller than the x extent. Hence, we assume that the pressure does not change in $y$ (Plane-Poiseuille), and that we can use the Lubrication equations.	
 	Assume the gas is a continuous fluid.
-	We also imbue no-slip boundary conditions onto the gas film, via the solid and the moving water drop's boundary.
 	
-	\todo[inline]{Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. The former of these assumptions only really holds as the interface is smooth and flat, but this breaks down under high curvatures (interface wants to pull itself back together! HP doesn't go into this but we might!) The latter of these holds (CITE Mandre et al 2009) that this holds when $P_a \sqrt[3]{\frac{\mu_g}{\rho_lUR}} \gg 1$. This seams really easy to surpass! - Thoroddsen et al (2005) and Dam and Le Clerc (2004)! - what do we do about this?}
+	\todo[inline,color=pink]{Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. The former of these assumptions only really holds as the interface is smooth and flat, but this breaks down under high curvatures (interface wants to pull itself back together! HP doesn't go into this but we might!) The middle of these holds because something something Freud Number. The latter of these holds (CITE Mandre et al 2009) that this holds when $P_a \sqrt[3]{\frac{\mu_g}{\rho_lUR}} \gg 1$.}
+	\todo[inline,color=green]{This seams really easy to surpass! - Thoroddsen et al (2005) and Dam and Le Clerc (2004) shows the impact velocity only needs to be more than $1ms^{-1}$! - This is okay though, as droplets in cloud formations have really slow collision velocities. If we really want to do this though, we modify the continuity equation in the lubrication equation, to consider a barotropic argument.}
+	
 	I think we're using the fact that, above a critical Reynolds Number (Smith et al. (2003) showed this is $\sim 10^7$), the interaction between air and liquid is purely inviscid. I think this means that the air cushion doesn't form? But it could also mean that the cushioning effect does not occur until the air layer is sufficiently thin? Ahhh, assume we are slow enough such that the pressure build-up isn't felt until late?
+	\todo[inline]{I am a bit confused about this in general... So the gas is considered to be viscous, but is this because of the thin film effect, or the interactions of a moving plate ramming into it? How does this change intuitively for show descent vs fast descent? It is very rare that we think about gas being anything other than INCREDIBLY inviscid!}
 	
 	HP shows that the Froude number is large, and therefore we neglect gravity.
 	
 	\subsection{Further Assumptions Worth Commenting on!}
-	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo{From "Events before droplet splashing on a solid surface}.
+	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo[color=cyan]{From "Events before droplet splashing on a solid surface}.
 	Also, assume the gas is incompressible?? This seems a bit weird... see equation 2.3 in HP
 	
 	
@@ -94,15 +96,6 @@
 	
 	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, a fine assumption in this simple case is that the Poiseuille profile holds: $x,x^2 \to 0$ in the gas film, and we get a strip.
 	
-	
-	
-	This resolves to:
-	\begin{equation}
-		\label{LubricationPlanePoiseuille}
-		\frac{d}{dx}\left(\frac{h^{3}}{12\mu }\frac{dp}{dx}\right)=U\frac{dh}{dx}.
-	\end{equation}
-	\todo[inline]{DERIVE THIS!! Comment on the $h^3$ interaction distance - this is important.}
-	
 
 	
 	
@@ -111,14 +104,14 @@
 	The problem is basically trying to figure out the complex boundary conditions, given by the height of the drop's surface $h(x,t)$. We need the pressure at these points, as well as enforcing no-slip on the film. Matching these for both fluids gives a coupled 1D system.
 	
 	In the drop, we are wanting to solve $\nabla ^2p = 0$, which means that the problem is determined purely by boundary conditions (ie: underbelly shape). We call these functions ($p$) \textbf{harmonic} - gradients blend smoothly towards the centre.
-	\todo[inline]{Methods of Note: Laplace equation, Half-Space Green's Functions, method of images, Dirichlet-to-Neumann (DtN) Maps, Cauchy PV, singularity subtraction, elliptical integrals}
+	\todo[inline, color=cyan]{Methods of Note: Laplace equation, Half-Space Green's Functions, method of images, Dirichlet-to-Neumann (DtN) Maps, Cauchy PV, singularity subtraction, elliptical integrals}
 	
 	In the film, we are wanting so solve the lubrication equation, also known as Reynolds Equation. Via the smooth-ness of the drop's surface, and the fact that $h \ll R$, we can approximate $h$ via linear functions at each point.
 	\todo[inline]{viscous shear against the wall dominates?? Hydraulic resistance scales as $1/h^3$, so it will eventually act like a stiff fluid?? What does this mean?}
 	
 	
 	
-	\subsubsection{Green's Functions}
+	\subsection{Green's Functions}
 	A Dirac-Delta is a single 'prick' in space, which ripples outwards.
 	Like how we can build a solution to 
 	
@@ -138,7 +131,7 @@
 	\todo[inline]{This dimple is "rimmed by a razor-thin circular neck of minimum thickness $h_{\text{neck}}$ (labelled $h_{pd}$). I have no idea what this means.}
 	
 	\subsection{Non-Dimensionalisation}
-	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get\todo{Meseguer, A., \& Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}:
+	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get\todo[color=cyan]{Meseguer, A., \& Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}:
 	\begin{subequations}\label{NavierStokesND}
 		\begin{align}
 			\frac{1}{r} \frac{\partial (r u_r)}{\partial r} + \frac{1}{r} \frac{\partial u_\theta}{\partial \theta} + \frac{\partial u_z}{\partial z} &= 0, \label{NavierStokesND:continuity} \\
@@ -155,22 +148,23 @@
 		\underline{u}_g(r,0) = (0,0).
 	\end{equation}	
 	
-	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to\todo{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}
+	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo[color=cyan]{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to\todo[color=cyan]{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}
 	\begin{equation}
 		\label{BCKinetic}
 		u_z(r,h) = \frac{\partial h}{\partial t} + u_r \frac{\partial h}{\partial r}.
 	\end{equation}
 	This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
 	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
+	\todo[inline, color=pink]{This comes from matching $F = ma$ on the boundary (a dynamic boundary condition), and hence $\mathbf{T}_g\cdot \hat{\underline{n}} = \mathbf{T}_l\cdot \hat{\underline{n}}$. As the liquid is inviscid, $\mathbf{T}_l = -p\mathbf{I}$, and so we have $p=p$.}
+	\todo[inline, color=green]{To add the effect of surface tension, we just say $p_g = p_l + ...$!}
 	
 	Crucially, as the liquid is in the high Reynolds number regime (ie: the velocity $\underline{u} = \nabla \phi$, for some potential $\phi$), we cannot enforce no slip for the liquid at the interface... BUT WHAT ABOUT THE GAS!?!? We have the kinematic equation, but doesn't this mean that the tangential velocity of the gas moves the same as the tangential velocity of the gas? And therefore, no slip? But the boundary is controlled by the gas, so no?? Maybe we do get slip? Talk about boundary layer effect in the report? (as it is a liquid-liquid interface vs a liquid-solid interface? Is it just the difference in viscosity, or the absolute magnitude of the liquid viscosity)
-	\todo[inline]{Ask James about this!! do we have slip at the interface between liquid and gas? Inviscid so yes? Supported by kinematic boundary conditon? But then, what about the gas? (Slip, Immiscibility, and Boundary Conditions at the Liquid-Liquid Interface paper says there is no slip?)}
-	
+	\todo[inline, color=pink]{Okay, here's what's going on: the liquid is inviscid, so we lose slip. Hence, as we are dealing with a fluid-fluid interface, NEITHER fluid can have no-slip conditions. We only enforce impermeability via the lack of boundary conditions available from Laplace's equation. However, the moving interface creates the kinematic boundary equation (forces a streamline) and pressure matching boundary condition. This is made simpler as $h(r,t)$ is not a one-to-many function?}
 	
 	And the boundary conditions $\underline{u}(r,0) = (0,0)$, $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$, $\underline{u}(r,z) = \underline{u}_\text{liquid}$, $p = p_\text{liquid}$ at the interface.
 	
 	\subsection{Lubrication Equation Derivation}
-	By the axisymmetric conditions, $\partial / \partial \theta = 0$ and $u_\theta = 0$ \todo{From "Stability of nonswirl axisymmetric solutions to the Navier-Stokes equations"}, and thus we get $\underline{u}(r,z)$. Hence, in the absence of external forces (including gravity), we get:
+	By the axisymmetric conditions, $\partial / \partial \theta = 0$ and $u_\theta = 0$ \todo[color=cyan]{From "Stability of nonswirl axisymmetric solutions to the Navier-Stokes equations"}, and thus we get $\underline{u}(r,z)$. Hence, in the absence of external forces (including gravity), we get:
 	
 	\begin{subequations}\label{NavierStokesAXI}
 		\begin{align}
@@ -180,14 +174,14 @@
 		\end{align}
 	\end{subequations}
 	
-	Rescaling the momentum equations under the regime of $h / R \ll 1$ (ie: locally flat), we conclude that, to leading order\todo{cite Schlichting, 1968, Long-scale evolution of thin liquid films}:
+	Rescaling the momentum equations under the regime of $h / R \ll 1$ (ie: locally flat), we conclude that, to leading order\todo[color=cyan]{cite Schlichting, 1968, Long-scale evolution of thin liquid films}:
 	\begin{subequations}\label{BoundaryLayerScaling}
 		\begin{align}
 			\frac{\partial p_g}{\partial r} = \mu_g \frac{\partial^2 u_r}{\partial z^2},\label{BLScaling} \\
 			\frac{\partial p_g}{\partial z} = 0.
 		\end{align}
 	\end{subequations}
-	This directly concludes that $p_g$ is a function of $r$ and $t$ only! Using the boundary conditions of $\underline{u}(r,0) = \underline{u}(r,h(r,t)) = 0$, we can integrate \eqref{BLScaling} to get the Plane Poiseuille velocity profile \todo{CITE: Long-scale evolution of thin liquid films}:
+	This directly concludes that $p_g$ is a function of $r$ and $t$ only! Using the boundary conditions of $\underline{u}(r,0) = \underline{u}(r,h(r,t)) = 0$, we can integrate \eqref{BLScaling} to get the Plane Poiseuille velocity profile \todo[color=cyan]{CITE: Long-scale evolution of thin liquid films}:
 	\begin{equation}
 		u_r(r,z,t) = \frac{z(z-h(r,t))}{2\mu_g} \frac{\partial p_g(r,t)}{\partial r},
 	\end{equation}
@@ -196,17 +190,17 @@
 		\label{Flux}
 		Q(r,t) = \int^{h(r,t)}_0 u_r\, dz = -\frac{h^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r}.
 	\end{equation}
-	To determine the evolution of the film thickness $h(r,t)$, we integrate the continuity equation \eqref{NavierStokesAXI:continuity} inside the entire $z$ domain \todo{CITE NOTES 2 DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS} to get,
+	To determine the evolution of the film thickness $h(r,t)$, we integrate the continuity equation \eqref{NavierStokesAXI:continuity} inside the entire $z$ domain \todo[color=cyan]{CITE NOTES 2 DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS} to get,
 	\begin{equation}
 		\label{ContInt}
 		\int_0^{h(r,t)} \frac{1}{r} \frac{\partial (r u_r)}{\partial r}\ dz + \int_0^{h(r,t)} \frac{\partial u_z}{\partial z} \ dz = 0.
 	\end{equation}
-	Recalling Leibniz Integration Rule, and applying \eqref{BCKinetic}\todo{CITE: BJ Hamrock, Fundamentals of Fluid Film Lubrication}, the first term in \eqref{ContInt} evaluates to
+	Recalling Leibniz Integration Rule, and applying \eqref{BCKinetic}\todo[color=cyan]{CITE: BJ Hamrock, Fundamentals of Fluid Film Lubrication}, the first term in \eqref{ContInt} evaluates to
 	\begin{equation}
 		\label{ContInt1}
 		\frac{1}{r} \frac{\partial}{\partial r}\left( r \int_0^h u_r\, dz \right) - u_r(r,h)\frac{\partial h}{\partial r} \ =\ \frac{1}{r} \frac{\partial (r Q)}{\partial r} - \left( u_z(r,h) - \frac{\partial h}{\partial t} \right),
 	\end{equation}
-	whilst the Fundamental Theorem of Calculus and boundary condition \eqref{BCNoSlip} can be used to evaluate the second term in \eqref{ContInt} as merely $u_z(r,h)$. Combining this with \eqref{ContInt1} in continuity equation \eqref{ContInt}, whilst subbing in \eqref{Flux} for $Q$, we retrieve the axisymmetric Reynolds lubrication equation \todo{CITE: Modelling and closed loop control of near-field acoustically levitated objects, A rotational traveling wave based levitation device - Modelling, design, and control }:
+	whilst the Fundamental Theorem of Calculus and boundary condition \eqref{BCNoSlip} can be used to evaluate the second term in \eqref{ContInt} as merely $u_z(r,h)$. Combining this with \eqref{ContInt1} in continuity equation \eqref{ContInt}, whilst subbing in \eqref{Flux} for $Q$, we retrieve the axisymmetric Reynolds lubrication equation \todo[color=cyan]{CITE: Modelling and closed loop control of near-field acoustically levitated objects, A rotational traveling wave based levitation device - Modelling, design, and control }:
 	\begin{equation}
 		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r}\left( \frac{rh^3}{12\mu_g} \frac{\partial p_g(r,t)}{\partial r} \right).
 	\end{equation}
@@ -217,21 +211,21 @@
 	where $\text{St} = \frac{\rho_l R U}{\mu_g}$ is the Stokes number.
 	
 	\subsection{Droplet Equations Formation}
-	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), we approximate the interface as flat to leading order. We recover that as $z \to 0$, the material derivative $\frac{D}{Dt}$ loses it's advective terms \todo{CITE: HP, Air cushioning with a lubrication/inviscid balance}, and thus by the high Reynolds Number approximation, the axisymmetric version of \eqref{NavierStokesND} becomes
+	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), we approximate the interface as flat to leading order. We recover that as $z \to 0$, the material derivative $\frac{D}{Dt}$ loses it's advective terms \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance}, and thus by the high Reynolds Number approximation, the axisymmetric version of \eqref{NavierStokesND} becomes
 	\begin{equation}
 		\label{NSHarmonic}
 		\frac{\partial \underline{u}_l}{\partial t} = -\left( \frac{\partial p_l}{\partial r}, \frac{\partial p_l}{\partial z} \right),
 	\end{equation}
-	and so taking the cylindrical divergence of \eqref{NSHarmonic}, and equating to \eqref{NavierStokesAXI:continuity} gives \todo{CITE: HP, Air cushioning with a lubrication/inviscid balance},
+	and so taking the cylindrical divergence of \eqref{NSHarmonic}, and equating to \eqref{NavierStokesAXI:continuity} gives \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance},
 	\begin{equation}
 		\label{PressureLaplace}
 		\nabla ^2 p_l = 0.
 	\end{equation}
-	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle) \todo{cite: Evans, L. C. (2010). Partial Differential Equations}
-	\todo[inline]{Would this form a nice extension for the problem? We don't really care about the pressure inside the liquid, only at the boundary (so we can use Bernoulli to prescribe it as a boundary for the gas too!) But then use the Dirichlet Principle or something else to solve the pressure inside the drop and hence make a cool heatmap inside the droplet? :O}
+	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle) \todo[color=cyan]{cite: Evans, L. C. (2010). Partial Differential Equations}
+	\todo[inline, color=green]{Possible extension for visuals and post processing: create big 3D heatmap of the pressure inside the liquid drop (we don't really care about the details and pressure inside the drop, but it's useful as a learning tool since we have the data). Requires spacial drop discretisation.}
 	
 	To reduce this to a boundary integral, which can be solved to generate an ODE for $h(r,t)$, we use the concept of Green's functions. Intuitively, these are the responses to Dirac Delta functions
-	Green's Second Identity states\todo{CITE: Partial Differential Equations: An Introduction, 2nd Edition}
+	Green's Second Identity states\todo[color=cyan]{CITE: Partial Differential Equations: An Introduction, 2nd Edition}
 	\begin{equation}
 		\label{Green2}
 		\iiint_\Omega \left(\phi \nabla'^2 G - G \nabla'^2 \phi\right) r' dr' d\theta' dz' = \iint_{\partial\Omega} \left(\phi \frac{\partial G}{\partial n'} - G \frac{\partial \phi}{\partial n'}\right) dS'
@@ -242,10 +236,14 @@
 	\subsection{Formation of the Problem}
 	Now we have non-dimensionalisd, we turn to the symmetries that allow for a simpler argument.
 	The whole problem is axisymmetric in the z axis, hence we can perform the maths on the 2D version of the problem, then convert to a 3D problem by integrating the solution over $\theta$. Hence, it is natural to use polar coordinates $(r,z)$ for this: if we used $(x,y)$, the geometry would represent a infinitely long cylinder, rather than a circular drop.
-	\todo[inline]{Papers on 2D problem, for comparison: Mandre, Mani \& Brenner, Precursors to splashing of liquid droplets on a solid surface}
+	\todo[inline, color=cyan]{Papers on 2D problem, for comparison: Mandre, Mani \& Brenner, Precursors to splashing of liquid droplets on a solid surface}
 	
 	Again, we can consider normal impact as even oblique impacts are normal to leading order!
 	Also, assume that the initial pressure in the gas is $p = 0$.
+	
+	\subsection{Numerics Time Yay!}
+	The lubrication equation \eqref{LubricationND} and boundary integral formula (??) couple to form an iterative method. Given the initial condition of the downward moving drop in the far field, we update the pressure via \eqref{LubricationND}, then use this pressure to update the interface via (??), etc etc.
+	\todo[inline, color=pink]{Something about picking a predictor step?}
 
 	
 	
@@ -266,7 +264,7 @@
 	\section{Additions to Purvis-Hicks}
 	Disjoining Pressure (microscopic van der Waals attraction) pulls interfaces together. Knudsen Gas-Kinetic Slip (as h goes to mean free path, the cushion strength is reduced as the molecules begin to slip). The scaling is achieved by  the $\text{Kn}$ number. As the drop descends, the following things happen in order:
 	\begin{enumerate}
-		\item We get slip at the boundaries.
+		\item We get slip at the boundaries. \todo[inline, color=green]{Boundary Layer Theory: on the liquid side of the interface, we get a boundary layer like in MD3D1, but on the gas side (which we model as viscous), it is kinetic effects that give boundary layers! Ie: as $h\to 0$, we lose this kinetic effect and thus slip!}
 		\item The bulk equations begin to break.
 	\end{enumerate}
 	To resolve this, we consider viscosity $\mu \to \mu(h)$ at these small scales.
