@@ -96,8 +96,16 @@
 		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r} \left( r \frac{h(r,t)^3}{12 \mu_g} \frac{\partial p(r,t)}{\partial r} \right).
 	\end{equation}
 	
-	\subsubsection{Visualisation}
-	Writing $h(r,t) = h_0(t) + r^2/2R$, with $\frac{dh_0}{dt} = V < 0$, we can integrate \eqref{PlanarReynolds} to get:
+	\subsection{Hicks \& Purvis Method}
+	At the parabolic film's minimum, the pressure is largest and the fluid moves rapidly - to leading order it can be thought of as inviscid (wait what? I thought we were dealing with low Reynolds flow? But now its high Reynolds, but in this small region? Seems a bit strange - can no longer use \eqref{Stokes}?)
+	Also, the interface is locally flat so therefore voodoo magic and we can neglect inertial terms?? BUT THAT MEANS LOW REYNOLDS NUMBERS EH!??!?!
+	
+	Anyway, voodoo shenanigans therefore says that $\nabla ^2p = 0$ in this local area of the liquid: problem determined purely by boundary conditions (ie: underbelly shape). We call these functions \textbf{harmonic} - gradients blend smoothly towards the centre.
+	
+	\subsubsection{Green's Functions}
+	A Dirac-Delta is a single 'prick' in space, which ripples outwards 
+	
+	Like how we can build a solution to 
 	
 	
 	
