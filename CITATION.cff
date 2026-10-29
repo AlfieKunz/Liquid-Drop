@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this code or data in your work, please cite the associated preprint."
+authors:
+- family-names: "Kunz"
+  given-names: "Alfie"
+title: "Why do liquid drops bounce? Modelling the hidden physics of droplet collisions"
+version: 1.0.0
+date-released: 
+url: "https://github.com/AlfieKunz/Liquid-Drop"

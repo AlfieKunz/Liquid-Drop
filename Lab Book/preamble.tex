@@ -1,0 +1,49 @@
+\usepackage{cite}
+\usepackage{parskip}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{xtab}
+\usepackage{cancel}
+\usepackage{graphicx}
+\usepackage{esint}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{charter}
+\usepackage{microtype}
+\usepackage[colorinlistoftodos,prependcaption,textsize=small]{todonotes}
+
+	
+\definecolor{darkbg}{HTML}{1A1A1A}
+\definecolor{lighttext}{HTML}{F2F2F2}
+\definecolor{accentlink}{HTML}{4FC1FF}
+\definecolor{pageborder}{HTML}{404040}
+\pagecolor{darkbg}
+\color{lighttext}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks = true,
+	linkcolor  = accentlink,
+	citecolor  = accentlink,
+	urlcolor   = accentlink
+}
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+	\begin{tikzpicture}[remember picture, overlay]
+		\draw[color=pageborder, line width=1.2pt] 
+		([xshift=1.5mm, yshift=1.5mm]current page.south west) 
+		rectangle 
+		([xshift=-1.5mm, yshift=-1.5mm]current page.north east);
+	\end{tikzpicture}%
+}
+
+\title{Dissertation Learning Notes \& Resources}
+\author{Alfie Kunz - u5514994}

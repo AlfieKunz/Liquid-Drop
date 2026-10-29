@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\title{Dissertation Learning Notes \& Resources}
+\author{Alfie Kunz - u5514994}
+
+\begin{document}
+	
+	\maketitle
+	\tableofcontents
+	
+	\section{Pre-Reading \& Project Brief}
+	
+	\subsection{Intro}
+	Bounces are modelled specifically via the thin air film that coats the drop - lubrication theory. The drop bounces on it's \textit{own air cushion}.
+	Collisions with solids don't happen unless the solid is nano-smooth - small ridges puncture air film and reaches the liquid, sticking to it. Hence, drop-drop collisions (or symmetric to halve computation?).
+	
+	Weber number $\text{We} = \frac{\rho RU^2}{\gamma}$, ratio of inertia (wants to deform) to surface tension (wants no deform) determines behaviour - middle ground only for bouncing.
+	
+	When bouncing, the droplet flattens and dimples (from an initially parabolic shape) - we are modelling the shape evolution.
+	
+	\subsection{Method \& Key Assumptions}
+	Assume the side of the drop colliding with the surface begins as a weak parabola (no 1st order terms).
+	Assume the gas is a continuous fluid.
+	
+	\subsection{Part I: no attraction forces between the films}
+	The closer the drop gets to the barrier (and the thinner the air film gets), the more pressure forms. With no attractive forces, this pressure builds up until it repels the drop. 
+	
+	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, fine assumption is Poiseuille profile: $x,x^2 \to 0$ in film and we get a strip. Note that MA3D1 gives:
+	
+	\begin{itemize}
+		\item By the profile, we write $\underline{u} = u(y)\underline{\hat{x}}$. Via 1D nature, \textcolor[RGB]{255, 170, 0}{conservation of momentum} gives \underline{no inertial terms}, and:
+		\begin{itemize}
+			\item $\color{orange}x$: $\color{cyan}0 = -\frac{\partial p}{\partial x} + \mu \frac{\partial ^2u}{\partial y^2}$ \textit{(friction moves from boundary into the fluid)}, \quad $\color{orange}y$: $\color{lime} 0= -\frac{\partial p}{\partial y}$.
+		\end{itemize}
+		\item As $\color{lime}p(x)$, $u(y)$, we just \textcolor[RGB]{85, 255, 255}{integrate} to get $u(y) = \left( \frac{1}{2\mu} \frac{d p}{d x} \right) y^2 + Ay + B$.
+		\item Using $u(y = \pm h/2) = 0$ (\underline{no-slip}, viscous), we get the \textbf{parabola} $\underline{u(y) = \frac{1}{2\mu} \frac{d p}{d x}\left( y^2 - \frac{h^2}{4} \right)}$.
+	\end{itemize}
+	
+	But now we generalise to $y \to \pm h(x,t)/2$ and $p(x,t)$ - same thing otherwise. Moving to cylindrical coordinates (coordinates $\{x, h(r,t)\}$, pressure $p(r,t)$) gives the planar Reynolds equation (in polar):
+	\begin{equation}
+		\label{PlanarReynolds}
+		\frac{\partial h(r,t)}{\partial t} = \frac{1}{r}\frac{\partial }{\partial r} \left( r \frac{h(r,t)^3}{12 \mu_g} \frac{\partial p(r,t)}{\partial t} \right)
+	\end{equation}
+	
+	
+	\subsection{Global Model}
+	We add a small rarefaction (slip) correction to the gas.
+	
+	
+	\begin{enumerate}
+		\item 
+	\end{enumerate}
+	
+\end{document}
