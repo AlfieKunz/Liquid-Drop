@@ -37,8 +37,8 @@
 	\begin{subequations}
 		\label{Bernoulli}
 		\begin{align}
-			\tilde{B}(\underline{x}) &= \left( \frac{\rho}{2} |u(x)|^2 + p  + \rho gz \right),\quad&\text{(Steady, Inviscid. Constant on streamlines)}\\
-			\hat{B}(t) &= \left( {\rho \frac{\partial \phi}{\partial t}} + \frac{\rho}{2} |u(x,t)|^2 + p + \rho gz \right).\quad&\text{(Potential. Constant in space)}
+			\tilde{B}(\underline{x}) &= \left( \frac{\rho}{2} |u(x)|^2 + p  + \rho gz \right),\quad&\text{(Steady, Inviscid. Constant on streamlines)} \label{Bernoulli1}\\
+			\hat{B}(t) &= \left( {\rho \frac{\partial \phi}{\partial t}} + \frac{\rho}{2} |u(x,t)|^2 + p + \rho gz \right).\quad&\text{(Potential. Constant in space)} \label{Bernoulli2}
 		\end{align}
 	\end{subequations}
 	
@@ -56,8 +56,10 @@
 	Bounces are modelled specifically via the thin air film that coats the drop - lubrication theory. The drop bounces on it's \textit{own air cushion}.
 	Collisions with solids don't happen unless the solid is nano-smooth - small ridges puncture air film and reaches the liquid, sticking to it. Hence, drop-drop collisions (or symmetric to halve computation?).
 	
-	The closer the drop gets to the barrier (and the thinner the air film gets), the more pressure forms. With no attractive forces, this pressure builds up until it repels the drop.
-	\todo[inline]{The drop is able to reach the barrier for two reasons: at small scales, the attract each other through van der Waals forces, and if the film height drops below the mean free path of gas molecules, pressure decreases, causing the gas molecules to slip along the boundary (Knudsen Gas-Kinetic Slip). If this happens, the the film ruptures and the drops merge.}
+	The closer the drop gets to the barrier (and the thinner the air film gets), the more pressure forms. With no attractive forces, this pressure builds up until it repels the drop. At this initial phase, we are attempting to recreate figure 3a from Hicks and Pervis.
+	
+	
+	The drop is able to reach the barrier for two reasons: at small scales, the attract each other through van der Waals forces, and if the film height drops below the mean free path of gas molecules, pressure decreases, causing the gas molecules to slip along the boundary (Knudsen Gas-Kinetic Slip). If this happens, the the film ruptures and the drops merge.
 	\todo[inline]{Does this have something to do with the $1/r$ interaction distance from the summer reading?? Make notes on this!!}
 	
 	
@@ -69,8 +71,10 @@
 	Assume the gas is a continuous fluid.
 	We also imbue no-slip boundary conditions onto the gas film, via the solid and the moving water drop's boundary.
 	
+	Hicks and Purvis further assume that we don't care about surface tension and gravity, and that we are incompressible. Also, we are in the low Reynolds regime in the air, such that we don't get cushioning until the air layer is sufficiently thin?
 	
-	\subsection{Recap of Plane-Poiseuille Flow and Lubrication Theory}
+	
+	\subsection{Recap of Plane-Poiseuille Flow, and Lubrication Theory}
 	The Plane-Poiseuille flow is the flow between two stationary plates of separation $h \sim \hat{\underline{z}}$.
 	\begin{itemize}
 		\item By the profile, we write $\underline{u} = u(y)\underline{\hat{x}}$. Via 1D nature, \textcolor[RGB]{255, 170, 0}{conservation of momentum} gives \underline{no inertial terms}, and:
@@ -80,7 +84,12 @@
 		\item As $\color{lime}p(x)$, $u(y)$, we just \textcolor[RGB]{85, 255, 255}{integrate} to get $u(y) = \left( \frac{1}{2\mu} \frac{d p}{d x} \right) y^2 + Ay + B$.
 		\item Using $u(y = \pm h/2) = 0$ (\underline{no-slip}, viscous), we get the \textbf{parabola} $\underline{u(y) = \frac{1}{2\mu} \frac{d p}{d x}\left( y^2 - \frac{h^2}{4} \right)}$.
 	\end{itemize}
-	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, a fine assumption in this simple case is that the Poiseuille profile holds: $x,x^2 \to 0$ in the gas film, and we get a strip. This resolves to:
+	
+	\textbf{Lubrication Theory}: used as film radius $r \gg h$ height - very weak parabola. Hence, a fine assumption in this simple case is that the Poiseuille profile holds: $x,x^2 \to 0$ in the gas film, and we get a strip.
+	
+	
+	
+	This resolves to:
 	\begin{equation}
 		\label{LubricationPlanePoiseuille}
 		\frac{d}{dx}\left(\frac{h^{3}}{12\mu }\frac{dp}{dx}\right)=U\frac{dh}{dx}.
@@ -112,8 +121,6 @@
 	
 	\section{Hicks \& Purvis Method}
 	
-	\subsection{Formation of the Problem}
-	
 	
 	\subsection{Intro}
 	Weber number $\text{We} = \frac{\rho RU^2}{\gamma}$, ratio of inertia (wants to deform) to surface tension (wants no deform) determines behaviour - middle ground only for bouncing.
@@ -123,13 +130,51 @@
 	The droplet's fate is determined by this film: whether it bounces cleanly or ruptures the film.
 	\todo[inline]{This dimple is "rimmed by a razor-thin circular neck of minimum thickness $h_{\text{neck}}$ (labelled $h_{pd}$). I have no idea what this means.}
 	
+	\subsection{Non-Dimensionalisation}
+	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get:
+	\begin{equation}
+		\label{NavierStokesND}
+			\frac{1}{r} \frac{\partial (r u_r)}{\partial r} + \frac{1}{r} \frac{\partial u_\theta}{\partial \theta} + \frac{\partial u_z}{\partial z} = 0,\\
+			
+			\frac{\partial u_r}{\partial t} + (\mathbf{u} \cdot \nabla) u_r - \frac{u_\theta^2}{r} = -\frac{\partial p}{\partial r} + \frac{1}{\text{Re}} \left( \nabla^2 u_r - \frac{u_r}{r^2} - \frac{2}{r^2} \frac{\partial u_\theta}{\partial \theta} \right),\\
+			
+			\frac{\partial u_\theta}{\partial t} + (\mathbf{u} \cdot \nabla) u_\theta + \frac{u_r u_\theta}{r} = -\frac{1}{r} \frac{\partial p}{\partial \theta} + \frac{1}{\mathrm{Re}} \left( \nabla^2 u_\theta - \frac{u_\theta}{r^2} + \frac{2}{r^2} \frac{\partial u_r}{\partial \theta} \right),\\
+			
+			\frac{\partial u_z}{\partial t} + (\mathbf{u} \cdot \nabla) u_z = -\frac{\partial p}{\partial z} + \frac{1}{\text{Re}} \nabla^2 u_z.
+	\end{equation}
+	\todo{Meseguer, Á., & Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}
 	
+	
+	\subsection{Formation of the Problem}
+	Now we have non-dimensionalisd, we turn to the symmetries that allow for a simpler argument.
+	The whole problem is axisymmetric in the z axis, hence we can perform the maths on the 2D version of the problem, then convert to a 3D problem by integrating the solution over $\theta$. Hence, it is natural to use polar coordinates $(r,z)$ for this: if we used $(x,y)$, the geometry would represent a infinitely long cylinder, rather than a circular drop.
+	\todo[inline]{Papers on 2D problem, for comparison: Mandre, Mani & Brenner, Precursors to splashing of liquid droplets on a solid surface}
+	
+	\subsection{Here we go!}
+	Boundary conditions come from matching $p_\text{liquid} = p_\text{gas}$ at the boundary, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
+	
+	
+	
+	
+	
+	
+	\section{Analysis \& Numerics}
+	For an analytic comparison, we can compare the $\text{St}^{-1/3}$ dimple scaling.
+	\subsection{Asymptotics}
+	
+	\subsection{Figures}
+	Use a Kymo Graph! :D
 	
 	
 	
 	
 	\section{Additions to Purvis-Hicks}
-	Disjoining Pressure (microscopic van der Waals attraction) pulls interfaces together. Knudsen Gas-Kinetic Slip (as h goes to mean free path, the cushion strength is reduced as the molecules begin to slip)...
+	Disjoining Pressure (microscopic van der Waals attraction) pulls interfaces together. Knudsen Gas-Kinetic Slip (as h goes to mean free path, the cushion strength is reduced as the molecules begin to slip). The scaling is achieved by  the $\text{Kn}$ number. As the drop descends, the following things happen in order:
+	\begin{enumerate}
+		\item We get slip at the boundaries.
+		\item The bulk equations begin to break.
+	\end{enumerate}
+	To resolve this, we consider viscosity $\mu \to \mu(h)$ at these small scales.
 	
 	
 	
