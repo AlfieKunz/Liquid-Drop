@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  29 OCT 2026 23:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  1 NOV 2026 22:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1000,25 +1000,12 @@ LaTeX Warning: Marginpar on page 6 moved.
 LaTeX Warning: Marginpar on page 6 moved.
 
 [6]
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 214--214
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 215--215
 \OT1/bch/m/n/10 (-20) tion/inviscid 
  []
 
 
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 214--214
-\OT1/bch/m/n/10 (-20) tion/inviscid 
- []
-
-
-LaTeX Warning: Marginpar on page 7 moved.
-
-
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 219--219
-\OT1/bch/m/n/10 (-20) tion/inviscid 
- []
-
-
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 219--219
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 215--215
 \OT1/bch/m/n/10 (-20) tion/inviscid 
  []
 
@@ -1029,36 +1016,46 @@ LaTeX Warning: Marginpar on page 7 moved.
 LaTeX Warning: Marginpar on page 7 moved.
 
 
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 231--231
+\OT1/bch/m/n/10 (-20) tion/inviscid 
+ []
+
+
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 231--231
+\OT1/bch/m/n/10 (-20) tion/inviscid 
+ []
+
+
 LaTeX Warning: Marginpar on page 7 moved.
 
-[7] [8]
-<images/Notes_261014_112957.jpg, id=257, 1084.05pt x 2896.06969pt>
+[7] [8] [9] [10]
+<images/Notes_261014_112957.jpg, id=296, 1084.05pt x 2896.06969pt>
 File: images/Notes_261014_112957.jpg Graphic file (type jpg)
 <use images/Notes_261014_112957.jpg>
-Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 284
+Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 366
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2896.06265pt.
-<images/Notes_261013_215824_1.jpg, id=258, 1084.05pt x 4598.17876pt>
+<images/Notes_261013_215824_1.jpg, id=297, 1084.05pt x 4598.17876pt>
 File: images/Notes_261013_215824_1.jpg Graphic file (type jpg)
 <use images/Notes_261013_215824_1.jpg>
-Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 2
-89.
+Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 3
+71.
 (pdftex.def)             Requested size: 1084.04736pt x 4598.1676pt.
-<images/Notes_261013_165541.jpg, id=259, 1084.05pt x 3207.73407pt>
+<images/Notes_261013_165541.jpg, id=298, 1084.05pt x 3207.73407pt>
 File: images/Notes_261013_165541.jpg Graphic file (type jpg)
 <use images/Notes_261013_165541.jpg>
-Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 294
+Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 376
 .
 (pdftex.def)             Requested size: 1084.04736pt x 3207.72629pt.
-<images/Notes_261013_121959.jpg, id=260, 1084.05pt x 2652.91125pt>
+<images/Notes_261013_121959.jpg, id=299, 1084.05pt x 2652.91125pt>
 File: images/Notes_261013_121959.jpg Graphic file (type jpg)
 <use images/Notes_261013_121959.jpg>
-Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 299
+Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 381
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2652.90482pt.
- [9 <./images/Notes_261014_112957.jpg> <./images/Notes_261013_215824_1.jpg> <./
-images/Notes_261013_165541.jpg>] [10 <./images/Notes_261013_121959.jpg>] (main.
-aux)
+ [11 <./images/Notes_261014_112957.jpg> <./images/Notes_261013_215824_1.jpg>] [
+12 <./images/Notes_261013_165541.jpg> <./images/Notes_261013_121959.jpg>] (main
+.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
@@ -1067,13 +1064,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 7547F6730C8FE8CE04E824402CD59CFC;3650.
  ) 
 Here is how much of TeX's memory you used:
- 25105 strings out of 467871
- 461843 string characters out of 5418376
- 929590 words of memory out of 5000000
- 53217 multiletter control sequences out of 15000+600000
- 675740 words of font info for 245 fonts, out of 8000000 for 9000
+ 25180 strings out of 467871
+ 462915 string characters out of 5418376
+ 929548 words of memory out of 5000000
+ 53250 multiletter control sequences out of 15000+600000
+ 677865 words of font info for 262 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,23n,107p,1561b,968s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 89i,23n,107p,1561b,1037s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\alfie\AppData\Local\MiKTeX\fonts/pk/ljfour/public/esint/dpi657\esi
 nt10.pk><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/char
 ter/bchb8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/bitstr
@@ -1094,12 +1091,13 @@ KTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/alfie/AppData/Local/Prog
 rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/alfie/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/alfie/AppD
 ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/a
-lfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:
-/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8
-.pfb>
-Output written on main.pdf (10 pages, 2738590 bytes).
+lfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:
+/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7
+.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmsy8.pfb>
+Output written on main.pdf (12 pages, 2770277 bytes).
 PDF statistics:
- 383 PDF objects out of 1000 (max. 8388607)
- 104 named destinations out of 1000 (max. 500000)
+ 430 PDF objects out of 1000 (max. 8388607)
+ 121 named destinations out of 1000 (max. 500000)
  56025 words of extra memory for PDF output out of 61914 (max. 10000000)
 

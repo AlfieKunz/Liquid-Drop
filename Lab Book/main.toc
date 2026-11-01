@@ -11,13 +11,13 @@
 \contentsline {subsection}{\numberline {4.3}Boundary Conditions}{5}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Lubrication Equation Derivation}{6}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Droplet Equations Formation}{7}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Formation of the Problem}{7}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Numerics Time Yay!}{8}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Analysis \& Numerics}{8}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Asymptotics}{8}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Figures}{8}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Additions to Purvis-Hicks}{8}{section.6}%
-\contentsline {section}{\numberline {7}Report Layout}{8}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Introduction}{8}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Work to Delegate to Jiya}{9}{subsection.7.2}%
-\contentsline {section}{\numberline {8}Handwritten Uploads}{9}{section.8}%
+\contentsline {subsection}{\numberline {4.6}Formation of the Problem}{10}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Numerics Time Yay!}{10}{subsection.4.7}%
+\contentsline {section}{\numberline {5}Analysis \& Numerics}{10}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Asymptotics}{10}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Figures}{10}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Additions to Purvis-Hicks}{10}{section.6}%
+\contentsline {section}{\numberline {7}Report Layout}{11}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Introduction}{11}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Work to Delegate to Jiya}{11}{subsection.7.2}%
+\contentsline {section}{\numberline {8}Handwritten Uploads}{11}{section.8}%

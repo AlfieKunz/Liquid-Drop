@@ -151,7 +151,7 @@
 	Applying this for the moving boundary at the interface gives the kinematic equation for impermeability: fluid particles on the boundary remain on the boundary \todo[color=cyan]{CITE Lamb, H. (1932). Hydrodynamics and 1. Breslin JP, Andersen P. Hydrodynamics of Ship Propellers. Cambridge University Press; 1993}. Defining the level set of the boundary $F(r,z,t) := z - h(r,t) = 0$, enforcing that the material derivative $\frac{DF}{Dt} = \left( \frac{\partial} {\partial t} + \underline{u}\cdot \nabla  \right)F = 0$ evaluates directly to\todo[color=cyan]{cite "Long-scale evolution of thin liquid films", "Notes 2DERIVATION OF THE CLASSICAL REYNOLDS EQUATION FOR THIN FILM FLOWS"}
 	\begin{equation}
 		\label{BCKinetic}
-		u_z(r,h) = \frac{\partial h}{\partial t} + u_r \frac{\partial h}{\partial r}.
+		u_z(r,h) = \frac{\partial h}{\partial t} + u_r(r,h) \frac{\partial h}{\partial r}.
 	\end{equation}
 	This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
 	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
@@ -211,25 +211,107 @@
 	where $\text{St} = \frac{\rho_l R U}{\mu_g}$ is the Stokes number.
 	
 	\subsection{Droplet Equations Formation}
-	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), we approximate the interface as flat to leading order. We recover that as $z \to 0$, the material derivative $\frac{D}{Dt}$ loses it's advective terms \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance}, and thus by the high Reynolds Number approximation, the axisymmetric version of \eqref{NavierStokesND} becomes
-	\begin{equation}
-		\label{NSHarmonic}
-		\frac{\partial \underline{u}_l}{\partial t} = -\left( \frac{\partial p_l}{\partial r}, \frac{\partial p_l}{\partial z} \right),
-	\end{equation}
-	and so taking the cylindrical divergence of \eqref{NSHarmonic}, and equating to \eqref{NavierStokesAXI:continuity} gives \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance},
+	We must reset our assumptions of a thin film, and model $p_l(r,z)$ specifically.
+	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), to leading-order as $z \to 0$ we lose the advective terms fo the material derivative $\frac{D}{Dt}$ \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance}. This has the following consequences on our formulation:
+	\begin{itemize}
+		\item \eqref{BCKinetic} becomes\todo[color=cyan]{CITE HP}
+		\begin{equation}
+			\label{KineticApprox}
+			\frac{\partial h}{\partial t} = u_z(r, h).
+		\end{equation}
+		In other words, the interface $f(r,z)$ flattens entirely onto the $z=0$ plane.
+		\item Recalling that we are in a high Reynolds Number approximation, the axisymmetric version of \eqref{NavierStokesND} becomes:
+		\begin{equation}
+			\label{NSHarmonic}
+			\frac{\partial \underline{u}_l}{\partial t} = -\left( \frac{\partial p_l}{\partial r}, \frac{\partial p_l}{\partial z} \right).
+		\end{equation}
+	\end{itemize}
+	(Again, good to stress that this is in the leading order approximation of $z \to 0$.)
+	
+	Considering initially the second of these points, taking the cylindrical divergence of \eqref{NSHarmonic}, and equating to \eqref{NavierStokesAXI:continuity} gives \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance},
 	\begin{equation}
 		\label{PressureLaplace}
-		\nabla ^2 p_l = 0.
+		\nabla ^2 p_l = \frac{1}{r}\frac{\partial}{\partial r}\left(r \frac{\partial p_l}{\partial r}\right) + \frac{\partial^2 p_l}{\partial z^2} = 0.
 	\end{equation}
-	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle) \todo[color=cyan]{cite: Evans, L. C. (2010). Partial Differential Equations}
+	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle). \todo[color=cyan]{cite: Evans, L. C. (2010). Partial Differential Equations}
 	\todo[inline, color=green]{Possible extension for visuals and post processing: create big 3D heatmap of the pressure inside the liquid drop (we don't really care about the details and pressure inside the drop, but it's useful as a learning tool since we have the data). Requires spacial drop discretisation.}
 	
-	To reduce this to a boundary integral, which can be solved to generate an ODE for $h(r,t)$, we use the concept of Green's functions. Intuitively, these are the responses to Dirac Delta functions
-	Green's Second Identity states\todo[color=cyan]{CITE: Partial Differential Equations: An Introduction, 2nd Edition}
+	Considering now the first of these points, we are able to relate the downward acceleration of the interface to the pressure at the boundary by differentiating \eqref{KineticApprox} and using \eqref{NSHarmonic} to get:
+	\begin{equation}
+		\label{KineticODE}
+		-\frac{\partial^2 h(r,t)}{\partial t^2} = \left.\frac{\partial p_l(r,z)}{\partial z}\right|_{z \to 0^+},
+	\end{equation}		
+	providing an ODE for the interface, which can be solved by the following recipe:
+	\begin{itemize}
+		\item Solve the Lubrication Equation for the thin film, given the previously produced value (or initial condition) for $\partial_t h(r,t)$, giving us an equation for $p_g(r,t)$.
+		\item Use Bernoulli's equations to solve for the pressure boundary conditions of the liquid, via $p_l(r, h) = p_g(r, t)$ (exploiting the fact that $\partial _zp_g = 0$).
+		\item Exploit the linearity of the harmonic liquid pressure to find an equation for the full liquid pressure.
+		\item Use this pressure equation to thus solve the ODE \eqref{KineticODE}, giving us a new value for $h(r,t)$.
+		\item Repeat!
+	\end{itemize}
+	
+	We are left with the 3rd step of this list, which requires the introduction of Green's functions. Intuitively, these are the responses to Dirac Delta functions $\delta([r,z] - [r', z'])$, which in our axisymmetric coordinates can be thought of as an impulsive action in a ring in the $r-\theta$ plane, of radius $r'$ and height $z'$, felt at a response $(r,z)$. This response function, the \textbf{Green's Function} $G(r,z;\ r',z')$, allows us to build an entire solution for
+	\begin{equation}
+		\label{PressureDelta}
+		p_l(r,z) = \iint \delta(r-r', z-z')p_l(r',z') 2\pi r' \ dr'dz' .
+	\end{equation}
+	\todo[inline]{Note: How does this link to Green's functions? Something something Laplace's equation is linear? Also, is this equation actually maybe correct??}
+	
+	The standard Green's function in axisymmetric coordinates, in free space, satisfies the equation,
+	\begin{equation}
+		\label{GreenFreeSpace}
+		\nabla ^2G(r,z;\ r',z') = -\frac{\overbrace{\delta([r,z] - [r', z'])}^{:= \delta(r-r')\delta(z-z')}}{2\pi r'},
+	\end{equation}
+	where the factor $2\pi r'$ comes from symmetry of $\theta$ in cylindrical coordinates, and the axisymmetric differential operator,
+	\begin{subequations}
+		\label{NablaCyl}
+		\begin{align}
+			\nabla &:= \left( \frac{\partial }{\partial r'}\ ,\ \frac{\partial }{\partial z} \right), \label{NablaCyl:1} \\
+			\nabla^2 &:= \frac{1}{r'} \frac{\partial }{\partial r'} \left( r' \frac{\partial }{\partial r'} \right) + \frac{\partial ^2}{\partial z^2}. \label{NablaCyl:2}
+		\end{align}
+	\end{subequations}
+	
+	Recalling that the eigenfunctions of the radial components of \eqref{NablaCyl:2} are the 0th-order Bessel Functions $J_0(kr')$ (where $k$ are eigenvector wavenumbers), which satisfy $\frac{1}{r'}\frac{d}{dr'}\big(r'\frac{d}{dr'}J_0(k r')\big) = -k^2 J_0(k r')$, we can write \eqref{GreenFreeSpace} in pure $(r,z)$ components by expressing it as a Hankel integral:
+	\begin{equation}
+		\label{GreenHankel}
+		G(r, z; r', z') = \frac{1}{4\pi} \int_0^\infty J_0(k r) J_0(k r') e^{-k|z-z'|} \, dk.
+	\end{equation}
+	Lipschitz–Hankel proved that this has an exact closed-form solution:
+	\begin{equation}
+		\label{GreenElliptic}
+		G(r,z; r',z') = \frac{K(m_{\_}),m_{\_}}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}} = \frac{4rr'}{(r+r')^2 + (z-z')^2},
+	\end{equation}
+	where $K(m) = \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}}$ is the complete elliptical integral of the first kind.
+	\todo[inline]{Okay I don't get this in the slightest lmaooooooo.}
+	
+	At this point, we can intuitively convert the 2D problem into one defined on the droplet's boundary: a \textbf{boundary integral method} (BIM). This involves the use of Green's Second Identity\todo[color=cyan]{CITE: Partial Differential Equations: An Introduction, 2nd Edition}, which in our coordinates states,
 	\begin{equation}
 		\label{Green2}
-		\iiint_\Omega \left(\phi \nabla'^2 G - G \nabla'^2 \phi\right) r' dr' d\theta' dz' = \iint_{\partial\Omega} \left(\phi \frac{\partial G}{\partial n'} - G \frac{\partial \phi}{\partial n'}\right) dS'
+		-p_l(r,z) = \iint_\Omega \left(p_l \nabla^2 G - G \nabla'^2 p_l\right) 2\pi r' dr' dz' = \oint_{\partial\Omega} \left(p_l \frac{\partial G}{\partial n'} - G \frac{\partial p_l}{\partial n'}\right) 2\pi r' ds',
 	\end{equation}
+	where $\Omega$ is the drop's volume, $\partial \Omega$ is the interface's parametrisation, and $n'$ is the outward unit normal to $\partial \Omega$. Note that we have used \eqref{PressureDelta}, \eqref{GreenFreeSpace}, and \eqref{PressureLaplace} to equate the left-hand side to the liquid pressure. We can reduce $n' = -z'$, recalling that our leading order approximations of $z \to 0$ flattened the droplet interface onto the $z=0$ plane, and thus the outer `spherical' volume can be asymptotically reduced by taking the limit of $R = \sqrt{r'^2 + z'^2} \to \infty $.
+	\todo[inline]{Why can we then say ds' = dr', and loop from 0 to infinity? How does this form a closed loop?}
+	
+	However, note that one of the terms that remains stuck in the integral, $\frac{\partial p_l}{\partial z'}$, is redundant, as it the exact quantity we are wishing to solve for via \eqref{KineticODE}. However, we are able to add a term to both sides of the equation to subtract this variable! This process is called the \textbf{Method of Images}, and operates by subtracting a second Green's Function at $z = -z'$, effectively cancelling out the $z' = 0$ contributions. We get the new function:
+	$$G(r,z; r',z') \to G_M(r,z;r',r') := G(r,z; r',z') + G(r,z; r',-z') = G(r,z; r',z') + G(r,-z; r',z'),$$
+	where the final equality holds from the symmetry of Green's Functions (we are integrating over the primed, so this makes sense). By the linearity of Green's functions,
+	\todo[inline]{(as they are solutions to Laplace's equation \eqref{GreenFreeSpace}???? No, that doesn't make sense...)}
+	we get $G_M = 0$ for $z=0$, and thus the $\frac{\partial p_l}{\partial z'}$ contribution in \eqref{Green2} (when replacing $G \to G_M$) drops out. Crucially, this substitution does \textbf{not} impact the left-hand side of the equation, as this second Green's Function does not exist inside of the drop's volume, $\Omega$!
+	
+	Note that in \eqref{Green2}, $n' = +z'$ for the first Green's function and $n' = z'$ for the second Green's function, as the flux felt from each Green's function heads in opposite directions. Hence, we get double the contribution for $\frac{\partial G}{\partial n'}$, and thus the full solution:
+	\begin{equation}
+		\label{PressureGreen}
+		\begin{aligned}
+			p_l(r, z, t) &= -\int_0^\infty p_l(r', 0, t) \left.\frac{\partial G_M}{\partial n'}\right|_{z'=0}\ 2\pi r' \, dr', \\
+			&= -4\pi \int_0^\infty p_l(r', 0, t) \frac{\partial G(r,z;r',0)}{\partial z} \, r'\ dr', \\
+			&= \int_0^\infty p_l(r', 0, t) \left[\int_0^\infty k J_0(k r) J_0(k r') e^{-k z} \, dk\right] r' \, dr'.
+		\end{aligned}
+	\end{equation}
+	
+	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}.
+	
+	$$\frac{\partial}{\partial r'}\big[r' J_1(k r')\big] = k r' J_0(k r')$$
+	$$\int_0^\infty p(r', t) \, k r' J_0(k r') \, dr' = \Big[p(r', t) r' J_1(k r')\Big]_0^\infty - \int_0^\infty \frac{\partial p}{\partial r'}(r', t) \, r' J_1(k r') \, dr'.$$
 	
 	
 	
