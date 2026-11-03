@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  3 NOV 2026 16:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  3 NOV 2026 18:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1029,29 +1029,29 @@ Overfull \hbox (13.49152pt too wide) in paragraph at lines 231--231
 LaTeX Warning: Marginpar on page 7 moved.
 
 [7] [8] [9] [10]
-<images/Notes_261014_112957.jpg, id=300, 1084.05pt x 2896.06969pt>
+<images/Notes_261014_112957.jpg, id=302, 1084.05pt x 2896.06969pt>
 File: images/Notes_261014_112957.jpg Graphic file (type jpg)
 <use images/Notes_261014_112957.jpg>
-Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 384
+Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 386
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2896.06265pt.
-<images/Notes_261013_215824_1.jpg, id=301, 1084.05pt x 4598.17876pt>
+<images/Notes_261013_215824_1.jpg, id=303, 1084.05pt x 4598.17876pt>
 File: images/Notes_261013_215824_1.jpg Graphic file (type jpg)
 <use images/Notes_261013_215824_1.jpg>
 Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 3
-89.
+91.
 (pdftex.def)             Requested size: 1084.04736pt x 4598.1676pt.
-<images/Notes_261013_165541.jpg, id=302, 1084.05pt x 3207.73407pt>
+<images/Notes_261013_165541.jpg, id=304, 1084.05pt x 3207.73407pt>
 File: images/Notes_261013_165541.jpg Graphic file (type jpg)
 <use images/Notes_261013_165541.jpg>
-Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 394
+Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 396
 .
 (pdftex.def)             Requested size: 1084.04736pt x 3207.72629pt.
  [11 <./images/Notes_261014_112957.jpg>]
-<images/Notes_261013_121959.jpg, id=311, 1084.05pt x 2652.91125pt>
+<images/Notes_261013_121959.jpg, id=313, 1084.05pt x 2652.91125pt>
 File: images/Notes_261013_121959.jpg Graphic file (type jpg)
 <use images/Notes_261013_121959.jpg>
-Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 399
+Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 401
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2652.90482pt.
  [12 <./images/Notes_261013_215824_1.jpg> <./images/Notes_261013_165541.jpg> <.
@@ -1064,10 +1064,10 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 7547F6730C8FE8CE04E824402CD59CFC;3650.
  ) 
 Here is how much of TeX's memory you used:
- 25183 strings out of 467871
- 462955 string characters out of 5418376
- 929602 words of memory out of 5000000
- 53251 multiletter control sequences out of 15000+600000
+ 25185 strings out of 467871
+ 462993 string characters out of 5418376
+ 929651 words of memory out of 5000000
+ 53252 multiletter control sequences out of 15000+600000
  677865 words of font info for 262 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,23n,107p,1561b,1037s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1095,9 +1095,9 @@ lfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:
 /Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7
 .pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
 cm/cmsy8.pfb>
-Output written on main.pdf (12 pages, 2774723 bytes).
+Output written on main.pdf (12 pages, 2774864 bytes).
 PDF statistics:
- 437 PDF objects out of 1000 (max. 8388607)
- 123 named destinations out of 1000 (max. 500000)
+ 439 PDF objects out of 1000 (max. 8388607)
+ 124 named destinations out of 1000 (max. 500000)
  56025 words of extra memory for PDF output out of 61914 (max. 10000000)
 

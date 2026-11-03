@@ -279,9 +279,12 @@
 	Lipschitz–Hankel proved that this has an exact closed-form solution:
 	\begin{equation}
 		\label{GreenElliptic}
-		G(r,z; r',z') = \frac{K(m_{\_}),m_{\_}}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}} = \frac{4rr'}{(r+r')^2 + (z-z')^2},
+		\begin{aligned}
+			G(r,z; r',z') &= \frac{K(m)}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}} = \frac{4rr'}{(r+r')^2 + (z-z')^2}, \\
+			\text{where } K(m) &= \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}},\qquad m = \frac{4rr'}{(r+r')^2 + (z-z')^2}.
+		\end{aligned}
 	\end{equation}
-	where $K(m) = \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}}$ is the complete elliptical integral of the first kind.
+	In the above equations, $K(m)$ is the complete elliptical integral of the first kind, a function of the elliptic parameter $m$.
 	\todo[inline]{Okay I don't get this in the slightest lmaooooooo.}
 	
 	At this point, we can intuitively convert the 2D problem into one defined on the droplet's boundary: a \textbf{boundary integral method} (BIM). This involves the use of Green's Second Identity\todo[color=cyan]{CITE: Partial Differential Equations: An Introduction, 2nd Edition}, which in our coordinates states,
@@ -293,7 +296,7 @@
 	\todo[inline]{Why can we then say ds' = dr', and loop from 0 to infinity? How does this form a closed loop?}
 	
 	However, note that one of the terms that remains stuck in the integral, $\frac{\partial p_l}{\partial z'}$, is redundant, as it the exact quantity we are wishing to solve for via \eqref{KineticODE}. However, we are able to add a term to both sides of the equation to subtract this variable! This process is called the \textbf{Method of Images}, and operates by subtracting a second Green's Function at $z = -z'$, effectively cancelling out the $z' = 0$ contributions. We get the new function:
-	$$G(r,z; r',z') \to G_M(r,z;r',r') := G(r,z; r',z') + G(r,z; r',-z') = G(r,z; r',z') + G(r,-z; r',z'),$$
+	$$G(r,z; r',z') \to G_M(r,z;r',z') := G(r,z; r',z') - G(r,z; r',-z') = G(r,z; r',z') - G(r,-z; r',z'),$$
 	where the final equality holds from the symmetry of Green's Functions (we are integrating over the primed, so this makes sense). By the linearity of Green's functions,
 	\todo[inline]{(as they are solutions to Laplace's equation \eqref{GreenFreeSpace}???? No, that doesn't make sense...)}
 	we get $G_M = 0$ for $z=0$, and thus the $\frac{\partial p_l}{\partial z'}$ contribution in \eqref{Green2} (when replacing $G \to G_M$) drops out. Crucially, this substitution does \textbf{not} impact the left-hand side of the equation, as this second Green's Function does not exist inside of the drop's volume, $\Omega$!
@@ -308,9 +311,7 @@
 		\end{aligned}
 	\end{equation}
 	
-	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the rules for differentiating the zeroth and first order Bessel functions,
-	$$\frac{\partial J_0(kr)}{\partial r} = kJ_1(kr) \qquad \frac{\partial }{\partial r} rJ_1(kr) = krJ_0(kr),$$
-	we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
+	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the first order Bessel function derivative: rule for differentiating the zeroth and first order Bessel functions, $\frac{\partial }{\partial r} (rJ_1(kr)) = krJ_0(kr)$, we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
 		\begin{equation}
 		\label{PressureGreenIBP}
 		\begin{aligned}
@@ -328,6 +329,7 @@
 			&\quad \text{where } m = \frac{4rr'}{(r+r')^2}, \quad \text{PV } \equiv \text{ Cauchy Principle Value.}
 		\end{aligned}
 	\end{equation}
+	\todo[inline]{Note that, compared with \eqref{GreenElliptic}, the equation for the elliptic parameter loses dependency on $z$. This is because........}
 	
 	
 	
