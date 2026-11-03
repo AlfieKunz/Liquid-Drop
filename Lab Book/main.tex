@@ -302,16 +302,34 @@
 	\begin{equation}
 		\label{PressureGreen}
 		\begin{aligned}
-			p_l(r, z, t) &= -\int_0^\infty p_l(r', 0, t) \left.\frac{\partial G_M}{\partial n'}\right|_{z'=0}\ 2\pi r' \, dr', \\
-			&= -4\pi \int_0^\infty p_l(r', 0, t) \frac{\partial G(r,z;r',0)}{\partial z} \, r'\ dr', \\
-			&= \int_0^\infty p_l(r', 0, t) \left[\int_0^\infty k J_0(k r) J_0(k r') e^{-k z} \, dk\right] r' \, dr'.
+			p_l(r, z) &= -\int_0^\infty p_l(r', 0) \left.\frac{\partial G_M}{\partial n'}\right|_{z'=0}\ 2\pi r' \, dr', \\
+			&= -4\pi \int_0^\infty p_l(r', 0) \frac{\partial G(r,z;r',0)}{\partial z} \, r'\ dr', \\
+			&= \int_0^\infty p_l(r', 0) \left[\int_0^\infty k J_0(k r) J_0(k r') e^{-k z} \, dk\right] r' \, dr'.
 		\end{aligned}
 	\end{equation}
 	
-	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}.
+	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the rules for differentiating the zeroth and first order Bessel functions,
+	$$\frac{\partial J_0(kr)}{\partial r} = kJ_1(kr) \qquad \frac{\partial }{\partial r} rJ_1(kr) = krJ_0(kr),$$
+	we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
+		\begin{equation}
+		\label{PressureGreenIBP}
+		\begin{aligned}
+			p_l(r, z) &= \int^\infty _0 \left( \int^\infty _0 p(r',0) kr'J_0(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
+			&= \int^\infty _0 \left( \left[ p(r',0)\ r'J_1(kr') \right]^\infty _0 - \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r'J_1(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
+			&= -\int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)J_1(kr')e^{-kz}\ dk\ dr',
+		\end{aligned}
+	\end{equation}
+	noting the far-field boundary condition $\lim{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ to cancel the evaluated integral.
 	
-	$$\frac{\partial}{\partial r'}\big[r' J_1(k r')\big] = k r' J_0(k r')$$
-	$$\int_0^\infty p(r', t) \, k r' J_0(k r') \, dr' = \Big[p(r', t) r' J_1(k r')\Big]_0^\infty - \int_0^\infty \frac{\partial p}{\partial r'}(r', t) \, r' J_1(k r') \, dr'.$$
+	Finally, equating \eqref{PressureGreenIBP} with \eqref{KineticODE}, and evaluating the Lipschitz–Hankel integral in the limit $z \to 0$, gives the analytic ODE for the interface, $h(r,t)$:
+	\begin{equation}
+		\begin{aligned}
+			\frac{\partial^2 h(r, t)}{\partial t^2} &= -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} = \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l}{\partial r'}(r', 0, t) \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \\
+			&\quad \text{where } m = \frac{4rr'}{(r+r')^2}, \quad \text{PV } \equiv \text{ Cauchy Principle Value.}
+		\end{aligned}
+	\end{equation}
+	
+	
 	
 	
 	
