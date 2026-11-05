@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  3 NOV 2026 18:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  5 NOV 2026 21:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -954,22 +954,22 @@ LaTeX Font Info:    Trying to load font information for TS1+bch on input line 8
 File: ts1bch.fd 2004/10/18 font definitions for TS1/bch.
 )
 [4]
-Overfull \hbox (0.95636pt too wide) in paragraph at lines 134--134
+Overfull \hbox (0.95636pt too wide) in paragraph at lines 137--137
 [][][]\OT1/bch/m/n/10 (-20) Meseguer, 
  []
 
 
-Overfull \hbox (0.95636pt too wide) in paragraph at lines 134--134
+Overfull \hbox (0.95636pt too wide) in paragraph at lines 137--137
 [][][]\OT1/bch/m/n/10 (-20) Meseguer, 
  []
 
 
-Overfull \hbox (8.65042pt too wide) in paragraph at lines 151--151
+Overfull \hbox (8.65042pt too wide) in paragraph at lines 157--157
 \OT1/bch/m/n/10 (-20) REYNOLDS 
  []
 
 
-Overfull \hbox (8.65042pt too wide) in paragraph at lines 151--151
+Overfull \hbox (8.65042pt too wide) in paragraph at lines 157--157
 \OT1/bch/m/n/10 (-20) REYNOLDS 
  []
 
@@ -984,12 +984,12 @@ LaTeX Warning: Marginpar on page 5 moved.
 LaTeX Warning: Marginpar on page 6 moved.
 
 
-Overfull \hbox (8.65042pt too wide) in paragraph at lines 193--193
+Overfull \hbox (8.65042pt too wide) in paragraph at lines 202--202
 \OT1/bch/m/n/10 (-20) REYNOLDS 
  []
 
 
-Overfull \hbox (8.65042pt too wide) in paragraph at lines 193--193
+Overfull \hbox (8.65042pt too wide) in paragraph at lines 202--202
 \OT1/bch/m/n/10 (-20) REYNOLDS 
  []
 
@@ -1000,13 +1000,39 @@ LaTeX Warning: Marginpar on page 6 moved.
 LaTeX Warning: Marginpar on page 6 moved.
 
 [6]
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 215--215
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 227--227
 \OT1/bch/m/n/10 (-20) tion/inviscid 
  []
 
 
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 215--215
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 227--227
 \OT1/bch/m/n/10 (-20) tion/inviscid 
+ []
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 243--243
+\OT1/bch/m/n/10 (-20) tion/inviscid 
+ []
+
+
+Overfull \hbox (13.49152pt too wide) in paragraph at lines 243--243
+\OT1/bch/m/n/10 (-20) tion/inviscid 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 248--248
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 248--248
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
  []
 
 
@@ -1015,89 +1041,216 @@ LaTeX Warning: Marginpar on page 7 moved.
 
 LaTeX Warning: Marginpar on page 7 moved.
 
-
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 231--231
-\OT1/bch/m/n/10 (-20) tion/inviscid 
+[7]
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 270--270
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
  []
 
 
-Overfull \hbox (13.49152pt too wide) in paragraph at lines 231--231
-\OT1/bch/m/n/10 (-20) tion/inviscid 
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 270--270
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
  []
 
 
-LaTeX Warning: Marginpar on page 7 moved.
+LaTeX Warning: Marginpar on page 8 moved.
 
-[7] [8] [9] [10]
-<images/Notes_261014_112957.jpg, id=302, 1084.05pt x 2896.06969pt>
+
+LaTeX Warning: Marginpar on page 8 moved.
+
+
+LaTeX Warning: Marginpar on page 8 moved.
+
+
+Overfull \hbox (9.23158pt too wide) in paragraph at lines 289--289
+\OT1/bch/m/n/10 (-20) PLEASE!!!!![]  
+ []
+
+
+Overfull \hbox (9.23158pt too wide) in paragraph at lines 289--289
+\OT1/bch/m/n/10 (-20) PLEASE!!!!![]  
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 289--289
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 289--289
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+LaTeX Warning: Marginpar on page 8 moved.
+
+
+LaTeX Warning: Marginpar on page 8 moved.
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 295--295
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 295--295
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+LaTeX Warning: Marginpar on page 8 moved.
+
+[8]
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 310--310
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 310--310
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+LaTeX Warning: Marginpar on page 9 moved.
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 312--312
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 312--312
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+LaTeX Warning: Marginpar on page 9 moved.
+
+
+Overfull \hbox (12.41856pt too wide) in paragraph at lines 326--326
+\OT1/bch/m/n/10 (-20) Abramowitz, 
+ []
+
+
+Overfull \hbox (12.41856pt too wide) in paragraph at lines 326--326
+\OT1/bch/m/n/10 (-20) Abramowitz, 
+ []
+
+
+Overfull \hbox (12.41856pt too wide) in paragraph at lines 335--335
+\OT1/bch/m/n/10 (-20) Abramowitz, 
+ []
+
+
+Overfull \hbox (12.41856pt too wide) in paragraph at lines 335--335
+\OT1/bch/m/n/10 (-20) Abramowitz, 
+ []
+
+
+Overfull \hbox (46.02992pt too wide) in paragraph at lines 334--336
+\OT1/bch/m/n/10.95 (-20) noting the far-field bound-ary con-di-tion $[][] \OML/
+cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 r; \OT1/cmr/m/n/10.95 0
+) = 0$ \OT1/bch/m/n/10.95 (-20) and Bessel func-tion prop-erty $[] []\OML/cmm/m
+/it/10.95 rJ[]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 kr\OT1/cmr/m/n/10.95 ) =
+ []
+
+[9]
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 349--349
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+Overfull \hbox (2.10513pt too wide) in paragraph at lines 349--349
+\OT1/bch/m/n/10 (-20) Pozrikidis, 
+ []
+
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+[10]
+<images/Notes_261014_112957.jpg, id=316, 1084.05pt x 2896.06969pt>
 File: images/Notes_261014_112957.jpg Graphic file (type jpg)
 <use images/Notes_261014_112957.jpg>
-Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 386
+Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 412
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2896.06265pt.
-<images/Notes_261013_215824_1.jpg, id=303, 1084.05pt x 4598.17876pt>
+<images/Notes_261013_215824_1.jpg, id=317, 1084.05pt x 4598.17876pt>
 File: images/Notes_261013_215824_1.jpg Graphic file (type jpg)
 <use images/Notes_261013_215824_1.jpg>
-Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 3
-91.
+Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 4
+17.
 (pdftex.def)             Requested size: 1084.04736pt x 4598.1676pt.
-<images/Notes_261013_165541.jpg, id=304, 1084.05pt x 3207.73407pt>
+ [11]
+<images/Notes_261013_165541.jpg, id=325, 1084.05pt x 3207.73407pt>
 File: images/Notes_261013_165541.jpg Graphic file (type jpg)
 <use images/Notes_261013_165541.jpg>
-Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 396
+Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 422
 .
 (pdftex.def)             Requested size: 1084.04736pt x 3207.72629pt.
- [11 <./images/Notes_261014_112957.jpg>]
-<images/Notes_261013_121959.jpg, id=313, 1084.05pt x 2652.91125pt>
+<images/Notes_261013_121959.jpg, id=326, 1084.05pt x 2652.91125pt>
 File: images/Notes_261013_121959.jpg Graphic file (type jpg)
 <use images/Notes_261013_121959.jpg>
-Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 401
+Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 427
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2652.90482pt.
- [12 <./images/Notes_261013_215824_1.jpg> <./images/Notes_261013_165541.jpg> <.
-/images/Notes_261013_121959.jpg>] (main.aux)
+ [12 <./images/Notes_261014_112957.jpg> <./images/Notes_261013_215824_1.jpg> <.
+/images/Notes_261013_165541.jpg>] [13 <./images/Notes_261013_121959.jpg>] (main
+.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 7547F6730C8FE8CE04E824402CD59CFC;3650.
- ) 
+ )
+(\end occurred inside a group at level 1)
+
+### simple group (level 1) entered at line 357 ({)
+### bottom level 
 Here is how much of TeX's memory you used:
- 25185 strings out of 467871
- 462993 string characters out of 5418376
- 929651 words of memory out of 5000000
- 53252 multiletter control sequences out of 15000+600000
- 677865 words of font info for 262 fonts, out of 8000000 for 9000
+ 25332 strings out of 467871
+ 466204 string characters out of 5418376
+ 964706 words of memory out of 5000000
+ 53375 multiletter control sequences out of 15000+600000
+ 678609 words of font info for 268 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,23n,107p,1561b,1037s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\alfie\AppData\Local\MiKTeX\fonts/pk/ljfour/public/esint/dpi657\esi
-nt10.pk><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/char
-ter/bchb8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/bitstr
-ea/charter/bchr8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1
-/bitstrea/charter/bchri8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fon
-ts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/alfie/AppData/Local/Programs/M
-iKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/alfie/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><C:/Users/alfie/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users
-/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><
-C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmm
-i6.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmmi7.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmmi8.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmr10.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/alfie/AppData/Local/Programs/Mi
-KTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/alfie/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/alfie/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/alfie/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/a
-lfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:
-/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7
+ <C:\Users\alfie\AppData\Local\MiKTeX\fonts/pk/ljfour/public/es
+int/dpi657\esint10.pk><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1
+/bitstrea/charter/bchb8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/font
+s/type1/bitstrea/charter/bchr8a.pfb><C:/Users/alfie/AppData/Local/Programs/MiKT
+eX/fonts/type1/bitstrea/charter/bchri8a.pfb><C:/Users/alfie/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/alfie/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/alfie/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><C:/
+Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10
 .pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmsy8.pfb>
-Output written on main.pdf (12 pages, 2774864 bytes).
+cm/cmmi5.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmmi6.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmi7.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/alfie/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/alfie/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/alfie/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/alfie/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/alf
+ie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Us
+ers/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.p
+fb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmsy6.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmsy7.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmsy8.pfb>
+Output written on main.pdf (13 pages, 2784483 bytes).
 PDF statistics:
- 439 PDF objects out of 1000 (max. 8388607)
- 124 named destinations out of 1000 (max. 500000)
+ 461 PDF objects out of 1000 (max. 8388607)
+ 139 named destinations out of 1000 (max. 500000)
  56025 words of extra memory for PDF output out of 61914 (max. 10000000)
 

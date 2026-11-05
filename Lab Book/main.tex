@@ -130,6 +130,9 @@
 	The droplet's fate is determined by this film: whether it bounces cleanly or ruptures the film.
 	\todo[inline]{This dimple is "rimmed by a razor-thin circular neck of minimum thickness $h_{\text{neck}}$ (labelled $h_{pd}$). I have no idea what this means.}
 	
+	
+	
+	
 	\subsection{Non-Dimensionalisation}
 	Using the scalings $p = \tilde{p} \times \rho_\text{liquid} U^2$ and $t = \tilde{t} \times R/U$, where $R$ is the radius of the drop and $U$ is the initial downward speed, we non-dimensionalise \eqref{NavierStokes} and migrate to cylindrical coordinates to get\todo[color=cyan]{Meseguer, A., \& Trefethen, L. N. (2003). Linearized pipe flow to Reynolds number 107}:
 	\begin{subequations}\label{NavierStokesND}
@@ -140,6 +143,9 @@
 			\frac{\partial u_z}{\partial t} + (\underline{u} \cdot \nabla) u_z &= -\frac{\partial p}{\partial z} + \frac{1}{\text{Re}} \nabla^2 u_z. \label{NavierStokesND:z}
 		\end{align}
 	\end{subequations}
+	
+	
+	
 	
 	\subsection{Boundary Conditions}
 	As for boundary conditions, impermeability and no-slip at the solid says
@@ -162,6 +168,9 @@
 	\todo[inline, color=pink]{Okay, here's what's going on: the liquid is inviscid, so we lose slip. Hence, as we are dealing with a fluid-fluid interface, NEITHER fluid can have no-slip conditions. We only enforce impermeability via the lack of boundary conditions available from Laplace's equation. However, the moving interface creates the kinematic boundary equation (forces a streamline) and pressure matching boundary condition. This is made simpler as $h(r,t)$ is not a one-to-many function?}
 	
 	And the boundary conditions $\underline{u}(r,0) = (0,0)$, $u_z(r,h) = \frac{dh}{dt} + u_r \frac{dh}{dr}$, $\underline{u}(r,z) = \underline{u}_\text{liquid}$, $p = p_\text{liquid}$ at the interface.
+	
+	
+	
 	
 	\subsection{Lubrication Equation Derivation}
 	By the axisymmetric conditions, $\partial / \partial \theta = 0$ and $u_\theta = 0$ \todo[color=cyan]{From "Stability of nonswirl axisymmetric solutions to the Navier-Stokes equations"}, and thus we get $\underline{u}(r,z)$. Hence, in the absence of external forces (including gravity), we get:
@@ -210,8 +219,11 @@
 	\end{equation}
 	where $\text{St} = \frac{\rho_l R U}{\mu_g}$ is the Stokes number.
 	
+	
+	
+	
 	\subsection{Droplet Equations Formation}
-	We must reset our assumptions of a thin film, and model $p_l(r,z)$ specifically.
+	We must reset our assumptions of a thin film, and model $p_l(r,z)$ specifically as the liquid pressure evaluated at time $t$.
 	We introduce the characteristic pressure length $\ell$ (the horizontal length that pressure makes a leading order contribution to the deformation of the drop), or rather the ratio $\delta := \ell/R$. Rescaling with this ($L \to \delta L$, $t \to \delta^2t$, $h \to \delta^2h$, $U \to U$ (and thus other components of drop velocity! Don't really care about oblique impacts unless they are VERY oblique - solutions match to leading order), $p \to p/\delta$), to leading-order as $z \to 0$ we lose the advective terms fo the material derivative $\frac{D}{Dt}$ \todo[color=cyan]{CITE: HP, Air cushioning with a lubrication/inviscid balance}. This has the following consequences on our formulation:
 	\begin{itemize}
 		\item \eqref{BCKinetic} becomes\todo[color=cyan]{CITE HP}
@@ -233,7 +245,7 @@
 		\label{PressureLaplace}
 		\nabla ^2 p_l = \frac{1}{r}\frac{\partial}{\partial r}\left(r \frac{\partial p_l}{\partial r}\right) + \frac{\partial^2 p_l}{\partial z^2} = 0.
 	\end{equation}
-	In other words, the pressure field is Harmonic within the liquid. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle). \todo[color=cyan]{cite: Evans, L. C. (2010). Partial Differential Equations}
+	In other words, the pressure field is harmonic within the liquid \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}. By the weak maximum principle for the Laplace Equation, we can therefore determine $p$ uniquely from the boundary conditions (for example, using the Dirichlet Principle). \todo[color=cyan]{cite: Evans, L. C. (2010). Partial Differential Equations}
 	\todo[inline, color=green]{Possible extension for visuals and post processing: create big 3D heatmap of the pressure inside the liquid drop (we don't really care about the details and pressure inside the drop, but it's useful as a learning tool since we have the data). Requires spacial drop discretisation.}
 	
 	Considering now the first of these points, we are able to relate the downward acceleration of the interface to the pressure at the boundary by differentiating \eqref{KineticApprox} and using \eqref{NSHarmonic} to get:
@@ -253,65 +265,65 @@
 	We are left with the 3rd step of this list, which requires the introduction of Green's functions. Intuitively, these are the responses to Dirac Delta functions $\delta([r,z] - [r', z'])$, which in our axisymmetric coordinates can be thought of as an impulsive action in a ring in the $r-\theta$ plane, of radius $r'$ and height $z'$, felt at a response $(r,z)$. This response function, the \textbf{Green's Function} $G(r,z;\ r',z')$, allows us to build an entire solution for
 	\begin{equation}
 		\label{PressureDelta}
-		p_l(r,z) = \iint \delta(r-r', z-z')p_l(r',z') 2\pi r' \ dr'dz' .
+		p_l(r,z) = \iint \delta(r-r')\delta(z-z')p_l(r',z') \ dr'dz',
 	\end{equation}
-	\todo[inline]{Note: How does this link to Green's functions? Something something Laplace's equation is linear? Also, is this equation actually maybe correct??}
-	
-	The standard Green's function in axisymmetric coordinates, in free space, satisfies the equation,
+	by replacing the Dirac Deltas with the Poisson equation for the standard free-space Green's function. In axisymmetric cylindrical coordinates, this is given by the standard form \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}
 	\begin{equation}
 		\label{GreenFreeSpace}
-		\nabla ^2G(r,z;\ r',z') = -\frac{\overbrace{\delta([r,z] - [r', z'])}^{:= \delta(r-r')\delta(z-z')}}{2\pi r'},
+		-\nabla ^2G(r,z;\ r',z') = \delta([r,z] - [r', z']) := \frac{\delta(r-r')\delta(z-z')}{2\pi r'},
 	\end{equation}
-	where the factor $2\pi r'$ comes from symmetry of $\theta$ in cylindrical coordinates, and the axisymmetric differential operator,
+	where the factor $2\pi r'$ comes from symmetry of $\theta$ in cylindrical coordinates, and the axisymmetric differential operator\todo[color=cyan]{Jackson, J. D. (1999) Classical Electrodynamics},
 	\begin{subequations}
 		\label{NablaCyl}
 		\begin{align}
-			\nabla &:= \left( \frac{\partial }{\partial r'}\ ,\ \frac{\partial }{\partial z} \right), \label{NablaCyl:1} \\
-			\nabla^2 &:= \frac{1}{r'} \frac{\partial }{\partial r'} \left( r' \frac{\partial }{\partial r'} \right) + \frac{\partial ^2}{\partial z^2}. \label{NablaCyl:2}
+			\nabla &:= \left( \frac{\partial }{\partial r'}\ ,\ \frac{\partial }{\partial z'} \right), \label{NablaCyl:1} \\
+			\nabla^2 &:= \frac{1}{r'} \frac{\partial }{\partial r'} \left( r' \frac{\partial }{\partial r'} \right) + \frac{\partial ^2}{\partial z'^2}. \label{NablaCyl:2}
 		\end{align}
 	\end{subequations}
 	
-	Recalling that the eigenfunctions of the radial components of \eqref{NablaCyl:2} are the 0th-order Bessel Functions $J_0(kr')$ (where $k$ are eigenvector wavenumbers), which satisfy $\frac{1}{r'}\frac{d}{dr'}\big(r'\frac{d}{dr'}J_0(k r')\big) = -k^2 J_0(k r')$, we can write \eqref{GreenFreeSpace} in pure $(r,z)$ components by expressing it as a Hankel integral:
+	Recalling that the eigenfunctions of the radial components of \eqref{NablaCyl:2} are the zeroth-order Bessel Functions $J_0(kr')$ \todo[color=cyan]{Jackson, J. D. (1999) Classical Electrodynamics} (where $k$ are eigenvector wavenumbers), which satisfy $\frac{1}{r'}\frac{d}{dr'}\big(r'\frac{d}{dr'}J_0(k r')\big) = -k^2 J_0(k r')$, we can write \eqref{GreenFreeSpace} in pure $(r,z)$ components by expressing it as a Hankel integral \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, G. N. Watson, A Treatise on the Theory of Bessel Functions}:
 	\begin{equation}
 		\label{GreenHankel}
 		G(r, z; r', z') = \frac{1}{4\pi} \int_0^\infty J_0(k r) J_0(k r') e^{-k|z-z'|} \, dk.
 	\end{equation}
-	Lipschitz–Hankel proved that this has an exact closed-form solution:
+	Lipschitz–Hankel \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, AND MORE PLEASE!!!!!} proved that this has a family of exact closed-form solutions \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}:
 	\begin{equation}
 		\label{GreenElliptic}
-		\begin{aligned}
-			G(r,z; r',z') &= \frac{K(m)}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}} = \frac{4rr'}{(r+r')^2 + (z-z')^2}, \\
-			\text{where } K(m) &= \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}},\qquad m = \frac{4rr'}{(r+r')^2 + (z-z')^2}.
-		\end{aligned}
+		G(r,z; r',z') = \frac{K(m)}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}}, \qquad
+		\text{where } m = \frac{4rr'}{(r+r')^2 + (z-z')^2}.
 	\end{equation}
-	In the above equations, $K(m)$ is the complete elliptical integral of the first kind, a function of the elliptic parameter $m$.
-	\todo[inline]{Okay I don't get this in the slightest lmaooooooo.}
+	In the above equation, $K(m)$ is the complete elliptical integral of the first kind, a function of the elliptic parameter $m$. The analysis to come will also make use of the second kind of said functions, $E(m)$. Both are defined as such: \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow, Resistance and mobility functions for the near-contact motion of permeable particles, Hicks Air trapping at impact of a rigid sphere onto a liquid}
+	\begin{subequations}
+		\label{EllipticalIntegrals}
+		\begin{align}
+			K(m) &= \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}}\qquad = \int_0^1 \frac{dt}{\sqrt{(1-t^2)(1-mt^2)}}\ , \label{EllipticalIntegrals:K} \\
+			E(m) &= \int^{\pi/2}_0 {\sqrt{1-m\sin^2(\theta)}}\ d\theta\quad = \int_0^1 \sqrt{\frac{1-mt^2}{1-t^2}} \ dt. \label{EllipticalIntegrals:E}
+		\end{align}
+	\end{subequations}
+	"C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow" provides a fantastic derivation of these functions.
 	
 	At this point, we can intuitively convert the 2D problem into one defined on the droplet's boundary: a \textbf{boundary integral method} (BIM). This involves the use of Green's Second Identity\todo[color=cyan]{CITE: Partial Differential Equations: An Introduction, 2nd Edition}, which in our coordinates states,
 	\begin{equation}
 		\label{Green2}
-		-p_l(r,z) = \iint_\Omega \left(p_l \nabla^2 G - G \nabla'^2 p_l\right) 2\pi r' dr' dz' = \oint_{\partial\Omega} \left(p_l \frac{\partial G}{\partial n'} - G \frac{\partial p_l}{\partial n'}\right) 2\pi r' ds',
+		-p_l(r,z) = \iint_\Omega \left(p_l \nabla^2 G - G \nabla^2 p_l\right) 2\pi r' dr' dz' = \oint_{\partial\Omega} \left(p_l \frac{\partial G}{\partial n'} - G \frac{\partial p_l}{\partial n'}\right) 2\pi r' ds,
 	\end{equation}
-	where $\Omega$ is the drop's volume, $\partial \Omega$ is the interface's parametrisation, and $n'$ is the outward unit normal to $\partial \Omega$. Note that we have used \eqref{PressureDelta}, \eqref{GreenFreeSpace}, and \eqref{PressureLaplace} to equate the left-hand side to the liquid pressure. We can reduce $n' = -z'$, recalling that our leading order approximations of $z \to 0$ flattened the droplet interface onto the $z=0$ plane, and thus the outer `spherical' volume can be asymptotically reduced by taking the limit of $R = \sqrt{r'^2 + z'^2} \to \infty $.
-	\todo[inline]{Why can we then say ds' = dr', and loop from 0 to infinity? How does this form a closed loop?}
+	where $\Omega$ is the drop's volume, $\partial \Omega$ is the interface's parametrisation, and $n'$ is the outward unit normal to $\partial \Omega$. Note that we have used \eqref{PressureDelta}, \eqref{GreenFreeSpace}, and \eqref{PressureLaplace} to equate the left-hand side to the liquid pressure. We can reduce $n' = -z'$, recalling that our leading order approximations of $z \to 0$ flattened the droplet interface onto the $z=0$ plane, and thus the outer `spherical' volume can be asymptotically reduced by taking the limit of $R = \sqrt{r'^2 + z'^2} \to \infty $\todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}. Thus, the integral parameter $ds = dr'$ (noting that we are implicitly integrating over $\theta$ to form a closed 'surface') with $z'=0 on \partial \Omega$.
 	
-	However, note that one of the terms that remains stuck in the integral, $\frac{\partial p_l}{\partial z'}$, is redundant, as it the exact quantity we are wishing to solve for via \eqref{KineticODE}. However, we are able to add a term to both sides of the equation to subtract this variable! This process is called the \textbf{Method of Images}, and operates by subtracting a second Green's Function at $z = -z'$, effectively cancelling out the $z' = 0$ contributions. We get the new function:
+	However, note that one of the terms that remains stuck in the integral, $\frac{\partial p_l}{\partial z'}$, is redundant, as it the exact quantity we are wishing to solve for via \eqref{KineticODE}. However, we are able to add a term to both sides of the equation to subtract this variable \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}! This process is called the \textbf{Method of Images}, and operates by subtracting a second Green's Function at $z = -z'$, effectively cancelling out the $z' = 0$ contributions. We get the new function:
 	$$G(r,z; r',z') \to G_M(r,z;r',z') := G(r,z; r',z') - G(r,z; r',-z') = G(r,z; r',z') - G(r,-z; r',z'),$$
-	where the final equality holds from the symmetry of Green's Functions (we are integrating over the primed, so this makes sense). By the linearity of Green's functions,
-	\todo[inline]{(as they are solutions to Laplace's equation \eqref{GreenFreeSpace}???? No, that doesn't make sense...)}
-	we get $G_M = 0$ for $z=0$, and thus the $\frac{\partial p_l}{\partial z'}$ contribution in \eqref{Green2} (when replacing $G \to G_M$) drops out. Crucially, this substitution does \textbf{not} impact the left-hand side of the equation, as this second Green's Function does not exist inside of the drop's volume, $\Omega$!
+	where the final equality holds from the symmetry of Green's Functions (we are integrating over the primed, so this makes sense). By the linearity of Green's functions, we get $G_M = 0$ for $z=0$, and thus the $\frac{\partial p_l}{\partial z'}$ contribution in \eqref{Green2} (when replacing $G \to G_M$) drops out. Crucially, this substitution does \textbf{not} impact the left-hand side of the equation, as this second Green's Function does not exist inside of the drop's volume, $\Omega$!
 	
-	Note that in \eqref{Green2}, $n' = +z'$ for the first Green's function and $n' = z'$ for the second Green's function, as the flux felt from each Green's function heads in opposite directions. Hence, we get double the contribution for $\frac{\partial G}{\partial n'}$, and thus the full solution:
+	Note that in \eqref{Green2}, $n' = +z'$ for the first Green's function and $n' = z'$ for the second Green's function, as the flux felt from each Green's function heads in opposite directions. Hence, we get double the contribution for $\frac{\partial G}{\partial n'}$, and thus can modify the right-hand side of \eqref{Green2} to generate the full solution:
 	\begin{equation}
 		\label{PressureGreen}
 		\begin{aligned}
-			p_l(r, z) &= -\int_0^\infty p_l(r', 0) \left.\frac{\partial G_M}{\partial n'}\right|_{z'=0}\ 2\pi r' \, dr', \\
-			&= -4\pi \int_0^\infty p_l(r', 0) \frac{\partial G(r,z;r',0)}{\partial z} \, r'\ dr', \\
+			p_l(r, z) &= -\int_0^\infty p_l(r', 0) \left.\frac{\partial G_M}{\partial n'}\right|_{z'=0}\ 2\pi r' \, dr' \\
+			&= -4\pi \int_0^\infty p_l(r', 0) \frac{\partial G(r,z;r',0)}{\partial z} \, r'\ dr' \\
 			&= \int_0^\infty p_l(r', 0) \left[\int_0^\infty k J_0(k r) J_0(k r') e^{-k z} \, dk\right] r' \, dr'.
 		\end{aligned}
 	\end{equation}
 	
-	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the first order Bessel function derivative: rule for differentiating the zeroth and first order Bessel functions, $\frac{\partial }{\partial r} (rJ_1(kr)) = krJ_0(kr)$, we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
+	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the first order Bessel function derivative: rule for differentiating the first order Bessel functions \todo[color=cyan]{CITE Abramowitz, Stegun Handbook of Mathematical Functions} $\frac{\partial }{\partial r} (rJ_1(kr)) = krJ_0(kr)$, we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
 		\begin{equation}
 		\label{PressureGreenIBP}
 		\begin{aligned}
@@ -320,16 +332,30 @@
 			&= -\int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)J_1(kr')e^{-kz}\ dk\ dr',
 		\end{aligned}
 	\end{equation}
-	noting the far-field boundary condition $\lim{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ to cancel the evaluated integral.
+	noting the far-field boundary condition $\lim_{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, Abramowitz, Stegun Handbook of Mathematical Functions} to cancel the evaluated integral.
 	
 	Finally, equating \eqref{PressureGreenIBP} with \eqref{KineticODE}, and evaluating the Lipschitz–Hankel integral in the limit $z \to 0$, gives the analytic ODE for the interface, $h(r,t)$:
 	\begin{equation}
 		\begin{aligned}
-			\frac{\partial^2 h(r, t)}{\partial t^2} &= -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} = \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l}{\partial r'}(r', 0, t) \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \\
+			\frac{\partial^2 h(r, t)}{\partial t^2} &= -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} = \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l(r',0)}{\partial r'} \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \\
 			&\quad \text{where } m = \frac{4rr'}{(r+r')^2}, \quad \text{PV } \equiv \text{ Cauchy Principle Value.}
 		\end{aligned}
 	\end{equation}
-	\todo[inline]{Note that, compared with \eqref{GreenElliptic}, the equation for the elliptic parameter loses dependency on $z$. This is because........}
+	Note also that the equation for the elliptic parameter $m$ differs slightly compared with \eqref{GreenElliptic} - this is because our integral interface is performed over the $z'=0$ plane, in the limit of $z \to 0$. Further, as $m$ is the square of the geometric mean to the arithmetic mean of $r$ and $r'$, $\sqrt{m} \le 1$, and so the elliptical functions are well-defined \todo[color=cyan]{CITE air trapping at impact hicks}.
+	
+	Cauchy Principle Value: Indeed, the latter requires that the improper
+	integration is effected by excluding two small intervals on either side of
+	the singularity from the domain of integration and taking the limit as the
+	size of these intervals tends to zero in a simultaneous manner \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}
+	
+	
+	Next steps: try to derive the above equation yourself, figure out what adding PV means analytically, then how we can reduce this: evaluate E(1), as this is where the singularity is (cauchy pole, logarithmic singularity?) Do this analutiically, subtract dp/dr \todo[color=cyan]{CITE Inertial and viscous dynamics of jump-to-contact between fluid drops under van der Waals attraction}: find a known value that works, evaluate the integral to get something known: " We note that a constant pressure satisfies both Laplace’s equation and the far-field and regularity conditions required in the derivation of (A3). We can thus set p = 1 in (A3) to obtain the identity...".
+
+	
+	In the numerical method, the elliptical integrals $K(m)$ and $E(m)$ are well-approximated by $P(\xi)-Q(\xi)\ln\xi$ and $R(\xi)-S(\xi)\ln\xi$ respectively, where $P,Q,R,S$ are tabulated polynomials, and $\chi = 1 - m^2$ \todo[color=cyan]{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS}.
+	
+	"{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS section 2.6": something something isolate and subtract logarithmic singularities across boundary elements before applying numerical quadrature, citing Stroud and Secrest (1966) (Gaussian Quadrature Formulas). The particular integral has an explicit singularity of log type which can be integrated using the quadrature scheme tabulated by Stroud and Secrest $\int_0^1 \ln(1/x)f(x)\ dx$".
+	
 	
 	
 	
