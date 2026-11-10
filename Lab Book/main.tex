@@ -78,7 +78,7 @@
 	HP shows that the Froude number is large, and therefore we neglect gravity.
 	
 	\subsection{Further Assumptions Worth Commenting on!}
-	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo[color=cyan]{From "Events before droplet splashing on a solid surface}.
+	Heat transfer in the gas, mass diffusion from the gas into the liquid (we assume in our calculations that the gas layer cannot be absorbed into the liquid)\todo[color=cyan]{From "Events before droplet splashing on a solid surface"}.
 	Also, assume the gas is incompressible?? This seems a bit weird... see equation 2.3 in HP
 	
 	
@@ -107,7 +107,7 @@
 	\todo[inline, color=cyan]{Methods of Note: Laplace equation, Half-Space Green's Functions, method of images, Dirichlet-to-Neumann (DtN) Maps, Cauchy PV, singularity subtraction, elliptical integrals}
 	
 	In the film, we are wanting so solve the lubrication equation, also known as Reynolds Equation. Via the smooth-ness of the drop's surface, and the fact that $h \ll R$, we can approximate $h$ via linear functions at each point.
-	\todo[inline]{viscous shear against the wall dominates?? Hydraulic resistance scales as $1/h^3$, so it will eventually act like a stiff fluid?? What does this mean?}
+	\todo[inline]{viscous shear against the wall dominates?? Hydraulic resistance scales as $1/h^3$, so it will eventually act like a stiff fluid?? What does this mean??? Gemini: "More importantly, the coupled lubrication + boundary integral system is numerically stiff due to the $h^3$ mobility. Python gives you instant access to adaptive stiff ODE/DAE integrators."}
 	
 	
 	
@@ -160,7 +160,7 @@
 		u_z(r,h) = \frac{\partial h}{\partial t} + u_r(r,h) \frac{\partial h}{\partial r}.
 	\end{equation}
 	This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
-	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
+	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo[color=cyan]{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
 	\todo[inline, color=pink]{This comes from matching $F = ma$ on the boundary (a dynamic boundary condition), and hence $\mathbf{T}_g\cdot \hat{\underline{n}} = \mathbf{T}_l\cdot \hat{\underline{n}}$. As the liquid is inviscid, $\mathbf{T}_l = -p\mathbf{I}$, and so we have $p=p$.}
 	\todo[inline, color=green]{To add the effect of surface tension, we just say $p_g = p_l + ...$!}
 	
@@ -286,18 +286,19 @@
 		\label{GreenHankel}
 		G(r, z; r', z') = \frac{1}{4\pi} \int_0^\infty J_0(k r) J_0(k r') e^{-k|z-z'|} \, dk.
 	\end{equation}
-	Lipschitz–Hankel \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, AND MORE PLEASE!!!!!} proved that this has a family of exact closed-form solutions \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}:
+	Lipschitz–Hankel \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, AND MORE PLEASE!!!!!} proved that this has a family of exact closed-form solutions \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow, Gradshteyn \& Ryzhik Table of Integrals, Series and Products 6.612}:
 	\begin{equation}
 		\label{GreenElliptic}
 		G(r,z; r',z') = \frac{K(m)}{2\pi^2\sqrt{(r+r')^2+(z-z')^2}}, \qquad
 		\text{where } m = \frac{4rr'}{(r+r')^2 + (z-z')^2}.
 	\end{equation}
-	In the above equation, $K(m)$ is the complete elliptical integral of the first kind, a function of the elliptic parameter $m$. The analysis to come will also make use of the second kind of said functions, $E(m)$. Both are defined as such: \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow, Resistance and mobility functions for the near-contact motion of permeable particles, Hicks Air trapping at impact of a rigid sphere onto a liquid}
+	In the above equation, $K(m)$ is the complete elliptical integral of the first kind, a function of the elliptic parameter $m$. The analysis to come will also make use of the second kind of said functions, $E(m)$. Both are defined as such: \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow, Resistance and mobility functions for the near-contact motion of permeable particles, Hicks Air trapping at impact of a rigid sphere onto a liquid, DLMF 19.4, Abramowitz, Stegun Handbook of Mathematical Function}
 	\begin{subequations}
 		\label{EllipticalIntegrals}
 		\begin{align}
 			K(m) &= \int^{\pi/2}_0 \frac{d\theta}{\sqrt{1-m\sin^2(\theta)}}\qquad = \int_0^1 \frac{dt}{\sqrt{(1-t^2)(1-mt^2)}}\ , \label{EllipticalIntegrals:K} \\
-			E(m) &= \int^{\pi/2}_0 {\sqrt{1-m\sin^2(\theta)}}\ d\theta\quad = \int_0^1 \sqrt{\frac{1-mt^2}{1-t^2}} \ dt. \label{EllipticalIntegrals:E}
+			E(m) &= \int^{\pi/2}_0 {\sqrt{1-m\sin^2(\theta)}}\ d\theta\quad = \int_0^1 \sqrt{\frac{1-mt^2}{1-t^2}} \ dt, \label{EllipticalIntegrals:E} \\
+		&\qquad \qquad	K'(m) = \frac{E(m)}{2m(1-m)} - \frac{K(m)}{2m}. \label{EllipticalIntegrals:Derivative}
 		\end{align}
 	\end{subequations}
 	"C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow" provides a fantastic derivation of these functions.
@@ -307,7 +308,7 @@
 		\label{Green2}
 		-p_l(r,z) = \iint_\Omega \left(p_l \nabla^2 G - G \nabla^2 p_l\right) 2\pi r' dr' dz' = \oint_{\partial\Omega} \left(p_l \frac{\partial G}{\partial n'} - G \frac{\partial p_l}{\partial n'}\right) 2\pi r' ds,
 	\end{equation}
-	where $\Omega$ is the drop's volume, $\partial \Omega$ is the interface's parametrisation, and $n'$ is the outward unit normal to $\partial \Omega$. Note that we have used \eqref{PressureDelta}, \eqref{GreenFreeSpace}, and \eqref{PressureLaplace} to equate the left-hand side to the liquid pressure. We can reduce $n' = -z'$, recalling that our leading order approximations of $z \to 0$ flattened the droplet interface onto the $z=0$ plane, and thus the outer `spherical' volume can be asymptotically reduced by taking the limit of $R = \sqrt{r'^2 + z'^2} \to \infty $\todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}. Thus, the integral parameter $ds = dr'$ (noting that we are implicitly integrating over $\theta$ to form a closed 'surface') with $z'=0 on \partial \Omega$.
+	where $\Omega$ is the drop's volume, $\partial \Omega$ is the interface's parametrisation, and $n'$ is the outward unit normal to $\partial \Omega$. Note that we have used \eqref{PressureDelta}, \eqref{GreenFreeSpace}, and \eqref{PressureLaplace} to equate the left-hand side to the liquid pressure. We can reduce $n' = -z'$, recalling that our leading order approximations of $z \to 0$ flattened the droplet interface onto the $z=0$ plane, and thus the outer `spherical' volume can be asymptotically reduced by taking the limit of $R = \sqrt{r'^2 + z'^2} \to \infty $\todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}. Thus, the integral parameter $ds = dr'$ (noting that we are implicitly integrating over $\theta$ to form a closed 'surface') with $z'=0 \in \partial \Omega$.
 	
 	However, note that one of the terms that remains stuck in the integral, $\frac{\partial p_l}{\partial z'}$, is redundant, as it the exact quantity we are wishing to solve for via \eqref{KineticODE}. However, we are able to add a term to both sides of the equation to subtract this variable \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}! This process is called the \textbf{Method of Images}, and operates by subtracting a second Green's Function at $z = -z'$, effectively cancelling out the $z' = 0$ contributions. We get the new function:
 	$$G(r,z; r',z') \to G_M(r,z;r',z') := G(r,z; r',z') - G(r,z; r',-z') = G(r,z; r',z') - G(r,-z; r',z'),$$
@@ -323,8 +324,16 @@
 		\end{aligned}
 	\end{equation}
 	
-	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the first order Bessel function derivative: rule for differentiating the first order Bessel functions \todo[color=cyan]{CITE Abramowitz, Stegun Handbook of Mathematical Functions} $\frac{\partial }{\partial r} (rJ_1(kr)) = krJ_0(kr)$, we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
-		\begin{equation}
+	We now move to the penultimate step of our recipe: using \eqref{KineticODE} to form an ODE for $h(r,t)$ from \eqref{PressureGreen}. First however, we manipulate the form of \eqref{PressureGreen} slightly to better fit it numerically to \eqref{LubricationND}: as this equation directly produces $\frac{\partial p_g}{\partial r}$, and Bernoulli gives $p_g = p_l$ at the interface, it is much easier numerically to write $p_l(r, z)$ above as an $dr'$ integral of $\frac{\partial p_l}{\partial r'}$. Recalling the zeroth and first order Bessel function derivatives: \todo[color=cyan]{CITE Abramowitz, Stegun Handbook of Mathematical Functions}
+	\begin{subequations}
+		\label{BesselDerivatives}
+		\begin{align}
+			\frac{\partial }{\partial r} J_0(kr) &= -kJ_1(kr), \label{BesselDerivatives:1} \\
+			krJ_0(kr) &= \frac{\partial }{\partial r} (rJ_1(kr)), \label{BesselDerivatives:2}
+		\end{align}
+	\end{subequations}
+	we can apply integration by parts to the $dr'$ integral of \eqref{PressureGreen} to get
+	\begin{equation}
 		\label{PressureGreenIBP}
 		\begin{aligned}
 			p_l(r, z) &= \int^\infty _0 \left( \int^\infty _0 p(r',0) kr'J_0(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
@@ -332,34 +341,81 @@
 			&= -\int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)J_1(kr')e^{-kz}\ dk\ dr',
 		\end{aligned}
 	\end{equation}
-	noting the far-field boundary condition $\lim_{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, Abramowitz, Stegun Handbook of Mathematical Functions} to cancel the evaluated integral.
-	
-	Finally, equating \eqref{PressureGreenIBP} with \eqref{KineticODE}, and evaluating the Lipschitz–Hankel integral in the limit $z \to 0$, gives the analytic ODE for the interface, $h(r,t)$:
+	noting the far-field boundary condition $\lim_{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, Abramowitz, Stegun Handbook of Mathematical Functions} to cancel the evaluated integral. Equating the Lipschitz–Hankel integral \eqref{PressureGreenIBP} with \eqref{KineticODE} in the limit of $z \to 0$, and recalling the derivative rule \eqref{BesselDerivatives:1}, 
 	\begin{equation}
+		\label{BoundaryIntegralAntiderivative}
 		\begin{aligned}
-			\frac{\partial^2 h(r, t)}{\partial t^2} &= -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} = \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l(r',0)}{\partial r'} \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \\
-			&\quad \text{where } m = \frac{4rr'}{(r+r')^2}, \quad \text{PV } \equiv \text{ Cauchy Principle Value.}
+			\frac{\partial^2 h(r, t)}{\partial t^2} = -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} &= \lim_{z \to 0} \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)\left[ \frac{\partial }{\partial r'}J_0(kr') \right]e^{-kz}\ dk\ dr' \\
+			&= \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \left[ \frac{\partial }{\partial r'} \left( \frac{2K(m)}{\pi\sqrt{(r+r')^2 + z^2}} \right) \right]_{z=0}\ dr',
 		\end{aligned}
 	\end{equation}
+	where the final step follows from the parametric form of Gradshteyn \& Ryzhik (2014), Equation 6.612.3 \todo[color=cyan]{Gradshteyn \& Ryzhik Table of Integrals, Series and Products 6.612}. Recalling the derivative rule of elliptical integrals \eqref{EllipticalIntegrals:Derivative}, with $\left. \frac{\partial m}{\partial r'} \right|_{z=z'=0} = \frac{4r(r-r')}{(r+r')^3}$, we finally produce the analytic ODE for the interface $h(r,t)$:
+	\begin{equation}
+		\label{BoundaryIntegral}
+		\begin{aligned}
+			\frac{\partial^2 h(r, t)}{\partial t^2}	&= \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \left[ \frac{1}{\pi r'} \left( \frac{E(m)}{r-r'} - \frac{K(m)}{r+r'} \right) \right]\ dr' \\
+			&= \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l(r',0)}{\partial r'} \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \quad \text{where } m = \frac{4rr'}{(r+r')^2}.
+		\end{aligned}
+	\end{equation}
+	
 	Note also that the equation for the elliptic parameter $m$ differs slightly compared with \eqref{GreenElliptic} - this is because our integral interface is performed over the $z'=0$ plane, in the limit of $z \to 0$. Further, as $m$ is the square of the geometric mean to the arithmetic mean of $r$ and $r'$, $\sqrt{m} \le 1$, and so the elliptical functions are well-defined \todo[color=cyan]{CITE air trapping at impact hicks}.
-	
-	Cauchy Principle Value: Indeed, the latter requires that the improper
-	integration is effected by excluding two small intervals on either side of
-	the singularity from the domain of integration and taking the limit as the
-	size of these intervals tends to zero in a simultaneous manner \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}
-	
-	
-	Next steps: try to derive the above equation yourself, figure out what adding PV means analytically, then how we can reduce this: evaluate E(1), as this is where the singularity is (cauchy pole, logarithmic singularity?) Do this analutiically, subtract dp/dr \todo[color=cyan]{CITE Inertial and viscous dynamics of jump-to-contact between fluid drops under van der Waals attraction}: find a known value that works, evaluate the integral to get something known: " We note that a constant pressure satisfies both Laplace’s equation and the far-field and regularity conditions required in the derivation of (A3). We can thus set p = 1 in (A3) to obtain the identity...".
 
+
+	\subsubsection{Desingularisation} \label{sec:CauchyPV}
+	We have introduced the notation $\text{PV}$ in \eqref{BoundaryIntegral} above to mean the `Cauchy Principal Value', which applies only to the simple pole produced by the $E(m)$ integral, and intuitively means to exclude two small intervals on either side of the singularity $r = r'$ (for which $E(m) = 1$, producing a simple pole), and taking the limit as the size of these intervals tends to zero in a simultaneous manner \todo[color=cyan]{CITE C. Pozrikidis, Boundary Integral and Singularity Methods for Linearized Viscous Flow}. As \todo[color=cyan]{CITE Abramowitz \& Stegun With Formulas, Graphs and mathematical tables}
+	\begin{equation}
+		\label{KExpansion}
+		K(m) \sim \ln \left( \frac{4(r+r')}{|r-r'|} \right), \quad \text{as } m \to 1^-,
+	\end{equation}
+	$r=r'$ is also a singularity for $K(m)$, but is an integrable logarithmic singularity, rather than a pole (ie: it has finite area, but still diverges when evaluated point-wise). Whilst not strictly necessary for computation, desingularising the simple pole introduced by $E(m)$ eliminates an $O(1/\Delta r)$ sources of error, and further handling of the logarithmic singularity introduced by $K(m)$ eliminates a further $O(1/\ln \Delta r)$ source of error. Note that in this numerical discussion, we therefore replace the semi-improper integral with one with an upper bound $R$: not only does this aid the conceptual understanding of the numerical methods, but also allows the Cauchy Principal Value area of the singularity $1/r$ to be finite.
 	
-	In the numerical method, the elliptical integrals $K(m)$ and $E(m)$ are well-approximated by $P(\xi)-Q(\xi)\ln\xi$ and $R(\xi)-S(\xi)\ln\xi$ respectively, where $P,Q,R,S$ are tabulated polynomials, and $\chi = 1 - m^2$ \todo[color=cyan]{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS}.
+	To handle the $E(m)$ singularity, we use a method called `singularity subtraction' \todo[color=cyan]{CITE HP, OTHER PLEASE!}: we aim to replace the $\frac{E(m)}{r-r'}$ term in the kernel of \eqref{BoundaryLayerScaling} with $\frac{E(m) - 1}{r-r'}$, which is of order $\sim O(|r-r'|\ln|r-r'|)$\todo[color=cyan]{CITE DLMF 19.12 Abramowitz \& Stegun With Formulas, Graphs and mathematical tables } and is therefore numerically stable. Adding and subtracting the pure simple pole $\frac{\partial _rp_l(r,0)}{r-r'}$, which has an exact solution as given by I.M. Gel’fand and G.E. Shilov\todo[color=cyan]{CITE Gel’fand, I. M., \& Shilov, G. E. (1964). Generalized Functions}, therefore gives:
+	\begin{equation}
+		\begin{aligned}
+			\text{PV}\int^R _0 \frac{\partial p_l(r')}{\partial r'}r'\ \frac{E(m)}{r-r'}\ dr' &= \int^R _0 \frac{\partial _{r'}p_l(r')r'E(m) - \partial _{r}p_l(r)r}{r-r'}\ dr' + \frac{\partial p_l(r)}{\partial r}r\ \text{PV}\int^R _0 \frac{1}{r-r'}\ dr' \\
+			&= \int^R _0 \frac{\partial p_l(r')}{\partial r'}r'\ \frac{E(m)}{r-r'}\ dr'\ +\  \frac{\partial p_l(r)}{\partial r}r \ln\left( \frac{r}{R - r} \right).
+		\end{aligned}
+	\end{equation}
+	Considering now the $K(m)$ singularity, we use Stroud \& Secrest (1966) (Log-Gaussian) Quadrature \todo[color=cyan]{CITE}. Rearranging \eqref{KExpansion} to get
+	\begin{equation}
+		\frac{K(m)}{r + r'} \approx \frac{\ln(4(r + r'))}{r + r'} - \frac{\ln|r-r'|}{r + r'},
+	\end{equation}
+	and thus by setting $r+r' = 2r$, to leading order we get that $\frac{K(m)}{r + r'} \sim \frac{\ln|r-r'|}{2r}$ as $m \to 1^-$! Hence, we add and subtract this quantity to get
+	$$\frac{K(m)}{r + r'} = {\left[\frac{K(m)}{r + r'}   \frac{\ln|r-r'|}{2r} \right]} - \frac{\ln|r-r'|}{2r},$$
+	the sum of a smooth, integrable function with a pure logarithmic spike, which has an exact closed form as given by the Stroud \& Secrest Log-Gaussian Quadrature:
+	$$\int_{r}^{r + \Delta r/2} \partial _{r'}p_l(r')r'\ln\vert{}r - r'\vert{}\,dr' = \left[ \ln\left(\frac{\Delta r}{2}\right)\underbrace{\int_0^1 \tilde{\partial _{r'}p_l(r')r'}(\xi)\,d\xi}_{\text{Standard Gauss}} - \underbrace{\int_0^1 \tilde{\partial _{r'}p_l(r')r'}(\xi)\ln\left(\frac{1}{\xi}\right)d\xi}_{\text{Stroud \& Secrest Table}} \right] \frac{\Delta r}{2}.$$
 	
-	"{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS section 2.6": something something isolate and subtract logarithmic singularities across boundary elements before applying numerical quadrature, citing Stroud and Secrest (1966) (Gaussian Quadrature Formulas). The particular integral has an explicit singularity of log type which can be integrated using the quadrature scheme tabulated by Stroud and Secrest $\int_0^1 \ln(1/x)f(x)\ dx$".
+	\todo[inline]{wat?}
+	
+	\todo[color=green, inline]{okidoki, so here's what I'm thinking: I think it's all well and good to state all the singularity analysis and stuff like that, but it seems to complicated to do this in code that I thought it would be so much easier to use the anti-derivative version of \eqref{BoundaryIntegralAntiderivative}, such that we approximate $f(r) = \frac{\partial p_l(r,0)}{\partial r}\ r$ as locally constant? RESEARCH THAT $\partial _rp_l(r,0)$ IS??? Or, better yet, we account for the linear / quadratic deviation in f(r) by restoring the linear $-\frac{\ln 2}{\pi r'}f'(r')\ dr'$ term in the integral? This linear addition makes things absolutely identical to the Cauchy PV addition and subtraction, as we are specifically adding in $\int_{r_i - \Delta r/2}^{r_i + \Delta r/2} \big[f'(r_i)(r' - r_i)\big]\left[\frac{1}{\pi r_i(r_i - r')}\right] dr' = -\frac{f'(r_i)}{\pi r_i}\Delta r$, and using the evenness of the integral to cancel out the rest? Note for future me - do both! Write locally constant behaviour, then locally affine, and compare the full convergence in a log-log graph to show that this locally linear bit is the same. May also be worth comparing this to the full Cauchy PV method in the same suite (!!!), unless you can convince yourself that they are indeed the exact same thing - I don't quite get it yet! :O}
+	\todo[color=green, inline]{Hello past Alfie, it's Alfie from 15 minutes after you wrote this, it's very easy lmao. Basically, FVM solvers have error $O(\Delta r^2)$ in discretising the pressure function into points (seen with derivative functions), so we need to make sure that the integrand has error no worse than $O(\Delta r^2)$? In other words, even if we add Taylor quadratic terms to the approximation, we approximate with $O(\Delta r^3)$, which is lost completely to the FVM solver! Basically, as long as the error is no worse than $O(\Delta r^2)$, we are as accurate as we can be! (to leading order) But EVERYTHING needs to be of this order! Also elliptical integrals are smooth so we're fine there too!}
+	
+	
+	
+	
+	Note that our solver actually doesn't `notice' the single pole at $r = r' = 0$ (where the kernel $\sim -\pi/r'$), as our `Finite Volume Method' solver takes pressure values at the centre of square cells, or rather $p(r + \frac{s}{2}, z + \frac{s}{2})$, where $s$ is some cell side length. Nonetheless, the integrand is finite in this case via axisymmetric regularity. Nonetheless, as most of the integral information is near points of $m \to 1^-$ (when $r \approx r'$), we use the polynomial expansions \todo[color=cyan]{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS, Abramowitz \& Stegun}:
+	\begin{equation}
+		\begin{aligned}
+			K(m) &\approx \sum_{k=0}^4 a_k m_1^k - \ln(m_1)\sum_{k=0}^4 b_k m_1^k,\\
+			E(m) &\approx 1 + \sum_{k=1}^4 c_k m_1^k - \ln(m_1)\sum_{k=1}^4 d_k m_1^k, \\
+			&\quad \text{where } m_1 := 1 - m = \left(\frac{r-r'}{r+r'}\right)^2.
+		\end{aligned}
+	\end{equation}
+	
+	
+	\todo[color=pink, inline]{Figure out what adding PV means analytically, then how we can reduce this: evaluate E(1), as this is where the singularity is (cauchy pole, logarithmic singularity?) Do this analutiically, subtract dp/dr (CITE Inertial and viscous dynamics of jump-to-contact between fluid drops under van der Waals attraction): find a known value that works, evaluate the integral to get something known: " We note that a constant pressure satisfies both Laplace’s equation and the far-field and regularity conditions required in the derivation of (A3). We can thus set dp/dr = 1 in (A3) to obtain the identity...".}
+
+	\todo[color=pink, inline]{In the numerical method, the elliptical integrals $K(m)$ and $E(m)$ are well-approximated by $P(\xi)-Q(\xi)\ln\xi$ and $R(\xi)-S(\xi)\ln\xi$ respectively, where $P,Q,R,S$ are tabulated polynomials, and $\chi = 1 - m^2$ (CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS).}
+	
+	\todo[color=pink, inline]{"CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS section 2.6": something something isolate and subtract logarithmic singularities across boundary elements before applying numerical quadrature, citing Stroud and Secrest (1966) (Gaussian Quadrature Formulas). The particular integral has an explicit singularity of log type which can be integrated using the quadrature scheme tabulated by Stroud and Secrest $\int_0^1 \ln(1/x)f(x)\ dx$".}
 	
 	
 	
 	
 	
+	
+	
+	\section{Methodology}
 	
 	\subsection{Formation of the Problem}
 	Now we have non-dimensionalisd, we turn to the symmetries that allow for a simpler argument.
@@ -372,6 +428,19 @@
 	\subsection{Numerics Time Yay!}
 	The lubrication equation \eqref{LubricationND} and boundary integral formula (??) couple to form an iterative method. Given the initial condition of the downward moving drop in the far field, we update the pressure via \eqref{LubricationND}, then use this pressure to update the interface via (??), etc etc.
 	\todo[inline, color=pink]{Something about picking a predictor step?}
+	
+	\subsection{Cauchy PV for Droplet}
+	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact approximations, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$ varies across a cell of size $\Delta r$ with $O(\Delta r^2)$. This is an apt guess, as the following analysis shows... Again, we don't strictly need to do this, as FVM is capped at $O(\Delta r^2)$, but it is more just nice to show that FVM well-approximates our interface, such that the coupled system of differentiation and integration doesn't introduce any bottlenecks along the way.
+	\todo[inline]{I think this is quite wrong in the details and intricacies.}
+	
+	For the initial interface $h = y + r^2/2$, where $y = h_0(0,0) -Ut$ is the gap between the interface and the solid, we define the characteristic length $\ell = \sqrt{2y}$ (the radius for which $h = 2y$, or rather the characteristic pressure width).
+	Rearranging \eqref{LubricationND} gives $f(r)=-6r^2/(\text{St}\,h^3)$. Rescaling via the variable $\xi = r/\ell$ gives $f(\xi)=-\frac{12}{\text{St}\,y^2}\,\frac{\xi^2}{(1+\xi^2)^3}$, a smooth, single-humped function $\approx\xi^2$ near the axis, peaking at $\xi=1/\sqrt2$, and decaying like $\xi^{-4}$. Hence, it is natural to scale the variation of $f$ in a cell by $|f|_{\max}$.
+	Via the chain rule on $\xi$, we can therefore bound $|f'| \lesssim c_1|f|_\text{max} / \ell$ and $|f''| \lesssim c_2|f|_\text{max} / \ell^2$ respectively, where $c_1\approx2.4$ and $c_2=13.5$ are constants.
+	
+	Writing $\epsilon=\Delta r/\ell$, the variation of $f$ across one cell, written $\frac{|f(r+\Delta r)-f(r)|}{|f|_{\max}}$, is $\lesssim c_1\epsilon$, and the Taylor remainder shows that a locally affine representation has error $\le\tfrac{c_2}{2}\epsilon^2|f|_{\max}=O(\Delta r^2)$. This matches the finite-volume discretisation provided $\Delta r\ll\ell$.
+	\todo[inline]{As the droplet forms, $\ell=\sqrt{2y}$, so the grid must be refined to keep $\epsilon$ small???? How do we do this?!?!?}
+	
+	\todo[color=green, inline]{Analysis shows that dp/dr varies at most linearly in each cell, and so dp/dr r varies quadratically. We can do this by comparing to the initial profile h, and other things? We can use this to motivate the ideal growth rate of dp/dr r in each cell, and therefore produce the analysis in the green box below. LOOK INTO THIS MORE!! Good to know that the $O(\Delta r^2)$ FVM method solver can actually encapsulate the function.}
 
 	
 	
