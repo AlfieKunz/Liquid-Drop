@@ -161,7 +161,7 @@
 	\end{equation}
 	This holds for both $u_\text{gas}$ and $u_\text{liquid}$.
 	and similarly no slip at the boundary. Also, from the lack of surface tension we get the normal stress condition $p_\text{gas} = p_\text{liquid}$ at the interface\todo[color=cyan]{cite HP 2.6}, using Bernoulli (potential flow, so we use \eqref{Bernoulli2}).
-	\todo[inline, color=pink]{This comes from matching $F = ma$ on the boundary (a dynamic boundary condition), and hence $\mathbf{T}_g\cdot \hat{\underline{n}} = \mathbf{T}_l\cdot \hat{\underline{n}}$. As the liquid is inviscid, $\mathbf{T}_l = -p\mathbf{I}$, and so we have $p=p$.}
+	\todo[inline, color=pink]{This comes from matching $F = ma$ on the boundary (a dynamic boundary condition), and hence $\mathbf{T}_g\cdot \hat{\underline{n}} = \mathbf{T}_l\cdot \hat{\underline{n}}$. As the liquid is inviscid, $\mathbf{T}_l = -p\mathbf{I}$, and so we have $p=p$. Also, for this we need high Weber number, such that capillary pressure jumps across the interface are negligible at leading order.}
 	\todo[inline, color=green]{To add the effect of surface tension, we just say $p_g = p_l + ...$!}
 	
 	Crucially, as the liquid is in the high Reynolds number regime (ie: the velocity $\underline{u} = \nabla \phi$, for some potential $\phi$), we cannot enforce no slip for the liquid at the interface... BUT WHAT ABOUT THE GAS!?!? We have the kinematic equation, but doesn't this mean that the tangential velocity of the gas moves the same as the tangential velocity of the gas? And therefore, no slip? But the boundary is controlled by the gas, so no?? Maybe we do get slip? Talk about boundary layer effect in the report? (as it is a liquid-liquid interface vs a liquid-solid interface? Is it just the difference in viscosity, or the absolute magnitude of the liquid viscosity)
@@ -336,24 +336,24 @@
 	\begin{equation}
 		\label{PressureGreenIBP}
 		\begin{aligned}
-			p_l(r, z) &= \int^\infty _0 \left( \int^\infty _0 p(r',0) kr'J_0(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
-			&= \int^\infty _0 \left( \left[ p(r',0)\ r'J_1(kr') \right]^\infty _0 - \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r'J_1(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
-			&= -\int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)J_1(kr')e^{-kz}\ dk\ dr',
+			p_l(r, z) &= \int^\infty _0 \left( \int^\infty _0 p_l(r',0) kr'J_0(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
+			&= \int^\infty _0 \left( \left[ p_l(r',0)\ r'J_1(kr') \right]^\infty _0 - \int^\infty _0 \frac{\partial p_l(r',0)}{\partial r'} r'J_1(kr') dr' \right) J_0(kr) e^{-kz} \ dk \\
+			&= -\int^\infty _0 \frac{\partial p_l(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)J_1(kr')e^{-kz}\ dk\ dr',
 		\end{aligned}
 	\end{equation}
-	noting the far-field boundary condition $\lim_{r \to \infty }p(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, Abramowitz, Stegun Handbook of Mathematical Functions} to cancel the evaluated integral. Equating the Lipschitz–Hankel integral \eqref{PressureGreenIBP} with \eqref{KineticODE} in the limit of $z \to 0$, and recalling the derivative rule \eqref{BesselDerivatives:1}, 
+	noting the far-field boundary condition $\lim_{r \to \infty }p_l(r ,0) = 0$ and Bessel function property $\lim{r \to 0}rJ_1(kr) = 0$ \todo[color=cyan]{CITE Jackson, J. D. (1999) Classical Electrodynamics, Abramowitz, Stegun Handbook of Mathematical Functions} to cancel the evaluated integral. Equating the Lipschitz–Hankel integral \eqref{PressureGreenIBP} with \eqref{KineticODE} in the limit of $z \to 0$, and recalling the derivative rule \eqref{BesselDerivatives:1}, 
 	\begin{equation}
 		\label{BoundaryIntegralAntiderivative}
 		\begin{aligned}
-			\frac{\partial^2 h(r, t)}{\partial t^2} = -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} &= \lim_{z \to 0} \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)\left[ \frac{\partial }{\partial r'}J_0(kr') \right]e^{-kz}\ dk\ dr' \\
-			&= \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \left[ \frac{\partial }{\partial r'} \left( \frac{2K(m)}{\pi\sqrt{(r+r')^2 + z^2}} \right) \right]_{z=0}\ dr',
+			\frac{\partial^2 h(r, t)}{\partial t^2} = -\lim_{z \to 0} \frac{\partial p_l(r,z)}{\partial z} &= \lim_{z \to 0} \int^\infty _0 \frac{\partial p_l(r',0)}{\partial r'} r' \int^\infty _0 J_0(kr)\left[ \frac{\partial }{\partial r'}J_0(kr') \right]e^{-kz}\ dk\ dr' \\
+			&= \int^\infty _0 \frac{\partial p_l(r',0)}{\partial r'} r' \left[ \frac{\partial }{\partial r'} \left( \frac{2K(m)}{\pi\sqrt{(r+r')^2 + z^2}} \right) \right]_{z=0}\ dr',
 		\end{aligned}
 	\end{equation}
 	where the final step follows from the parametric form of Gradshteyn \& Ryzhik (2014), Equation 6.612.3 \todo[color=cyan]{Gradshteyn \& Ryzhik Table of Integrals, Series and Products 6.612}. Recalling the derivative rule of elliptical integrals \eqref{EllipticalIntegrals:Derivative}, with $\left. \frac{\partial m}{\partial r'} \right|_{z=z'=0} = \frac{4r(r-r')}{(r+r')^3}$, we finally produce the analytic ODE for the interface $h(r,t)$:
 	\begin{equation}
 		\label{BoundaryIntegral}
 		\begin{aligned}
-			\frac{\partial^2 h(r, t)}{\partial t^2}	&= \int^\infty _0 \frac{\partial p(r',0)}{\partial r'} r' \left[ \frac{1}{\pi r'} \left( \frac{E(m)}{r-r'} - \frac{K(m)}{r+r'} \right) \right]\ dr' \\
+			\frac{\partial^2 h(r, t)}{\partial t^2}	&= \int^\infty _0 \frac{\partial p_l(r',0)}{\partial r'} r' \left[ \frac{1}{\pi r'} \left( \frac{E(m)}{r-r'} - \frac{K(m)}{r+r'} \right) \right]\ dr' \\
 			&= \frac{1}{\pi} \, \text{PV} \int_0^\infty \frac{\partial p_l(r',0)}{\partial r'} \, \left[\frac{E(m)}{r - r'} - \frac{K(m)}{r + r'}\right] dr', \quad \text{where } m = \frac{4rr'}{(r+r')^2}.
 		\end{aligned}
 	\end{equation}
@@ -390,19 +390,6 @@
 	\todo[color=green, inline]{okidoki, so here's what I'm thinking: I think it's all well and good to state all the singularity analysis and stuff like that, but it seems to complicated to do this in code that I thought it would be so much easier to use the anti-derivative version of \eqref{BoundaryIntegralAntiderivative}, such that we approximate $f(r) = \frac{\partial p_l(r,0)}{\partial r}\ r$ as locally constant? RESEARCH THAT $\partial _rp_l(r,0)$ IS??? Or, better yet, we account for the linear / quadratic deviation in f(r) by restoring the linear $-\frac{\ln 2}{\pi r'}f'(r')\ dr'$ term in the integral? This linear addition makes things absolutely identical to the Cauchy PV addition and subtraction, as we are specifically adding in $\int_{r_i - \Delta r/2}^{r_i + \Delta r/2} \big[f'(r_i)(r' - r_i)\big]\left[\frac{1}{\pi r_i(r_i - r')}\right] dr' = -\frac{f'(r_i)}{\pi r_i}\Delta r$, and using the evenness of the integral to cancel out the rest? Note for future me - do both! Write locally constant behaviour, then locally affine, and compare the full convergence in a log-log graph to show that this locally linear bit is the same. May also be worth comparing this to the full Cauchy PV method in the same suite (!!!), unless you can convince yourself that they are indeed the exact same thing - I don't quite get it yet! :O}
 	\todo[color=green, inline]{Hello past Alfie, it's Alfie from 15 minutes after you wrote this, it's very easy lmao. Basically, FVM solvers have error $O(\Delta r^2)$ in discretising the pressure function into points (seen with derivative functions), so we need to make sure that the integrand has error no worse than $O(\Delta r^2)$? In other words, even if we add Taylor quadratic terms to the approximation, we approximate with $O(\Delta r^3)$, which is lost completely to the FVM solver! Basically, as long as the error is no worse than $O(\Delta r^2)$, we are as accurate as we can be! (to leading order) But EVERYTHING needs to be of this order! Also elliptical integrals are smooth so we're fine there too!}
 	
-	
-	
-	
-	Note that our solver actually doesn't `notice' the single pole at $r = r' = 0$ (where the kernel $\sim -\pi/r'$), as our `Finite Volume Method' solver takes pressure values at the centre of square cells, or rather $p(r + \frac{s}{2}, z + \frac{s}{2})$, where $s$ is some cell side length. Nonetheless, the integrand is finite in this case via axisymmetric regularity. Nonetheless, as most of the integral information is near points of $m \to 1^-$ (when $r \approx r'$), we use the polynomial expansions \todo[color=cyan]{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS, Abramowitz \& Stegun}:
-	\begin{equation}
-		\begin{aligned}
-			K(m) &\approx \sum_{k=0}^4 a_k m_1^k - \ln(m_1)\sum_{k=0}^4 b_k m_1^k,\\
-			E(m) &\approx 1 + \sum_{k=1}^4 c_k m_1^k - \ln(m_1)\sum_{k=1}^4 d_k m_1^k, \\
-			&\quad \text{where } m_1 := 1 - m = \left(\frac{r-r'}{r+r'}\right)^2.
-		\end{aligned}
-	\end{equation}
-	
-	
 	\todo[color=pink, inline]{Figure out what adding PV means analytically, then how we can reduce this: evaluate E(1), as this is where the singularity is (cauchy pole, logarithmic singularity?) Do this analutiically, subtract dp/dr (CITE Inertial and viscous dynamics of jump-to-contact between fluid drops under van der Waals attraction): find a known value that works, evaluate the integral to get something known: " We note that a constant pressure satisfies both Laplace’s equation and the far-field and regularity conditions required in the derivation of (A3). We can thus set dp/dr = 1 in (A3) to obtain the identity...".}
 
 	\todo[color=pink, inline]{In the numerical method, the elliptical integrals $K(m)$ and $E(m)$ are well-approximated by $P(\xi)-Q(\xi)\ln\xi$ and $R(\xi)-S(\xi)\ln\xi$ respectively, where $P,Q,R,S$ are tabulated polynomials, and $\chi = 1 - m^2$ (CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS).}
@@ -425,27 +412,113 @@
 	Again, we can consider normal impact as even oblique impacts are normal to leading order!
 	Also, assume that the initial pressure in the gas is $p = 0$.
 	
+	Consider the discretisation of the $r$ axis, where we keep $r_i$ at the centre of cells of width $\Delta r_i$. Note that this means that the point $r = 0$ (represented by $r_{-1/2}$) is never actually covered by a spline, instead only being a point we evaluate the kernel $\mathcal{K}$ with!
+	
 	\subsection{Numerics Time Yay!}
-	The lubrication equation \eqref{LubricationND} and boundary integral formula (??) couple to form an iterative method. Given the initial condition of the downward moving drop in the far field, we update the pressure via \eqref{LubricationND}, then use this pressure to update the interface via (??), etc etc.
+	The lubrication equation \eqref{LubricationND} and boundary integral formula \eqref{BoundaryIntegral} coupled to form an iterative method. Given the initial condition of the downward moving drop in the far field, we update the pressure via \eqref{LubricationND}, then use this pressure to update the interface via \eqref{BoundaryIntegral}, etc etc.
 	\todo[inline, color=pink]{Something about picking a predictor step?}
 	
 	\subsection{Cauchy PV for Droplet}
-	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact approximations, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$ varies across a cell of size $\Delta r$ with $O(\Delta r^2)$. This is an apt guess, as the following analysis shows... Again, we don't strictly need to do this, as FVM is capped at $O(\Delta r^2)$, but it is more just nice to show that FVM well-approximates our interface, such that the coupled system of differentiation and integration doesn't introduce any bottlenecks along the way.
-	\todo[inline]{I think this is quite wrong in the details and intricacies.}
+	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact representation, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$, where
+	\begin{equation}
+		\label{fFVMDefinition}
+		f(r_j) = \frac{f_{j+1/2} + f_{j-1/2}}{2}, \qquad f'(r_j) = \frac{f_{j+1/2} - f_{j-1/2}}{\Delta r_j},
+	\end{equation}
+	(in order to define $p$ at the centre of each cell) varies \underline{linearly} across a cell of size $\Delta r_j$ (see the verification below), and thus, continuing from the quadrature form of equation \eqref{BoundaryIntegralAntiderivative} by piece-wise integrating over each cell $(r_{j-1/2}, r_{j+1/2})$ and Taylor expanding in this small region, we get:
+	\begin{equation}
+		\label{BIAQuad}
+		\begin{aligned}
+			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} \int^{r_{j+1/2}}_{r_{j-1/2}} f(r') \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'\quad \left( \mathcal{K}(r, r') := \frac{2K(m)}{\pi(r+r')},\ m(r,r') = \frac{4rr'}{(r+r')^2} \right) \\
+			&\approx \sum^N_{j = 1} f(r_j) \underbrace{\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right]}_{\mathbf{K}^{(0)}_{ij}} + f'(r_j) \underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}}  (r'-r_j)\frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(1)}_{ij}}.
+		\end{aligned}
+	\end{equation}
+	where $r_{N+1/2} = R$ and, as mentioned in Section \ref{sec:CauchyPV}, $R \gg 1$ is the upper bound of our simulation, chosen large enough to approximate the far-field boundary condition $\lim_{r \to \infty }p_l(r,z) = 0$. As previously covered, the kernel $\mathcal{K}(r_i,r')$ contains an integrable logarithmic singularity at $r' = r_i$ (only in the summation term $i = j$), and thus we can cleanly apply the Fundamental Theorem of Calculus to the $\frac{\partial \mathcal{K}}{\partial r'}$ term.
 	
-	For the initial interface $h = y + r^2/2$, where $y = h_0(0,0) -Ut$ is the gap between the interface and the solid, we define the characteristic length $\ell = \sqrt{2y}$ (the radius for which $h = 2y$, or rather the characteristic pressure width).
-	Rearranging \eqref{LubricationND} gives $f(r)=-6r^2/(\text{St}\,h^3)$. Rescaling via the variable $\xi = r/\ell$ gives $f(\xi)=-\frac{12}{\text{St}\,y^2}\,\frac{\xi^2}{(1+\xi^2)^3}$, a smooth, single-humped function $\approx\xi^2$ near the axis, peaking at $\xi=1/\sqrt2$, and decaying like $\xi^{-4}$. Hence, it is natural to scale the variation of $f$ in a cell by $|f|_{\max}$.
-	Via the chain rule on $\xi$, we can therefore bound $|f'| \lesssim c_1|f|_\text{max} / \ell$ and $|f''| \lesssim c_2|f|_\text{max} / \ell^2$ respectively, where $c_1\approx2.4$ and $c_2=13.5$ are constants.
+	In the last step of \eqref{BIAQuad}, we have also performed Taylor expansion over $f(r)$, however it is important to verify that this is sufficiently smooth, such that neglecting higher-order derivatives still gives a solid approximation, thus ensuring that we don't introduce a significant bottleneck in the second-order accuracy of Finite Volume Method discretisation. In particular, we show that the linear approximation of $f$ is bounded by the quadratic Taylor remainder $\frac{1}{2}f''(r)\Delta r^2$ at $O(\Delta r^2)$.
 	
-	Writing $\epsilon=\Delta r/\ell$, the variation of $f$ across one cell, written $\frac{|f(r+\Delta r)-f(r)|}{|f|_{\max}}$, is $\lesssim c_1\epsilon$, and the Taylor remainder shows that a locally affine representation has error $\le\tfrac{c_2}{2}\epsilon^2|f|_{\max}=O(\Delta r^2)$. This matches the finite-volume discretisation provided $\Delta r\ll\ell$.
-	\todo[inline]{As the droplet forms, $\ell=\sqrt{2y}$, so the grid must be refined to keep $\epsilon$ small???? How do we do this?!?!?}
+	We take $\frac{\partial p_g(r,t)}{\partial r} r$ from the lubrication equation \eqref{LubricationND}, and use Bernoulli to equate this to $f(r)$. For the initial interface $h = y + r^2/2$, where $y = h_0(0,0) -Ut$ is the gap between the interface and the solid, we define the characteristic length $\ell = \sqrt{2y}$ (the radius for which $h = 2y$, or rather the characteristic pressure width).
+	Rearranging \eqref{LubricationND} gives $f(r)=-6r^2/(\text{St}\,h^3)$. Rescaling via the variable $\xi = r/\ell$ gives $f(\xi)=-\frac{12}{\text{St}\,y^2}\,\frac{\xi^2}{(1+\xi^2)^3}$, a smooth, single-humped function $\approx\xi^2$ near the axis, peaking at $\xi=1/\sqrt2$, and decaying like $\xi^{-4}$.
 	
-	\todo[color=green, inline]{Analysis shows that dp/dr varies at most linearly in each cell, and so dp/dr r varies quadratically. We can do this by comparing to the initial profile h, and other things? We can use this to motivate the ideal growth rate of dp/dr r in each cell, and therefore produce the analysis in the green box below. LOOK INTO THIS MORE!! Good to know that the $O(\Delta r^2)$ FVM method solver can actually encapsulate the function.}
+	The variation of $f$ across one cell can be written $\frac{|f(r+\Delta r)-f(r)|}{|f|_{\max}}$, whilst the remainder after linear approximation can be written $\frac{|f(r') - [f(r) + f'(r)(r'-r)]|}{|f|_{\max}}$.	Writing $\epsilon=\Delta r/\ell$, by the chain rule on $\xi$, we can therefore bound above the former of these by $\frac{|f'|_\text{max}}{|f|_\text{max}}\Delta r = c_1\epsilon$ (where, analytically, $c_1 \approx 2.36$), and the latter of these by $\frac{1}{2}\frac{|f''|_\text{max}}{|f|_\text{max}}\Delta r^2 = c_2\epsilon^2$ (where, analytically, $c_2 = 6.75$). Hence, provided $\epsilon \ll 1$, our linear approximation of $f$ matches the Finite Volume Method truncation error.	
 
+	\todo[inline, color=green]{Note that this validation only works in the case of a rigid interface - naturally the film will shape as the droplet falls, preventing $\ell$ from reaching 0. Something something scaling, $\ell$ has a natural lower bound of $\mathcal{O}(\text{St}^{-1/3})$, or the neck length $\ell_\text{neck}$, whichever is smaller. Hence, as long as we enforce $\Delta r \ll \text{St}^{-1/3}$ (in our simulation, we use $\Delta r = 0.05 \min\{\text{ahh}\}$), we get the behaviour as above.}
+	
+	We return back to equation \eqref{BIAQuad}. Applying integration by parts,
+	$$\mathbf{K}^{(1)}_{ij} = \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^R_{ij}},$$
+	and substituting into equation \eqref{BIAQuad} using formulas \eqref{fFVMDefinition} thus gives:
+	\begin{equation}
+		\label{BIAQuad2}
+		\begin{aligned}
+			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_{j+1/2})\mathcal{K}(r_i, r_{j+1/2}) - f(r_{j-1/2})\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} \\
+			&= f(R)\mathcal{K}(r_i, R) - f(0)\mathcal{K}(r_i, 0) - \sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} \quad \text{(by telescoping)} \\
+			&\approx \sum^N_{j = 1} \frac{f(r_{j-1/2})-f(r_{j+1/2})}{\Delta r_j}\ \mathbf{K}^R_{ij}\quad \text{(by boundary conditions)}.
+		\end{aligned}
+	\end{equation}
+	The entire problem thus reduces to the computing elements of the matrix $\mathbf{K}^R_{ij}$, which can be done simply by importing into a standard 20-point Gauss–Legendre quadrature (np.polynomial.legendre.leggauss(20))
+	\todo[inline]{As we're pre-computing everything, accuracy matters more than speed. Compute $K(m)$ via $m_1 = 1 - m = \epsilon(r_i+r')/\max(r_i,r')^2$ with $\epsilon = r' - r_i$ and \texttt{scipy.special.ellipkm1(m1)} (do not form $m$ first and subtract), to stop floating point errors. Also note $\mathcal{K}(r,r') = \frac{2K(k^2)}{\pi \max(r,r')}$ with $k = \min(r,r')/\max(r,r')$ (Landen, DLMF 19.8.12). Then just chuck into scipy.integrate.quad????}
 	
 	
 	
 	
+	
+	
+	We could just chuck this into scipy.integrate.quad, which handles the integrable singularity, but where's the fun in that? :D Note that we compute $m_1 = 1 - m$ to stop floating point errors.
+	
+	For the case of $i \neq j$, recalling that $\frac{\partial \mathcal{K}}{\partial r'}$ is completely smooth, standard Guass-Legendre quadrature (16 point: 'np.polynomial.legendre.leggauss(16)') is the thing to do.
+	However, we must take special care in the case of $i = j$, as the singularity introduced places the integrand at order $\sim \mathcal{O}(1 / \Delta r)$, and thus $\mathbf{K}^{R}_{ii}$ has order $\mathcal{O}(\Delta r)$ - most of the integral information is near points of $m \to 1^-$ (when $r \approx r'$)! Splitting $\mathbf{K}^{R}_{ii}$ into two integrals at the point $r' = r_i$,
+	$$\mathbf{K}^{R}_{ii} = \int_{r_{i-1/2}}^i  \ln(\epsilon) \, d\epsilon \xrightarrow{\epsilon = \frac{\Delta r_i}{2} u^3} \frac{3\Delta r_i}{2} \int_0^1 u^2 \ln\left(\frac{\Delta r_i}{2} u^3\right) du.$$
+	
+	Off-diagonal ($i \neq j$): $\mathcal{K}(r_i, r')$ is completely smooth inside cell $j$. Standard 16-point Gauss–Legendre quadrature (np.polynomial.legendre.leggauss(16)) integrates it to machine precision.
+
+	Diagonal ($i = j$): Split cell $i$ at its midpoint $r_i$ into $[r_i - \frac{\Delta r_i}{2}, r_i]$ and $[r_i, r_i + \frac{\Delta r_i}{2}]$. Set $\vert{}r' - r_i\vert{} = \frac{\Delta r_i}{2} u^3$ for $u \in [0, 1]$, so $dr' = \frac{3}{2}\Delta r_i \, u^2 \, du$.
+	Look at what the Jacobian factor $u^2$ does to the logarithmic singularity at $u = 0$:$$\int_0^{\Delta r_i/2} \ln(\epsilon) \, d\epsilon \xrightarrow{\epsilon = \frac{\Delta r_i}{2} u^3} \frac{3\Delta r_i}{2} \int_0^1 u^2 \ln\left(\frac{\Delta r_i}{2} u^3\right) du.$$Because $u^2 \ln(u) \to 0$ (and its first derivative also vanishes at $u=0$), the integrand is now completely smooth and bounded at $u=0$, so the exact same 16-point Gauss–Legendre rule integrates the diagonal to $\sim 10^{-15}$!
+	
+	\todo[inline]{Doesn't this assumption break down for the innermost cell(s)?? Do we not care just because we're in a very local region? However, the r in f(r) also scales the solution down - near r = 0 we are very close to quadratic and so f is $\mathcal{O}(1)$ in this small region, not $\mathcal{O}(r)$! Small note though that we lose 3.3\% accuracy in this method vs the full exact integral - is this bad?? Apparently we can calculate $\mathbf{K}^{(1),\text{exact}}_{11} = \left(\frac{2K(8/9)}{3\pi} + 1\right) - \frac{4G}{\pi} - \frac{2}{\pi}\int_{1/2}^1 \frac{K(v^2)}{v}\,dv$? But then why not just do this always?! Maybe begin with the standard method and then inject this in to see what happens? The fix here is to consider dp/dr as piecewise linear, and then multiply by r at the end! This decreases the error by like a 10th!} 
+	
+	
+	
+	
+	
+	
+	\subsubsection{Failed Asymptotic Expansions}
+	
+	We return back to equation \eqref{BIAQuad}. Applying integration by parts for the case of $i \neq j$, recalling that $\frac{\partial \mathcal{K}}{\partial r'}$ is completely smooth in this case and thus we only need to be consider $\mathbf{K}^{(1)}_{ij}$ at constant order to match the asymptotic expansion of $f'(r_j)$ locally constant:
+	\begin{equation}
+		\label{BIANonSingular}
+		\begin{aligned}
+			\mathbf{K}^{(1)}_{ij} &= \left[(r' - r_j)\mathcal{K}(r_i,r')\right]^{r_{j+1/2}}_{r_{j-1/2}} - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^\star \\
+			&\approx \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \left[ \frac{\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})}{2} \right]\Delta r_j \\
+			&= 0 \quad (\text{provided } i \neq j).
+		\end{aligned}
+	\end{equation}
+	\todo[inline]{Okay, so apparently this isn't the case - this is kinda the case for $i$ pretty far from $j$, but for direct neighbours we lose around 10\%! Basically, we can't chuck all information in the leading diagonal!}
+	However, we must take special care to integrate $\star$ in the case of $i = j$, as the singularity introduced places the integrand at order $\sim \mathcal{O}(1 / \Delta r)$, and thus $\mathbf{K}^{(1)}_{ii}$ has order $\mathcal{O}(\Delta r)$ - most of the integral information is near points of $m \to 1^-$ (when $r \approx r'$).
+	\todo[inline, color=pink]{Note that our solver actually doesn't `notice' the single pole at $r = r' = 0$ (where the kernel $\sim -\pi/r'$), as our `Finite Volume Method' solver takes pressure values at the centre of square cells, or rather $p(r + \frac{s}{2}, z + \frac{s}{2})$, where $s$ is some cell side length.}
+	In these cases, we use the asymptotic expansion for the elliptic integral \todo[color=cyan]{CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS, Abramowitz \& Stegun, DLMF}:
+	\begin{equation}
+		\begin{aligned}
+			K(m) &\approx \sum_{k=0}^4 a_k m_1^k - \ln(m_1)\sum_{k=0}^4 b_k m_1^k = \frac{1}{2}\ln\frac{16}{m_1} +  \frac{1}{8}\left(\ln\frac{16}{m_1} - 2\right)m_1 + \mathcal{O}(m_1),\\
+			&\quad \text{where } m_1 := 1 - m = \left(\frac{r_i-r'}{r_i+r'}\right)^2.
+		\end{aligned}
+	\end{equation}
+	Writing $r' = r_i + \epsilon$, where $\epsilon \ll r_i$,
+	\begin{equation}
+		\label{BIASingular}
+		\begin{aligned}
+			\mathbf{K}^{(1)}_{ii} &= \frac{\Delta r}{2}\left[\mathcal{K}(r_i,r_{i+1/2}) + \mathcal{K}(r_i,r_{i-1/2})\right] - \int^{\Delta r/2}_{-\Delta r/2} \mathcal{K}(r_i,r_i+\epsilon)\ d\epsilon \\
+			&= \frac{\Delta r}{\pi r_i}\ln\left(\frac{16r_i}{\Delta r}\right) - \frac{2}{\pi r_i}\int^{\Delta r/2}_0 \ln\left(\frac{8r_i}{\epsilon}\right)\ d\epsilon + \mathcal{O}\left(\frac{\Delta r^3}{r_i^3}\ln\frac{r_i}{\Delta r}\right) \\
+			&= \frac{\Delta r}{\pi r_i}\ln\left(\frac{16r_i}{\Delta r}\right) - \frac{\Delta r}{\pi r_i}\left[\ln\left(\frac{16r_i}{\Delta r}\right) + 1\right] + \mathcal{O}\left(\frac{\Delta r^3}{r_i^3}\ln\frac{r_i}{\Delta r}\right) \\
+			&= -\frac{\Delta r}{\pi r_i} + \mathcal{O}\left(\frac{\Delta r^3}{r_i^3}\ln\frac{r_i}{\Delta r}\right).
+		\end{aligned}
+	\end{equation}
+	
+
+	Thus, values of $\frac{\partial p_l}{\partial r}$ need to be stored on cell faces, rather than their centres. This matches the intuitive definition of the derivative on a grid mesh.
+	Combining this with our new expansions for equation \eqref{BIAQuad}, through expressions \eqref{BIANonSingular} and \eqref{BIASingular}, we produce the numerical method for solving \eqref{BoundaryIntegral}.
+	
+	Given this interface acceleration $\partial _{tt}h(r,t)$, we must finally integrate this in time to fit into the lubrication equation \eqref{LubricationND}... Actually no, form a 1st order ODE system for the state $y(t) = (h(t), w(t))$ with $dw/dt = d^2h/dt^2$ and let python do its thing! Just remember to use solve ivp with method="BDF" or "Radau"!
+
+
 	
 	
 	\section{Analysis \& Numerics}
