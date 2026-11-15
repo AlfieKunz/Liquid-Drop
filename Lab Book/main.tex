@@ -419,7 +419,7 @@
 	\todo[inline, color=pink]{Something about picking a predictor step?}
 	
 	\subsection{Cauchy PV for Droplet}
-	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact representation, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$, where
+	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$, where
 	\begin{equation}
 		\label{fFVMDefinition}
 		f(r_j) = \frac{f_{j+1/2} + f_{j-1/2}}{2}, \qquad f'(r_j) = \frac{f_{j+1/2} - f_{j-1/2}}{\Delta r_j},
@@ -443,35 +443,58 @@
 
 	\todo[inline, color=green]{Note that this validation only works in the case of a rigid interface - naturally the film will shape as the droplet falls, preventing $\ell$ from reaching 0. Something something scaling, $\ell$ has a natural lower bound of $\mathcal{O}(\text{St}^{-1/3})$, or the neck length $\ell_\text{neck}$, whichever is smaller. Hence, as long as we enforce $\Delta r \ll \text{St}^{-1/3}$ (in our simulation, we use $\Delta r = 0.05 \min\{\text{ahh}\}$), we get the behaviour as above.}
 	
-	We return back to equation \eqref{BIAQuad}. Applying integration by parts,
-	$$\mathbf{K}^{(1)}_{ij} = \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^R_{ij}},$$
-	and substituting into equation \eqref{BIAQuad} using formulas \eqref{fFVMDefinition} thus gives:
+	Despite this global $\mathcal{O}(\Delta r)$ behaviour, the above analysis reveals that locally in the inner-most cells (as $\xi \to 0$), though $f(\xi)$ is flat, $f''(\xi) \to 2$ (much like the standard 2nd-order polynomial)! Ie: to leading order $f(0)$ is approximated by a \underline{quadratic} piece-wise function. To avoid excessive calculations in this local region, however, all that is needed is to push this $f''(\xi)$ information into its gradient, which is captured by the locally affine representation of some function $g(r)$ (which has the same global behaviour of $f$). An easy way to handle this is to enforce $g(r)$ odd, for which a suitable form $f(r) = r g(r)$ emerges. Trivially, $g(r)$ must therefore be equal to $\frac{\partial p_l(r,0)}{\partial r}$, and this is the function we assume is locally affine:
+	\begin{equation}
+		\label{fExpansion}
+		\begin{aligned}
+			f(r') &\approx f(r_j) + \left[ r_j g'(r_j) + g(r_j) \right](r'-r_j)
+			&= r'\left[ g(r_j) + g'(r_j) (r' - r_j) \right].
+		\end{aligned}
+	\end{equation}
+	Note that $g(r) \approx f(r)$ in the far-field approach, so we get the same $\mathcal{O}(\Delta r)$ behaviour globally - we do push lots of information to $g'''(r)$ as a result of this odd behaviour, however this is well-bounded, missed by our half-index $r_{i \pm 1/2}$, and of order $\mathcal{O}(\Delta r^2)$.
+	
+	Adding and subtracting the term $r_j$ to the proceeding $r'$ term in \eqref{fFVMDefinition} gives,
+	$$\begin{aligned}
+		f(r') &= \left[r_j + (r' - r_j)\right]\left[g(r_j) + g'(r_j)(r' - r_j)\right] \\
+		&= r_j g(r_j) + \left[g(r_j) + r_j g'(r_j)\right](r' - r_j) + g'(r_j)(r' - r_j)^2 \\
+		&= f(r_j) + f'(r_j) (r'-r_j) + g'(r_j)(r'-r_j)^2,
+	\end{aligned}$$
+	where each coefficient $\{f(r_j), f'(r_j), g'(r_j)\}$ is constant. We thus replace each term of the summation in \eqref{BIAQuad} with the updated:
+	\begin{equation}
+		\label{BIAQuadg}
+		\int^{r_{j+1/2}}_{r_{j-1/2}} f(r') \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr' = f(r_j)\mathbf{K}^{(0)}_{ij} + f'(r_j)\mathbf{K}^{(1)}_{ij} + g'(r_j)\underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} (r'-r_j)^2 \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(2)}_{ij}}.
+	\end{equation}
+	In other words, the problem reduces to the case of the locally affine $f(r)$ approximation, plus the extra term $g'(r_j)\mathbf{K}^{(2)}_{ij}$. Applying integration by parts to both $\mathbf{K}^{(1)}_{ij}$ and $\mathbf{K}^{(2)}_{ij}$ (using equations \eqref{BIAQuad} and \eqref{BIAQuadg}, noting that $\mathbf{K}^{(0)}_{ij}$ is trivial to evaluate via the Fundamental Theorem of Calculus),
+	\begin{subequations}
+		\label{KIntegralByParts}
+		\begin{align}
+			\mathbf{K}^{(1)}_{ij} &= \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^R_{ij}}, \label{KIntegralByParts:1} \\
+			\mathbf{K}^{(2)}_{ij} &= \left(\frac{\Delta r_j}{2}\right)^2\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right] - 2 \underbrace{\int_{r_{j-1/2}}^{r_{j+1/2}} (r' - r_j)\frac{\partial \mathcal{K}(r_i, r')}{\partial r'} dr'}_{\mathbf{K}^{(1)}_{ij}}. \label{KIntegralByParts:2}
+		\end{align}
+	\end{subequations}
+	Neglecting the component $\mathbf{K}^{(2)}_{ij}$ initially to produce a leading-order solution to \eqref{BIAQuad}, applying formulae \eqref{fFVMDefinition} gives:
 	\begin{equation}
 		\label{BIAQuad2}
 		\begin{aligned}
 			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_{j+1/2})\mathcal{K}(r_i, r_{j+1/2}) - f(r_{j-1/2})\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} \\
 			&= f(R)\mathcal{K}(r_i, R) - f(0)\mathcal{K}(r_i, 0) - \sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} \quad \text{(by telescoping)} \\
-			&\approx \sum^N_{j = 1} \frac{f(r_{j-1/2})-f(r_{j+1/2})}{\Delta r_j}\ \mathbf{K}^R_{ij}\quad \text{(by boundary conditions)}.
+			&\approx -\sum^N_{j = 1} f'(r_j) \mathbf{K}^R_{ij}\quad \text{(by boundary conditions)}.
 		\end{aligned}
 	\end{equation}
-	The entire problem thus reduces to the computing elements of the matrix $\mathbf{K}^R_{ij}$, which can be done simply by importing into a standard 20-point Gauss–Legendre quadrature (np.polynomial.legendre.leggauss(20))
-	\todo[inline]{As we're pre-computing everything, accuracy matters more than speed. Compute $K(m)$ via $m_1 = 1 - m = \epsilon(r_i+r')/\max(r_i,r')^2$ with $\epsilon = r' - r_i$ and \texttt{scipy.special.ellipkm1(m1)} (do not form $m$ first and subtract), to stop floating point errors. Also note $\mathcal{K}(r,r') = \frac{2K(k^2)}{\pi \max(r,r')}$ with $k = \min(r,r')/\max(r,r')$ (Landen, DLMF 19.8.12). Then just chuck into scipy.integrate.quad????}
 	
+	Finally, by considering $g(r)$ locally affine rather than $f(r)$, and thus adding in the component $\mathbf{K}^{(2)}_{ij}$ as given by \eqref{KIntegralByParts:2}, we get the full numerical solution to the interface:
+		\begin{equation}
+		\label{BIAQuadFull}
+		\begin{aligned}
+			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx -\sum^N_{j = 1} f'(r_j) \mathbf{K}^R_{ij} + g'(r_j)\text{ALL THE REST OF IT!!}
+		\end{aligned}
+	\end{equation}
 	
+	The entire problem thus reduces to the computing elements of the matrices $\mathbf{K}^R_{ij}$ and $\mathbf{K}^{(1)}_{ij}$. To reduce floating point errors near the singularity (where $m \to 1$), we use the Landen Transform \todo[color=cyan]{CITE DLMF 19.8.12, Landen} \texttt{scipy.special.ellipkm1$\left(m_1 := 1 - m = \frac{\min(r_i, r')^2}{\max(r_i, r')^2}\right)$}. For the off-diagonal terms, note that $\mathcal{K}(r_i, r')$ is completely smooth for $r'$ inside cell $j$, and thus integrating via a standard 20-point Gauss–Legendre quadrature \texttt{np.polynomial.legendre.leggauss(20)} suffices to balance accuracy with ease of computation. For the leading diagonal, we take advantage of the \texttt{QUADPACK} feature of \texttt{scipy.integrate.quad}, which uses Gauss-Kronrod rules with Wynn epsilon-extrapolation to handle the $K(m)$ logarithmic singularity. Our simulation uses the parameters \texttt{(points=[ri], epsabs=0, epsrel=1e-13)}.	
 	
+	\todo[inline, color=pink]{COMPARE THE TWO METHODS AND WRITE ABOUT IT HERE!!!!!}
 	
-	
-	
-	We could just chuck this into scipy.integrate.quad, which handles the integrable singularity, but where's the fun in that? :D Note that we compute $m_1 = 1 - m$ to stop floating point errors.
-	
-	For the case of $i \neq j$, recalling that $\frac{\partial \mathcal{K}}{\partial r'}$ is completely smooth, standard Guass-Legendre quadrature (16 point: 'np.polynomial.legendre.leggauss(16)') is the thing to do.
-	However, we must take special care in the case of $i = j$, as the singularity introduced places the integrand at order $\sim \mathcal{O}(1 / \Delta r)$, and thus $\mathbf{K}^{R}_{ii}$ has order $\mathcal{O}(\Delta r)$ - most of the integral information is near points of $m \to 1^-$ (when $r \approx r'$)! Splitting $\mathbf{K}^{R}_{ii}$ into two integrals at the point $r' = r_i$,
-	$$\mathbf{K}^{R}_{ii} = \int_{r_{i-1/2}}^i  \ln(\epsilon) \, d\epsilon \xrightarrow{\epsilon = \frac{\Delta r_i}{2} u^3} \frac{3\Delta r_i}{2} \int_0^1 u^2 \ln\left(\frac{\Delta r_i}{2} u^3\right) du.$$
-	
-	Off-diagonal ($i \neq j$): $\mathcal{K}(r_i, r')$ is completely smooth inside cell $j$. Standard 16-point Gauss–Legendre quadrature (np.polynomial.legendre.leggauss(16)) integrates it to machine precision.
-
-	Diagonal ($i = j$): Split cell $i$ at its midpoint $r_i$ into $[r_i - \frac{\Delta r_i}{2}, r_i]$ and $[r_i, r_i + \frac{\Delta r_i}{2}]$. Set $\vert{}r' - r_i\vert{} = \frac{\Delta r_i}{2} u^3$ for $u \in [0, 1]$, so $dr' = \frac{3}{2}\Delta r_i \, u^2 \, du$.
-	Look at what the Jacobian factor $u^2$ does to the logarithmic singularity at $u = 0$:$$\int_0^{\Delta r_i/2} \ln(\epsilon) \, d\epsilon \xrightarrow{\epsilon = \frac{\Delta r_i}{2} u^3} \frac{3\Delta r_i}{2} \int_0^1 u^2 \ln\left(\frac{\Delta r_i}{2} u^3\right) du.$$Because $u^2 \ln(u) \to 0$ (and its first derivative also vanishes at $u=0$), the integrand is now completely smooth and bounded at $u=0$, so the exact same 16-point Gauss–Legendre rule integrates the diagonal to $\sim 10^{-15}$!
+	\todo[inline, color=green]{To do it all yourself: for the case of $i = j$ we split the integral at the singularity $r_i$, grade each side by cutting into panels of width half the previous, slowly converging towards the singularity, then use \texttt{np.polynomial.legendre.leggauss(20)} for each of these! Finally, we add in the analytic singularity $\mathcal{K} \approx \frac{1}{\pi r_i} \ln \frac{8r_i}{|\epsilon}$, which gives $\int_0^a\frac{1}{\pi r_i}\ln\frac{8r_i}{\epsilon}\,d\epsilon=\frac{a}{\pi r_i}\left(\ln\frac{8r_i}{a}+1\right)$, neglecting the term afterwards which is $\mathcal{O}(a^2/r_i^2) \sim 10^{-24}$.}
 	
 	\todo[inline]{Doesn't this assumption break down for the innermost cell(s)?? Do we not care just because we're in a very local region? However, the r in f(r) also scales the solution down - near r = 0 we are very close to quadratic and so f is $\mathcal{O}(1)$ in this small region, not $\mathcal{O}(r)$! Small note though that we lose 3.3\% accuracy in this method vs the full exact integral - is this bad?? Apparently we can calculate $\mathbf{K}^{(1),\text{exact}}_{11} = \left(\frac{2K(8/9)}{3\pi} + 1\right) - \frac{4G}{\pi} - \frac{2}{\pi}\int_{1/2}^1 \frac{K(v^2)}{v}\,dv$? But then why not just do this always?! Maybe begin with the standard method and then inject this in to see what happens? The fix here is to consider dp/dr as piecewise linear, and then multiply by r at the end! This decreases the error by like a 10th!} 
 	

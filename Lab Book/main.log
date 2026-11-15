@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  14 NOV 2026 23:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.5)  15 NOV 2026 19:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1223,58 +1223,44 @@ cmr/m/n/10.95 )\OML/cmm/m/it/10.95 r[] [] \OMS/cmsy/m/n/10.95 j[]\OML/cmm/m/it/
 \OML/cmm/m/it/10.95 dr[] \OT1/cmr/m/n/10.95 = [] []\OML/cmm/m/it/10.95 :
  []
 
-[11] [12] [13]
-Overfull \hbox (71.15515pt too wide) in paragraph at lines 456--458
-\OT1/bch/m/n/10.95 (-20) sim-ply by im-port-ing into a stan-dard 20-point Gauss
-{Legendre quadra-ture (np.polynomial.legendre.leggauss(20))
- []
-
-
-Overfull \hbox (10.43066pt too wide) in paragraph at lines 471--472
-[]\OT1/bch/m/n/10.95 (-20) Off-diagonal ($\OML/cmm/m/it/10.95 i \OMS/cmsy/m/n/1
-0.95 6\OT1/cmr/m/n/10.95 = \OML/cmm/m/it/10.95 j$\OT1/bch/m/n/10.95 (-20) ): $\
-OMS/cmsy/m/n/10.95 K\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 r[]; r[]\OT1/cmr/m/
-n/10.95 )$ \OT1/bch/m/n/10.95 (-20) is com-pletely smooth in-side cell $\OML/cm
-m/m/it/10.95 j$\OT1/bch/m/n/10.95 (-20) . Stan-dard 16-point Gauss{Legendre
- []
-
-[14]
-Overfull \hbox (11.08417pt too wide) in paragraph at lines 497--497
+[11] [12] [13] [14] [15]
+Overfull \hbox (11.08417pt too wide) in paragraph at lines 520--520
 \OT1/bch/m/n/10 (-20) Abramowitz 
  []
 
 
-Overfull \hbox (11.08417pt too wide) in paragraph at lines 497--497
+Overfull \hbox (11.08417pt too wide) in paragraph at lines 520--520
 \OT1/bch/m/n/10 (-20) Abramowitz 
  []
 
-[15] [16]
-<images/Notes_261014_112957.jpg, id=421, 1084.05pt x 2896.06969pt>
+[16]
+<images/Notes_261014_112957.jpg, id=430, 1084.05pt x 2896.06969pt>
 File: images/Notes_261014_112957.jpg Graphic file (type jpg)
 <use images/Notes_261014_112957.jpg>
-Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 554
+Package pdftex.def Info: images/Notes_261014_112957.jpg  used on input line 577
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2896.06265pt.
-<images/Notes_261013_215824_1.jpg, id=422, 1084.05pt x 4598.17876pt>
+<images/Notes_261013_215824_1.jpg, id=431, 1084.05pt x 4598.17876pt>
 File: images/Notes_261013_215824_1.jpg Graphic file (type jpg)
 <use images/Notes_261013_215824_1.jpg>
 Package pdftex.def Info: images/Notes_261013_215824_1.jpg  used on input line 5
-59.
+82.
 (pdftex.def)             Requested size: 1084.04736pt x 4598.1676pt.
-<images/Notes_261013_165541.jpg, id=423, 1084.05pt x 3207.73407pt>
+ [17]
+<images/Notes_261013_165541.jpg, id=439, 1084.05pt x 3207.73407pt>
 File: images/Notes_261013_165541.jpg Graphic file (type jpg)
 <use images/Notes_261013_165541.jpg>
-Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 564
+Package pdftex.def Info: images/Notes_261013_165541.jpg  used on input line 587
 .
 (pdftex.def)             Requested size: 1084.04736pt x 3207.72629pt.
-<images/Notes_261013_121959.jpg, id=424, 1084.05pt x 2652.91125pt>
+<images/Notes_261013_121959.jpg, id=440, 1084.05pt x 2652.91125pt>
 File: images/Notes_261013_121959.jpg Graphic file (type jpg)
 <use images/Notes_261013_121959.jpg>
-Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 569
+Package pdftex.def Info: images/Notes_261013_121959.jpg  used on input line 592
 .
 (pdftex.def)             Requested size: 1084.04736pt x 2652.90482pt.
- [17 <./images/Notes_261014_112957.jpg> <./images/Notes_261013_215824_1.jpg>] [
-18 <./images/Notes_261013_165541.jpg> <./images/Notes_261013_121959.jpg>] (main
+ [18 <./images/Notes_261014_112957.jpg> <./images/Notes_261013_215824_1.jpg> <.
+/images/Notes_261013_165541.jpg>] [19 <./images/Notes_261013_121959.jpg>] (main
 .aux)
  ***********
 LaTeX2e <2025-11-01>
@@ -1284,11 +1270,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 317810613A30597F697FE15816A0C1F3;4288.
  ) 
 Here is how much of TeX's memory you used:
- 25491 strings out of 467871
- 469064 string characters out of 5418376
- 975954 words of memory out of 5000000
- 53474 multiletter control sequences out of 15000+600000
- 681408 words of font info for 282 fonts, out of 8000000 for 9000
+ 25523 strings out of 467871
+ 469606 string characters out of 5418376
+ 976467 words of memory out of 5000000
+ 53494 multiletter control sequences out of 15000+600000
+ 681824 words of font info for 285 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,23n,107p,1544b,1037s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\alfie\AppData\Local\MiKTeX\fonts/pk/ljfour/public/esint/dpi600\esi
@@ -1319,9 +1305,9 @@ fonts/cm/cmsy6.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/amsfonts/cm/cmsy7.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/alfie/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (18 pages, 2880555 bytes).
+Output written on main.pdf (19 pages, 2889098 bytes).
 PDF statistics:
- 581 PDF objects out of 1000 (max. 8388607)
- 178 named destinations out of 1000 (max. 500000)
- 58617 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 601 PDF objects out of 1000 (max. 8388607)
+ 187 named destinations out of 1000 (max. 500000)
+ 59129 words of extra memory for PDF output out of 61914 (max. 10000000)
 

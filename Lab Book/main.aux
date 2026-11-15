@@ -268,41 +268,54 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Cauchy PV for Droplet}{13}{subsection.5.3}\protected@file@percent }
 \newlabel{fFVMDefinition}{{34}{13}{Cauchy PV for Droplet}{equation.34}{}}
 \newlabel{BIAQuad}{{35}{13}{Cauchy PV for Droplet}{equation.35}{}}
-\pgfsyspdfmark {pgfid217}{0}{0}
+\pgfsyspdfmark {pgfid216}{0}{0}
 \@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{green}{\textcolor {green}{o}}\ Note that this validation only works in the case of a rigid interface - naturally the film will shape as the droplet falls, preventing $\ell $ from reaching 0. Something something scaling, $\ell $ has a natural lower bound of $\mathcal  {O}(\text  {St}^{-1/3})$, or the neck length $\ell _\text  {neck}$, whichever is smaller. Hence, as long as we enforce $\Delta r \ll \text  {St}^{-1/3}$ (in our simulation, we use $\Delta r = 0.05 \min \{\text  {ahh}\}$), we get the behaviour as above.}{14}{section*.59}\protected@file@percent }
 \pgfsyspdfmark {pgfid215}{19562753}{39471725}
-\newlabel{BIAQuad2}{{36}{14}{Cauchy PV for Droplet}{equation.36}{}}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ As we're pre-computing everything, accuracy matters more than speed. Compute $K(m)$ via $m_1 = 1 - m = \epsilon (r_i+r')/\max (r_i,r')^2$ with $\epsilon = r' - r_i$ and \texttt  {scipy.special.ellipkm1(m1)} (do not form $m$ first and subtract), to stop floating point errors. Also note $\mathcal  {K}(r,r') = \frac  {2K(k^2)}{\pi \max (r,r')}$ with $k = \min (r,r')/\max (r,r')$ (Landen, DLMF 19.8.12). Then just chuck into scipy.integrate.quad????}{14}{section*.60}\protected@file@percent }
-\pgfsyspdfmark {pgfid216}{19562753}{16657728}
-\pgfsyspdfmark {pgfid226}{0}{0}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Doesn't this assumption break down for the innermost cell(s)?? Do we not care just because we're in a very local region? However, the r in f(r) also scales the solution down - near r = 0 we are very close to quadratic and so f is $\mathcal  {O}(1)$ in this small region, not $\mathcal  {O}(r)$! Small note though that we lose 3.3\% accuracy in this method vs the full exact integral - is this bad?? Apparently we can calculate $\mathbf  {K}^{(1),\text  {exact}}_{11} = \left (\frac  {2K(8/9)}{3\pi } + 1\right ) - \frac  {4G}{\pi } - \frac  {2}{\pi }\intop \ilimits@ _{1/2}^1 \frac  {K(v^2)}{v}\,dv$? But then why not just do this always?! Maybe begin with the standard method and then inject this in to see what happens? The fix here is to consider dp/dr as piecewise linear, and then multiply by r at the end! This decreases the error by like a 10th!}{15}{section*.61}\protected@file@percent }
-\pgfsyspdfmark {pgfid218}{19562753}{36143769}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Failed Asymptotic Expansions}{15}{subsubsection.5.3.1}\protected@file@percent }
-\newlabel{BIANonSingular}{{37}{15}{Failed Asymptotic Expansions}{equation.37}{}}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Okay, so apparently this isn't the case - this is kinda the case for $i$ pretty far from $j$, but for direct neighbours we lose around 10\%! Basically, we can't chuck all information in the leading diagonal!}{15}{section*.62}\protected@file@percent }
-\pgfsyspdfmark {pgfid219}{19562753}{18547393}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{pink}{\textcolor {pink}{o}}\ Note that our solver actually doesn't `notice' the single pole at $r = r' = 0$ (where the kernel $\sim -\pi /r'$), as our `Finite Volume Method' solver takes pressure values at the centre of square cells, or rather $p(r + \frac  {s}{2}, z + \frac  {s}{2})$, where $s$ is some cell side length.}{15}{section*.63}\protected@file@percent }
-\pgfsyspdfmark {pgfid220}{19562753}{12218120}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{cyan}{\textcolor {cyan}{o}}\ CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS, Abramowitz \& Stegun, DLMF}{15}{section*.64}\protected@file@percent }
-\pgfsyspdfmark {pgfid221}{27141028}{9701733}
-\pgfsyspdfmark {pgfid224}{36699365}{9662842}
-\pgfsyspdfmark {pgfid225}{38321380}{9442314}
-\pgfsyspdfmark {pgfid228}{0}{0}
-\newlabel{BIASingular}{{39}{16}{Failed Asymptotic Expansions}{equation.39}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Analysis \& Numerics}{16}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Asymptotics}{16}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Figures}{16}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Additions to Purvis-Hicks}{16}{section.7}\protected@file@percent }
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{green}{\textcolor {green}{o}}\ Boundary Layer Theory: on the liquid side of the interface, we get a boundary layer like in MD3D1, but on the gas side (which we model as viscous), it is kinetic effects that give boundary layers! Ie: as $h\to 0$, we lose this kinetic effect and thus slip!}{16}{section*.65}\protected@file@percent }
-\pgfsyspdfmark {pgfid227}{20459779}{13038866}
-\pgfsyspdfmark {pgfid229}{0}{0}
+\newlabel{fExpansion}{{36}{14}{Cauchy PV for Droplet}{equation.36}{}}
+\newlabel{BIAQuadg}{{37}{14}{Cauchy PV for Droplet}{equation.37}{}}
+\pgfsyspdfmark {pgfid225}{0}{0}
+\newlabel{KIntegralByParts}{{38}{15}{Cauchy PV for Droplet}{equation.38}{}}
+\newlabel{KIntegralByParts:1}{{38a}{15}{Cauchy PV for Droplet}{equation.38a}{}}
+\newlabel{KIntegralByParts:2}{{38b}{15}{Cauchy PV for Droplet}{equation.38b}{}}
+\newlabel{BIAQuad2}{{39}{15}{Cauchy PV for Droplet}{equation.39}{}}
+\newlabel{BIAQuadFull}{{40}{15}{Cauchy PV for Droplet}{equation.40}{}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{cyan}{\textcolor {cyan}{o}}\ CITE DLMF 19.8.12, Landen}{15}{section*.60}\protected@file@percent }
+\pgfsyspdfmark {pgfid217}{6509741}{20854104}
+\pgfsyspdfmark {pgfid220}{36699365}{20815213}
+\pgfsyspdfmark {pgfid221}{38321380}{20594685}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{pink}{\textcolor {pink}{o}}\ COMPARE THE TWO METHODS AND WRITE ABOUT IT HERE!!!!!}{15}{section*.61}\protected@file@percent }
+\pgfsyspdfmark {pgfid222}{19562753}{13859622}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{green}{\textcolor {green}{o}}\ To do it all yourself: for the case of $i = j$ we split the integral at the singularity $r_i$, grade each side by cutting into panels of width half the previous, slowly converging towards the singularity, then use \texttt  {np.polynomial.legendre.leggauss(20)} for each of these! Finally, we add in the analytic singularity $\mathcal  {K} \approx \frac  {1}{\pi r_i} \ln \frac  {8r_i}{|\epsilon }$, which gives $\intop \ilimits@ _0^a\frac  {1}{\pi r_i}\ln \frac  {8r_i}{\epsilon }\,d\epsilon =\frac  {a}{\pi r_i}\left (\ln \frac  {8r_i}{a}+1\right )$, neglecting the term afterwards which is $\mathcal  {O}(a^2/r_i^2) \sim 10^{-24}$.}{15}{section*.62}\protected@file@percent }
+\pgfsyspdfmark {pgfid223}{19562753}{10553803}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Doesn't this assumption break down for the innermost cell(s)?? Do we not care just because we're in a very local region? However, the r in f(r) also scales the solution down - near r = 0 we are very close to quadratic and so f is $\mathcal  {O}(1)$ in this small region, not $\mathcal  {O}(r)$! Small note though that we lose 3.3\% accuracy in this method vs the full exact integral - is this bad?? Apparently we can calculate $\mathbf  {K}^{(1),\text  {exact}}_{11} = \left (\frac  {2K(8/9)}{3\pi } + 1\right ) - \frac  {4G}{\pi } - \frac  {2}{\pi }\intop \ilimits@ _{1/2}^1 \frac  {K(v^2)}{v}\,dv$? But then why not just do this always?! Maybe begin with the standard method and then inject this in to see what happens? The fix here is to consider dp/dr as piecewise linear, and then multiply by r at the end! This decreases the error by like a 10th!}{15}{section*.63}\protected@file@percent }
+\pgfsyspdfmark {pgfid233}{0}{0}
+\pgfsyspdfmark {pgfid224}{19562753}{47101999}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Failed Asymptotic Expansions}{16}{subsubsection.5.3.1}\protected@file@percent }
+\newlabel{BIANonSingular}{{41}{16}{Failed Asymptotic Expansions}{equation.41}{}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Okay, so apparently this isn't the case - this is kinda the case for $i$ pretty far from $j$, but for direct neighbours we lose around 10\%! Basically, we can't chuck all information in the leading diagonal!}{16}{section*.64}\protected@file@percent }
+\pgfsyspdfmark {pgfid226}{19562753}{29105462}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{pink}{\textcolor {pink}{o}}\ Note that our solver actually doesn't `notice' the single pole at $r = r' = 0$ (where the kernel $\sim -\pi /r'$), as our `Finite Volume Method' solver takes pressure values at the centre of square cells, or rather $p(r + \frac  {s}{2}, z + \frac  {s}{2})$, where $s$ is some cell side length.}{16}{section*.65}\protected@file@percent }
+\pgfsyspdfmark {pgfid227}{19562753}{22776189}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{cyan}{\textcolor {cyan}{o}}\ CITE BOUNDARY INTEGRAL METHODS APPLIED TO CAVITATION BUBBLE DVNAMICS, Abramowitz \& Stegun, DLMF}{16}{section*.66}\protected@file@percent }
+\pgfsyspdfmark {pgfid228}{27141028}{20259802}
+\pgfsyspdfmark {pgfid231}{36699365}{20220911}
+\pgfsyspdfmark {pgfid232}{38321380}{20000383}
+\newlabel{BIASingular}{{43}{16}{Failed Asymptotic Expansions}{equation.43}{}}
+\pgfsyspdfmark {pgfid235}{0}{0}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Analysis \& Numerics}{17}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Asymptotics}{17}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Figures}{17}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Additions to Purvis-Hicks}{17}{section.7}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{green}{\textcolor {green}{o}}\ Boundary Layer Theory: on the liquid side of the interface, we get a boundary layer like in MD3D1, but on the gas side (which we model as viscous), it is kinetic effects that give boundary layers! Ie: as $h\to 0$, we lose this kinetic effect and thus slip!}{17}{section*.67}\protected@file@percent }
+\pgfsyspdfmark {pgfid234}{20459779}{24124390}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Report Layout}{17}{section.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Introduction}{17}{subsection.8.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Work to Delegate to Jiya}{17}{subsection.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Handwritten Uploads}{17}{section.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 13.10.2026 : Full domain discretisation and matrix construction.}}{17}{figure.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 13.10.2026 : Derivation of forces acting on the interface (from the air cushion pressure).}}{17}{figure.2}\protected@file@percent }
-\pgfsyspdfmark {pgfid230}{0}{0}
+\pgfsyspdfmark {pgfid236}{0}{0}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Handwritten Uploads}{18}{section.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 13.10.2026 : Full domain discretisation and matrix construction.}}{18}{figure.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 13.10.2026 : Derivation of forces acting on the interface (from the air cushion pressure).}}{18}{figure.2}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 13.10.2026 : First example discretising the domain.}}{18}{figure.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 13.10.2026 : Non-dimensionalisation of the Lubrication Equation.}}{18}{figure.4}\protected@file@percent }
-\gdef \@abspage@last{18}
+\pgfsyspdfmark {pgfid237}{0}{0}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 13.10.2026 : Non-dimensionalisation of the Lubrication Equation.}}{19}{figure.4}\protected@file@percent }
+\gdef \@abspage@last{19}
