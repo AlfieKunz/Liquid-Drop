@@ -10,7 +10,7 @@ If you use this code or data in your work, please cite the associated preprint:
 
 **BibTeX:**
 ```bibtex
-@misc{Kunz2026Vortices,
+@misc{Kunz2027LiquidDrop,
   title = {Why do liquid drops bounce? Modelling the hidden physics of droplet collisions},
   author = {Kunz, Alfie},
   howpublished = {PX402 Physics Project, Department of Physics, University of Warwick},
