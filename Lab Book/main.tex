@@ -413,23 +413,25 @@
 	Also, assume that the initial pressure in the gas is $p = 0$.
 	
 	Consider the discretisation of the $r$ axis, where we keep $r_i$ at the centre of cells of width $\Delta r_i$. Note that this means that the point $r = 0$ (represented by $r_{-1/2}$) is never actually covered by a spline, instead only being a point we evaluate the kernel $\mathcal{K}$ with!
-	
-	\subsection{Numerics Time Yay!}
+
 	The lubrication equation \eqref{LubricationND} and boundary integral formula \eqref{BoundaryIntegral} coupled to form an iterative method. Given the initial condition of the downward moving drop in the far field, we update the pressure via \eqref{LubricationND}, then use this pressure to update the interface via \eqref{BoundaryIntegral}, etc etc.
 	\todo[inline, color=pink]{Something about picking a predictor step?}
 	
-	\subsection{Cauchy PV for Droplet}
-	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$, where
-	\begin{equation}
+	\subsection{Numerical Evaluation of the Boundary Integral \eqref{BoundaryIntegral}}
+	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$ varies \underline{linearly} across a cell of size $\Delta r_j$ (see the verification below), where
+	\begin{subequations}
 		\label{fFVMDefinition}
-		f(r_j) = \frac{f_{j+1/2} + f_{j-1/2}}{2}, \qquad f'(r_j) = \frac{f_{j+1/2} - f_{j-1/2}}{\Delta r_j},
-	\end{equation}
-	(in order to define $p$ at the centre of each cell) varies \underline{linearly} across a cell of size $\Delta r_j$ (see the verification below), and thus, continuing from the quadrature form of equation \eqref{BoundaryIntegralAntiderivative} by piece-wise integrating over each cell $(r_{j-1/2}, r_{j+1/2})$ and Taylor expanding in this small region, we get:
+		\begin{align}
+			& \qquad f(r') = f(r_j) + f'(r_j)(r' - r_j), \label{fFVMDefinition:1} \\[6pt]
+			f(r_j) = &\frac{f_{j+1/2} + f_{j-1/2}}{2}, \qquad f'(r_j) = \frac{f_{j+1/2} - f_{j-1/2}}{\Delta r_j},  \label{fFVMDefinition:2}
+		\end{align}
+	\end{subequations}
+	(in order to define $p$ at the centre of each cell). Thus, continuing from the quadrature form of equation \eqref{BoundaryIntegralAntiderivative} by piece-wise integrating over each cell $(r_{j-1/2}, r_{j+1/2})$ and Taylor expanding in this small region, we get:
 	\begin{equation}
 		\label{BIAQuad}
 		\begin{aligned}
 			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} \int^{r_{j+1/2}}_{r_{j-1/2}} f(r') \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'\quad \left( \mathcal{K}(r, r') := \frac{2K(m)}{\pi(r+r')},\ m(r,r') = \frac{4rr'}{(r+r')^2} \right) \\
-			&\approx \sum^N_{j = 1} f(r_j) \underbrace{\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right]}_{\mathbf{K}^{(0)}_{ij}} + f'(r_j) \underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}}  (r'-r_j)\frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(1)}_{ij}}.
+			&\approx \sum^N_{j = 1} f(r_j) \underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(0)}_{ij}} + f'(r_j) \underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}}  (r'-r_j)\frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(1)}_{ij}}.
 		\end{aligned}
 	\end{equation}
 	where $r_{N+1/2} = R$ and, as mentioned in Section \ref{sec:CauchyPV}, $R \gg 1$ is the upper bound of our simulation, chosen large enough to approximate the far-field boundary condition $\lim_{r \to \infty }p_l(r,z) = 0$. As previously covered, the kernel $\mathcal{K}(r_i,r')$ contains an integrable logarithmic singularity at $r' = r_i$ (only in the summation term $i = j$), and thus we can cleanly apply the Fundamental Theorem of Calculus to the $\frac{\partial \mathcal{K}}{\partial r'}$ term.
@@ -447,32 +449,41 @@
 	\begin{equation}
 		\label{fExpansion}
 		\begin{aligned}
-			f(r') &\approx f(r_j) + \left[ r_j g'(r_j) + g(r_j) \right](r'-r_j)
+			f(r') &\approx f(r_j) + \left[ g(r_j) +  g'(r_j)r_j \right](r'-r_j) \\
 			&= r'\left[ g(r_j) + g'(r_j) (r' - r_j) \right].
 		\end{aligned}
 	\end{equation}
 	Note that $g(r) \approx f(r)$ in the far-field approach, so we get the same $\mathcal{O}(\Delta r)$ behaviour globally - we do push lots of information to $g'''(r)$ as a result of this odd behaviour, however this is well-bounded, missed by our half-index $r_{i \pm 1/2}$, and of order $\mathcal{O}(\Delta r^2)$.
 	
-	Adding and subtracting the term $r_j$ to the proceeding $r'$ term in \eqref{fFVMDefinition} gives,
-	$$\begin{aligned}
-		f(r') &= \left[r_j + (r' - r_j)\right]\left[g(r_j) + g'(r_j)(r' - r_j)\right] \\
-		&= r_j g(r_j) + \left[g(r_j) + r_j g'(r_j)\right](r' - r_j) + g'(r_j)(r' - r_j)^2 \\
-		&= f(r_j) + f'(r_j) (r'-r_j) + g'(r_j)(r'-r_j)^2,
-	\end{aligned}$$
-	where each coefficient $\{f(r_j), f'(r_j), g'(r_j)\}$ is constant. We thus replace each term of the summation in \eqref{BIAQuad} with the updated:
+	Adding and subtracting the term $r_j$ to the preceding $r'$ term in \eqref{fExpansion} gives,
+	\begin{equation}
+		\label{fAddSubtract}
+		\begin{aligned}
+			f(r') &= \left[r_j + (r' - r_j)\right]\left[g(r_j) + g'(r_j)(r' - r_j)\right] \\
+			&= r_j g(r_j) + \left[g(r_j) + r_j g'(r_j)\right](r' - r_j) + g'(r_j)(r' - r_j)^2 \\
+			&= f(r_j) + f'(r_j) (r'-r_j) + g'(r_j)(r'-r_j)^2,
+		\end{aligned}
+	\end{equation}
+	where each coefficient $\{f(r_j), f'(r_j), g'(r_j)\}$ is constant across cell $j$. This allows us to both rewrite equations \eqref{fFVMDefinition:2} in the case of $g$ locally affine rather than $f$ locally affine, as
+	\begin{equation}
+		\label{gFVMDefinition}
+		f(r_j) = \frac{f_{j+1/2} + f_{j-1/2}}{2} - g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2, \qquad f'(r_j) = \frac{f_{j+1/2} - f_{j-1/2}}{\Delta r_j},
+	\end{equation}
+	and replace each term of the summation in \eqref{BIAQuad} with the updated:
 	\begin{equation}
 		\label{BIAQuadg}
 		\int^{r_{j+1/2}}_{r_{j-1/2}} f(r') \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr' = f(r_j)\mathbf{K}^{(0)}_{ij} + f'(r_j)\mathbf{K}^{(1)}_{ij} + g'(r_j)\underbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} (r'-r_j)^2 \frac{\partial \mathcal{K}(r_i, r')}{\partial r'}\ dr'}_{\mathbf{K}^{(2)}_{ij}}.
 	\end{equation}
-	In other words, the problem reduces to the case of the locally affine $f(r)$ approximation, plus the extra term $g'(r_j)\mathbf{K}^{(2)}_{ij}$. Applying integration by parts to both $\mathbf{K}^{(1)}_{ij}$ and $\mathbf{K}^{(2)}_{ij}$ (using equations \eqref{BIAQuad} and \eqref{BIAQuadg}, noting that $\mathbf{K}^{(0)}_{ij}$ is trivial to evaluate via the Fundamental Theorem of Calculus),
+	In other words, the problem reduces to the case of the locally affine $f(r)$ approximation, plus the extra term $g'(r_j)\mathbf{K}^{(2)}_{ij}$. Applying the Fundamental Theorem of Calculus and integration by parts to $\mathbf{K}^{\{0, 1, 2\}}_{ij}$ (using equations \eqref{BIAQuad} and \eqref{BIAQuadg},
 	\begin{subequations}
 		\label{KIntegralByParts}
-		\begin{align}
+		\begin{align}	
+			\mathbf{K}^{(1)}_{ij} &= \mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2}) \\[-10pt]
 			\mathbf{K}^{(1)}_{ij} &= \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^R_{ij}}, \label{KIntegralByParts:1} \\
-			\mathbf{K}^{(2)}_{ij} &= \left(\frac{\Delta r_j}{2}\right)^2\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right] - 2 \underbrace{\int_{r_{j-1/2}}^{r_{j+1/2}} (r' - r_j)\frac{\partial \mathcal{K}(r_i, r')}{\partial r'} dr'}_{\mathbf{K}^{(1)}_{ij}}. \label{KIntegralByParts:2}
+			\mathbf{K}^{(2)}_{ij} &= \left(\frac{\Delta r_j}{2}\right)^2\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right] - 2 \underbrace{\int_{r_{j-1/2}}^{r_{j+1/2}} (r' - r_j)\mathcal{K}(r_i, r')\, dr'}_{\mathbf{K}^{(1)}_{ij}}. \label{KIntegralByParts:2}
 		\end{align}
 	\end{subequations}
-	Neglecting the component $\mathbf{K}^{(2)}_{ij}$ initially to produce a leading-order solution to \eqref{BIAQuad}, applying formulae \eqref{fFVMDefinition} gives:
+	First considering the simpler case of $f$ affine (thus neglecting the component $\mathbf{K}^{(2)}_{ij}$) to produce a leading-order solution to \eqref{BIAQuad}, applying formula \eqref{fFVMDefinition:2} gives:
 	\begin{equation}
 		\label{BIAQuad2}
 		\begin{aligned}
@@ -482,13 +493,18 @@
 		\end{aligned}
 	\end{equation}
 	
-	Finally, by considering $g(r)$ locally affine rather than $f(r)$, and thus adding in the component $\mathbf{K}^{(2)}_{ij}$ as given by \eqref{KIntegralByParts:2}, we get the full numerical solution to the interface:
-		\begin{equation}
+	Finally, by considering $g(r)$ locally affine rather than $f(r)$, and thus adding in the component $g'(r_j)\mathbf{K}^{(2)}_{ij}$ from \eqref{KIntegralByParts:2}, we substitute \eqref{KIntegralByParts} into \eqref{BIAQuadg}. Note that in this case, we use the approximation method \eqref{gFVMDefinition} rather than \eqref{fFVMDefinition:2}, to include this locally affine behaviour. By telescoping and applying boundary conditions as before, we generate the full numerical solution to the interface:
+	\begin{equation}
 		\label{BIAQuadFull}
 		\begin{aligned}
-			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx -\sum^N_{j = 1} f'(r_j) \mathbf{K}^R_{ij} + g'(r_j)\text{ALL THE REST OF IT!!}
+			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_j)\mathbf{K}^{(0)}_{ij} + f'(r_j)\mathbf{K}^{(1)}_{ij} + g'(r_j)\mathbf{K}^{(2)}_{ij} \\
+			&= \sum^N_{j = 1} \underbrace{\left[f(r_j) + f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j+1/2})}\mathcal{K}(r_i, r_{j+1/2}) \\
+			&\qquad\quad - \underbrace{\left[f(r_j) - f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j-1/2})}\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} - 2g'(r_j)\mathbf{K}^{(1)}_{ij} \\
+			&\approx \underline{-\sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} + 2g'(r_j)M_{ij}} \quad \text{(by telescoping and boundary conditions)} \\[6pt]
+			&\approx \sum_{j=1}^N \left[ \frac{r_{j-1/2}\ g(r_{j-1/2}) - r_{j+1/2}\ g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^R_{ij} + 2\,\frac{g(r_{j-1/2}) - g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^{(1)}_{ij} \right].
 		\end{aligned}
 	\end{equation}
+	
 	
 	The entire problem thus reduces to the computing elements of the matrices $\mathbf{K}^R_{ij}$ and $\mathbf{K}^{(1)}_{ij}$. To reduce floating point errors near the singularity (where $m \to 1$), we use the Landen Transform \todo[color=cyan]{CITE DLMF 19.8.12, Landen} \texttt{scipy.special.ellipkm1$\left(m_1 := 1 - m = \frac{\min(r_i, r')^2}{\max(r_i, r')^2}\right)$}. For the off-diagonal terms, note that $\mathcal{K}(r_i, r')$ is completely smooth for $r'$ inside cell $j$, and thus integrating via a standard 20-point Gauss–Legendre quadrature \texttt{np.polynomial.legendre.leggauss(20)} suffices to balance accuracy with ease of computation. For the leading diagonal, we take advantage of the \texttt{QUADPACK} feature of \texttt{scipy.integrate.quad}, which uses Gauss-Kronrod rules with Wynn epsilon-extrapolation to handle the $K(m)$ logarithmic singularity. Our simulation uses the parameters \texttt{(points=[ri], epsabs=0, epsrel=1e-13)}.	
 	
@@ -503,7 +519,7 @@
 	
 	
 	
-	\subsubsection{Failed Asymptotic Expansions}
+	\subsubsection{Failed Asymptotic Expansions} \label{sec:FailedAsymptotics}
 	
 	We return back to equation \eqref{BIAQuad}. Applying integration by parts for the case of $i \neq j$, recalling that $\frac{\partial \mathcal{K}}{\partial r'}$ is completely smooth in this case and thus we only need to be consider $\mathbf{K}^{(1)}_{ij}$ at constant order to match the asymptotic expansion of $f'(r_j)$ locally constant:
 	\begin{equation}
@@ -572,25 +588,59 @@
 	Non dimensionalisation and scaling for $St^{-1/3}$, Asymptotic scale separation, ...
 	
 	\section{Handwritten Uploads}
-		\begin{figure}[H]
+	\begin{figure}[H]
+		\centering
+		\includegraphics[angle=90, width=\textwidth]{images/Notes_261014_112957.jpg}
+		\caption{13.10.2026 : Full domain discretisation and matrix construction.}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_215824_1.jpg}
+		\caption{13.10.2026 : Derivation of forces acting on the interface (from the air cushion pressure).}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_165541.jpg}
+		\caption{13.10.2026 : First example discretising the domain.}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_121959.jpg}
+		\caption{13.10.2026 : Non-dimensionalisation of the Lubrication Equation.}
+	\end{figure}
+		
+		
+		
+		
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}[t]{0.45\textwidth}
 			\centering
-			\includegraphics[angle=90, width=\textwidth]{images/Notes_261014_112957.jpg}
-			\caption{13.10.2026 : Full domain discretisation and matrix construction.}
-		\end{figure}
-		\begin{figure}[H]
+			\includegraphics[width=\textwidth]{images/20261116_143633.jpg}
+			\caption{01.11.2026 : Rough working on deriving equations \eqref{BesselDerivatives}, \eqref{PressureGreenIBP}, and \eqref{BoundaryIntegralAntiderivative}.}
+		\end{minipage}\hfill
+		\begin{minipage}[t]{0.45\textwidth}
 			\centering
-			\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_215824_1.jpg}
-			\caption{13.10.2026 : Derivation of forces acting on the interface (from the air cushion pressure).}
-		\end{figure}
-		\begin{figure}[H]
-			\centering
-			\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_165541.jpg}
-			\caption{13.10.2026 : First example discretising the domain.}
-		\end{figure}
-		\begin{figure}[H]
-			\centering
-			\includegraphics[angle=90, width=\textwidth]{images/Notes_261013_121959.jpg}
-			\caption{13.10.2026 : Non-dimensionalisation of the Lubrication Equation.}
-		\end{figure}
-
+			\includegraphics[width=\textwidth]{images/20261116_143748.jpg}
+			\caption{14.11.2026 : Rough working on deriving equations \eqref{fFVMDefinition}, \eqref{BIAQuad}, \eqref{KIntegralByParts}, and \eqref{BIAQuad2}.}
+		\end{minipage}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.45\textwidth]{images/20261116_143721.jpg}\hfill
+		\includegraphics[width=0.45\textwidth]{images/20261116_143736.jpg}
+		\caption{12.11.2026 : Rough working on understanding the asymptotic expansions in Section \ref{sec:FailedAsymptotics}.}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.32\textwidth]{images/20261116_143748.jpg}\hfill
+		\includegraphics[width=0.32\textwidth]{images/20261116_143758.jpg}\hfill
+		\includegraphics[width=0.32\textwidth]{images/20261116_143815.jpg} \\[0.5em]
+		\includegraphics[width=0.32\textwidth]{images/20261116_143826.jpg}\hspace{0.02\textwidth}
+		\includegraphics[width=0.32\textwidth]{images/20261116_143839.jpg}
+		\caption{(15-16).11.2026 : Rough working on considering the case of $g$ locally affine, rather than $f$, and thus deriving equations \eqref{fExpansion}, \eqref{fAddSubtract}, \eqref{gFVMDefinition}, \eqref{BIAQuadg}, \eqref{KIntegralByParts}, and \eqref{BIAQuadFull}.}
+	\end{figure}
+		
 \end{document}
