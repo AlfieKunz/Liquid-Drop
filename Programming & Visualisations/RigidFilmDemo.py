@@ -1,9 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from scipy.linalg import solve_banded
-from scipy.integrate import solve_ivp
 import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
+from scipy.integrate import solve_ivp
+from scipy.linalg import solve_banded
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
 rho = 1e3

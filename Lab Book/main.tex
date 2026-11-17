@@ -500,7 +500,7 @@
 			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_j)\mathbf{K}^{(0)}_{ij} + f'(r_j)\mathbf{K}^{(1)}_{ij} + g'(r_j)\mathbf{K}^{(2)}_{ij} \\
 			&= \sum^N_{j = 1} \underbrace{\left[f(r_j) + f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j+1/2})}\mathcal{K}(r_i, r_{j+1/2}) \\
 			&\qquad\quad - \underbrace{\left[f(r_j) - f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j-1/2})}\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} - 2g'(r_j)\mathbf{K}^{(1)}_{ij} \\
-			&\approx \underline{-\sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} + 2g'(r_j)M_{ij}} \quad \text{(by telescoping and boundary conditions)} \\[6pt]
+			&\approx \underline{-\sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} + 2g'(r_j)\mathbf{K}^{(1)}_{ij}} \quad \text{(by telescoping and boundary conditions)} \\[6pt]
 			&\approx \sum_{j=1}^N \left[ \frac{r_{j-1/2}\ g(r_{j-1/2}) - r_{j+1/2}\ g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^R_{ij} + 2\,\frac{g(r_{j-1/2}) - g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^{(1)}_{ij} \right].
 		\end{aligned}
 	\end{equation}
