@@ -3,8 +3,10 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
+from scipy.integrate import quad
 from scipy.integrate import solve_ivp
 from scipy.linalg import solve_banded
+from scipy.special import ellipkm1
 
 # Note: use numba-scipy for scipy function! :)
 
@@ -21,7 +23,7 @@ print(f"Stokes Number: {St:.2e}")
 
 def MatrixPreElement(i):
     h_iMinus1 = 0.5 * (h[i - 1]**3 + h[i]**3)
-    r_iMinus1 = i * dr
+    r_iMinus1 = i * dr[i]
     return h_iMinus1 * r_iMinus1
 
 def InitMatrix(i, j):
@@ -43,14 +45,14 @@ def InitMatrix(i, j):
             MatrixElement -= (0.0 if i == 0 else MatrixPreElement(i)) # Boundary conditions: q_{-1/2} = 0 - no pressure gradient along the central line (symmetry).
         case 1:
             MatrixElement = MatrixPreElement(i)
-    return St * MatrixElement / (12 * r[i] * dr * dr)
+    return St * MatrixElement / (12 * r[i] * dr[i] * dr[i])
 
 # def ODEForce(t, dhdt, h0_val):
 #     return -dhdt * 6 * np.pi / (St * h0_val * m) #TODO: +??
 
 ZoomFactor = 1/4
 Nr = 1000
-dr = ZoomFactor / Nr
+dr = np.ones(Nr) * (ZoomFactor / Nr)
 r = (np.arange(Nr) + 0.5) * dr # Data taken at cell centres.
 h_0 = 5e-2 # h_0 << R for weak parabolic effect.
 h = h_0 + 0.5 * r**2
@@ -62,14 +64,55 @@ dt = (3.0 * h_0 / 1.0) / Nt
 
 hResults = []
 pResults = []
+
+K_R = np.zeros((Nr, Nr), dtype=np.float64)
+K_1 = np.zeros((Nr, Nr), dtype=np.float64)
+t, w = np.polynomial.legendre.leggauss(20)
+twopi = 2 / np.pi
+def Kernel(r, ri):
+    rSum = ri + r
+    k1 = (ri - r) / rSum # Do I do the min / max formula? NO!!!!
+    return twopi * ellipkm1(k1 * k1) / rSum
+def K1(r, ri, rj):
+    return (r - rj) * Kernel(r, ri)
+
+st = time.time()
+for i in range(Nr):
+    print(f"Precomputing Kernel Data: Row {i+1} / {Nr}...", end="\r", flush=True)
+    for j in range(Nr):
+        HalfSpacing = dr[j] / 2
+        rMinusHalf = r[j] - HalfSpacing
+        rPlussHalf = r[j] + HalfSpacing
+        if i == j: # Use scipy quad.
+            K_R[i,j], _ = quad(Kernel, rMinusHalf, rPlussHalf, args=(r[i],), points=[r[j]], epsabs=0, epsrel=1e-13)
+            K_1[i,j], _ = quad(K1, rMinusHalf, rPlussHalf, args=(r[i], r[j]), points=[r[j]], epsabs=0, epsrel=1e-13)
+        else: # Use legendre leggauss
+            KernelEvalPoints = HalfSpacing * t + r[j]
+            K_R[i,j] = HalfSpacing * np.dot(w, Kernel(KernelEvalPoints, r[i]))
+            K_1[i,j] = HalfSpacing * np.dot(w, K1(KernelEvalPoints, r[i], r[j]))
+            # K1Value = (dr[j]**2 / 12) * (Kernel(rPlussHalf, r[i]) - Kernel(rMinusHalf, r[i]))
+            # if abs(K_1[i,j] - K1Value) > 1e10:
+            #     print(f"ahh! {K1Value} vs {K_1[i,j]} at index [{i},{j}]")
+                        
+ft = time.time()
+print("\n" + f"Precomputed Kernel Data in {ft - st:.2e}s!")
+
+
+
 st = time.time()
 for n in range(Nt):
     print(f"Running Time Iteration {n+1} / {Nt}...", end="\r", flush=True)
+    
+    # Lubrication Method.
     AB = np.zeros((3,Nr))
     AB[0, 1:] = [InitMatrix(j - 1, j) for j in range(1, Nr)]
     AB[1, :] = [InitMatrix(i, i) for i in range(Nr)]
     AB[2, :-1] = [InitMatrix(j + 1, j) for j in range(Nr - 1)]
     p = solve_banded((1, 1), AB, dhdt)
+    
+    # Boundary Integral.
+    
+    
     # Saves results, so that they can be outputted. Note that we make everything symmetric also! :)
     hResults.append(np.concatenate((h[::-1], h)))
     pResults.append(np.concatenate((p[::-1], p)))
@@ -78,7 +121,7 @@ for n in range(Nt):
     # sol = solve_ivp(ODEForce, t_span=(0.0, dt), y0=dhdt, args=(h[0],))
     # h += sol.y[:,-1] * dt
     
-    accel = np.sum((3/2) * p * r * dr) #? F = \int^\infty_0 p 2\pi r dr, but non-dimensionalised. My thoughts are that we therefore just multiply by each area element? :O
+    accel = np.sum((3/2) * p * r * dr[0]) #? F = \int^\infty_0 p 2\pi r dr, but non-dimensionalised. My thoughts are that we therefore just multiply by each area element? :O
     #print(accel)
     
     # r_faces = np.arange(1, Nr) * dr

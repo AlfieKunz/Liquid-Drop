@@ -478,18 +478,18 @@
 	\begin{subequations}
 		\label{KIntegralByParts}
 		\begin{align}	
-			\mathbf{K}^{(1)}_{ij} &= \mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2}) \\[-10pt]
-			\mathbf{K}^{(1)}_{ij} &= \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^R_{ij}}, \label{KIntegralByParts:1} \\
-			\mathbf{K}^{(2)}_{ij} &= \left(\frac{\Delta r_j}{2}\right)^2\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right] - 2 \underbrace{\int_{r_{j-1/2}}^{r_{j+1/2}} (r' - r_j)\mathcal{K}(r_i, r')\, dr'}_{\mathbf{K}^{(1)}_{ij}}. \label{KIntegralByParts:2}
+			\mathbf{K}^{(0)}_{ij} &= \mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2}) \\[-10pt]
+			\mathbf{K}^{(1)}_{ij} &= \frac{\Delta r_j}{2}\left[\mathcal{K}(r_i,r_{j+1/2}) + \mathcal{K}(r_i,r_{j-1/2})\right] - \overbrace{\int^{r_{j+1/2}}_{r_{j-1/2}} \mathcal{K}(r_i,r')\ dr'}^{\mathbf{K}^P_{ij}}, \label{KIntegralByParts:1} \\
+			\mathbf{K}^{(2)}_{ij} &= \left(\frac{\Delta r_j}{2}\right)^2\left[\mathcal{K}(r_i, r_{j+1/2}) - \mathcal{K}(r_i, r_{j-1/2})\right] - 2 \underbrace{\int_{r_{j-1/2}}^{r_{j+1/2}} (r' - r_j)\mathcal{K}(r_i, r')\, dr'}_{\mathbf{K}^{S}_{ij}}. \label{KIntegralByParts:2}
 		\end{align}
 	\end{subequations}
 	First considering the simpler case of $f$ affine (thus neglecting the component $\mathbf{K}^{(2)}_{ij}$) to produce a leading-order solution to \eqref{BIAQuad}, applying formula \eqref{fFVMDefinition:2} gives:
 	\begin{equation}
 		\label{BIAQuad2}
 		\begin{aligned}
-			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_{j+1/2})\mathcal{K}(r_i, r_{j+1/2}) - f(r_{j-1/2})\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} \\
-			&= f(R)\mathcal{K}(r_i, R) - f(0)\mathcal{K}(r_i, 0) - \sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} \quad \text{(by telescoping)} \\
-			&\approx -\sum^N_{j = 1} f'(r_j) \mathbf{K}^R_{ij}\quad \text{(by boundary conditions)}.
+			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_{j+1/2})\mathcal{K}(r_i, r_{j+1/2}) - f(r_{j-1/2})\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^P_{ij} \\
+			&= f(R)\mathcal{K}(r_i, R) - f(0)\mathcal{K}(r_i, 0) - \sum^N_{j = 1} f'(r_j)\mathbf{K}^P_{ij} \quad \text{(by telescoping)} \\
+			&\approx -\sum^N_{j = 1} f'(r_j) \mathbf{K}^P_{ij}\quad \text{(by boundary conditions)}.
 		\end{aligned}
 	\end{equation}
 	
@@ -499,9 +499,9 @@
 		\begin{aligned}
 			\frac{\partial^2 h(r_i,t)}{\partial t^2} &\approx \sum^N_{j = 1} f(r_j)\mathbf{K}^{(0)}_{ij} + f'(r_j)\mathbf{K}^{(1)}_{ij} + g'(r_j)\mathbf{K}^{(2)}_{ij} \\
 			&= \sum^N_{j = 1} \underbrace{\left[f(r_j) + f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j+1/2})}\mathcal{K}(r_i, r_{j+1/2}) \\
-			&\qquad\quad - \underbrace{\left[f(r_j) - f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j-1/2})}\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^R_{ij} - 2g'(r_j)\mathbf{K}^{(1)}_{ij} \\
-			&\approx \underline{-\sum^N_{j = 1} f'(r_j)\mathbf{K}^R_{ij} + 2g'(r_j)\mathbf{K}^{(1)}_{ij}} \quad \text{(by telescoping and boundary conditions)} \\[6pt]
-			&\approx \sum_{j=1}^N \left[ \frac{r_{j-1/2}\ g(r_{j-1/2}) - r_{j+1/2}\ g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^R_{ij} + 2\,\frac{g(r_{j-1/2}) - g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^{(1)}_{ij} \right].
+			&\qquad\quad - \underbrace{\left[f(r_j) - f'(r_j)\frac{\Delta r_j}{2} + g'(r_j)\left(\frac{\Delta r_j}{2}\right)^2\right]}_{f(r_{j-1/2})}\mathcal{K}(r_i, r_{j-1/2}) - f'(r_j)\mathbf{K}^P_{ij} - 2g'(r_j)\mathbf{K}^S_{ij} \\
+			&\approx \underline{-\sum^N_{j = 1} f'(r_j)\mathbf{K}^P_{ij} + 2g'(r_j)\mathbf{K}^S_{ij}} \quad \text{(by telescoping and boundary conditions)} \\[6pt]
+			&\approx \sum_{j=1}^N \left[ \frac{r_{j-1/2}\ g(r_{j-1/2}) - r_{j+1/2}\ g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^P_{ij} + 2\,\frac{g(r_{j-1/2}) - g(r_{j+1/2})}{\Delta r_j} \mathbf{K}^S_{ij} \right].
 		\end{aligned}
 	\end{equation}
 	
