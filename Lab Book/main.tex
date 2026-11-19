@@ -418,7 +418,7 @@
 	\todo[inline, color=pink]{Something about picking a predictor step?}
 	
 	\subsection{Numerical Evaluation of the Boundary Integral \eqref{BoundaryIntegral}}
-	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$ varies \underline{linearly} across a cell of size $\Delta r_j$ (see the verification below), where
+	In the derivation as outlined in \ref{sec:CauchyPV}, we use the Cauchy Principal Value to evaluate the elliptical integral singularities. This is an exact expression, but as FVM methods are of order $O(\Delta r^2)$, we can make a much cheaper approximation and still generate the same results to leading order, as long as all the integrand components are of order $O(\Delta r^2)$! Specifically, we will assume that the function $f(r) := r \frac{\partial p_l(r,0)}{\partial r}$ varies \underline{linearly} across a cell of size $\Delta r_j$ (see the verification below), where
 	\begin{subequations}
 		\label{fFVMDefinition}
 		\begin{align}
