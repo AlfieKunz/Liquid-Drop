@@ -10,6 +10,66 @@ from scipy.special import ellipkm1
 
 # Note: use numba-scipy for scipy function! :)
 
+twopi = 2 / np.pi
+def Kernel(r, ri):
+    rSum = ri + r
+    k1 = (ri - r) / rSum # Do I do the min / max formula? NO!!!!
+    return twopi * ellipkm1(k1 * k1) / rSum
+def KS(r, ri, rj):
+    return (r - rj) * Kernel(r, ri)
+def ConstructKernel():
+    #TODO: Saw something about writing s = |r' - r_i| to make the K_S integral a lot easier... chuck s * (Kernel(ri + s, ri) - Kernel(ri - s, ri)) into quad, from 0 to delta/2
+    K_P = np.zeros((Nr, Nr))
+    K_S = np.zeros((Nr, Nr))
+    t, w = np.polynomial.legendre.leggauss(20)
+    HalfSpacing = CellWidth / 2
+    
+    # Use legendre leggauss for all elements.
+    print(f"Precomputing Kernel Data: Legengre Leggauss", end="\r", flush=True)
+    r_i = r[:, None, None] 
+    r_j = r[None, :, None]
+    KernelEvalPoints = HalfSpacing[None, :, None] * t[None, None, :] + r_j
+    KPoints = Kernel(KernelEvalPoints, r_i)
+    KSPoints = (KernelEvalPoints - r_j) * KPoints
+    K_P = HalfSpacing[None, :] * np.sum(KPoints * w, axis=-1)
+    K_S = HalfSpacing[None, :] * np.sum(KSPoints * w, axis=-1)
+    
+    # Fill in the i = j areas to deal with the Logarithmic Singularity
+    for i in range(Nr):
+        print(f"Precomputing Kernel Data: Scipy Quad Row {i+1} / {Nr}...", end="\r", flush=True)
+        K_P[i,i], _ = quad(Kernel, rHalf[i], rHalf[i+1], args=(r[i],), points=[r[i]], epsabs=0, epsrel=1e-12)
+        K_S[i,i], _ = quad(KS, rHalf[i], rHalf[i+1], args=(r[i], r[i]), points=[r[i]], epsabs=1e-16, epsrel=1e-12)
+    return K_P, K_S
+
+
+def ConstructBandedMatrix():
+    AB = np.zeros((3, Nr))
+    AB[0, 1:] = [InitMatrix(j - 1, j) for j in range(1, Nr)]
+    AB[1, :] = [InitMatrix(i, i) for i in range(Nr)]
+    AB[2, :-1] = [InitMatrix(j + 1, j) for j in range(Nr - 1)]
+    return AB
+def InitMatrix(i, j):
+    MatrixElement = 0.0
+    match i - j:
+        case -1:
+            MatrixElement = FluxCoefficientMinusHalf(i + 1)
+        case 0:
+            MatrixElement -= 0.0 if i == 0 else FluxCoefficientMinusHalf(i)
+            # Right face (face i + 1): p = 0 at r = RMax (half a cell away -> factor of 2).
+            if i == Nr - 1:
+                hN = 1.5 * h[-1] - 0.5 * h[-2]
+                MatrixElement -= 2.0 * (hN**3 * rHalf[Nr])
+            else:
+                MatrixElement -= FluxCoefficientMinusHalf(i + 1)
+        case 1:
+            MatrixElement = FluxCoefficientMinusHalf(i)
+    return St * MatrixElement / (12 * r[i] * CellWidth[i] * CellWidth[i])
+def FluxCoefficientMinusHalf(i):
+    hMinusHalf = 0.5 * (h[i - 1] + h[i]) # 0.5 * (h[i - 1]**3 + h[i]**3)???
+    return hMinusHalf**3 * rHalf[i]
+
+
+
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
 rho = 1e3
 R = 5e-4
@@ -17,136 +77,84 @@ U = 1.0
 mu_g = 1.8e-5
 m = 1.0 # rho * np.pi * R**3 * 4/3
 
-ScalingFactor = 1
+ScalingFactor = 1.0
 St = ScalingFactor * rho * R * U / mu_g
 print(f"Stokes Number: {St:.2e}")
 
-def FluxCoefficientMinusHalf(i):
-    hMinusHalf = 0.5 * (h[i - 1] + h[i]) # 0.5 * (h[i - 1]**3 + h[i]**3)???
-    rMinusHalf = r[i - 1]
-    return hMinusHalf**3 * rMinusHalf
-
-def InitMatrix(i, j):
-    MatrixElement = 0.0
-    #TODO: Okay wtf, inverting this line seems logical but then we can't feed it into the scipy solver. What is
-    #TODO: the right way to handle this BC?
-    #if i == N - 1: return -InitMatrix(i - 1, j) # Boundary conditions: sets p_N = -p_{N-1} s.t the pressure at the edge of the final cell is 0.
-    match i - j:
-        case -1:
-            MatrixElement = FluxCoefficientMinusHalf(i + 1)
-        case 0:
-            # Boundary conditions: q_{n + 1/2} = 0. We then enforce p_N = -p_{N-1} s.t the pressure at the edge of the final cell is 0.
-            if (i == Nr - 1):
-                MatrixElement = -2.0 * FluxCoefficientMinusHalf(i)
-            elif (i == Nr - 2):
-                MatrixElement = -2.0 * FluxCoefficientMinusHalf(i + 1)
-            else:
-                MatrixElement = -FluxCoefficientMinusHalf(i + 1)
-            MatrixElement -= (0.0 if i == 0 else FluxCoefficientMinusHalf(i)) # Boundary conditions: q_{-1/2} = 0 - no pressure gradient along the central line (symmetry).
-        case 1:
-            MatrixElement = FluxCoefficientMinusHalf(i)
-    return St * MatrixElement / (12 * r[i] * dr[i] * dr[i])
-
-# def ODEForce(t, dhdt, h0_val):
-#     return -dhdt * 6 * np.pi / (St * h0_val * m) #TODO: +??
 
 ZoomFactor = 1/4
-Nr = 500
+RMax = 1.0
+Nr = 2000
 
-rHalf = np.linspace(0, ZoomFactor, Nr + 1) # Values of r, defined at the edges (eg: r_{i - 1/2})
+rHalf = np.linspace(0, RMax, Nr + 1) # Values of r, defined at the edges (eg: r_{i - 1/2})
 CellWidth = np.diff(rHalf) # The width of each cell.
 r = rHalf[:-1] + CellWidth / 2 # Size Nr, the cell centers
 dr = np.diff(r) # The distance from the centre of each cell to the next.
 dpdr = np.zeros(Nr + 1) # dp/dr, held at cell edges.
 
-h_0 = 5e-2 # h_0 << R for weak parabolic effect.
+h_0 = 2e-2 # h_0 << R for weak parabolic effect.
 h = h_0 + 0.5 * r**2
 dhdt = np.full(Nr, -1.0)
 d2hdt2 = np.zeros(Nr)
 
-fPrime = np.zeros(Nr + 1)
-gPrime = np.zeros(Nr + 1)
+fPrime = np.zeros(Nr)
+gPrime = np.zeros(Nr)
 
-Nt = 500
-dt = (3.0 * h_0 / 1.0) / Nt
+NtMax = 2500
+dt0 = (3.0 * h_0 / 1.0) / NtMax  # Time for a rigid drop to descent 3x its height.
+GlobalSpeedupMultiplier = 5
 
 hResults = []
 pResults = []
-
-K_P = np.zeros((Nr, Nr), dtype=np.float64)
-K_S = np.zeros((Nr, Nr), dtype=np.float64)
-t, w = np.polynomial.legendre.leggauss(20)
-twopi = 2 / np.pi
-def Kernel(r, ri):
-    rSum = ri + r
-    k1 = (ri - r) / rSum # Do I do the min / max formula? NO!!!!
-    return twopi * ellipkm1(k1 * k1) / rSum
-def K1(r, ri, rj):
-    return (r - rj) * Kernel(r, ri)
-
+                
 st = time.time()
-for i in range(Nr):
-    print(f"Precomputing Kernel Data: Row {i+1} / {Nr}...", end="\r", flush=True)
-    for j in range(Nr):
-        HalfSpacing = CellWidth[j] / 2
-        if i == j: # Use scipy quad.
-            K_P[i,j], _ = quad(Kernel, rHalf[j], rHalf[j+1], args=(r[i],), points=[r[j]], epsabs=0, epsrel=1e-13)
-            K_S[i,j], _ = quad(K1, rHalf[j], rHalf[j+1], args=(r[i], r[j]), points=[r[j]], epsabs=0, epsrel=1e-13)
-        else: # Use legendre leggauss
-            KernelEvalPoints = HalfSpacing * t + r[j]
-            K_P[i,j] = HalfSpacing * np.dot(w, Kernel(KernelEvalPoints, r[i]))
-            K_S[i,j] = HalfSpacing * np.dot(w, K1(KernelEvalPoints, r[i], r[j]))
-            # K1Value = (dr[j]**2 / 12) * (Kernel(rHalf[j+1], r[i]) - Kernel(rHalf[j], r[i]))
-            # if abs(K_1[i,j] - K1Value) > 1e10:
-            #     print(f"ahh! {K1Value} vs {K_1[i,j]} at index [{i},{j}]")
-                        
+K_P, K_S = ConstructKernel()          
 ft = time.time()
 print("\n" + f"Precomputed Kernel Data in {ft - st:.2e}s!")
 
 
-
 st = time.time()
-for n in range(Nt):
-    print(f"Running Time Iteration {n+1} / {Nt}...", end="\r", flush=True)
+for n in range(NtMax):
+    print(f"Running Time Iteration {n+1} / {NtMax}...", end="\r", flush=True)
     
     # Lubrication Method.
-    AB = np.zeros((3,Nr))
-    AB[0, 1:] = [InitMatrix(j - 1, j) for j in range(1, Nr)]
-    AB[1, :] = [InitMatrix(i, i) for i in range(Nr)]
-    AB[2, :-1] = [InitMatrix(j + 1, j) for j in range(Nr - 1)]
+    AB = ConstructBandedMatrix()
     p = solve_banded((1, 1), AB, dhdt)
 
     # Calculates dp/dr (note: why can't we just embed this inside the matrix construction? Van der Walls??).
     # Boundary conditions (as in InitMatrix: no-flux at r = 0, p(r=N) = 0).
     dpdr[1:-1] = np.diff(p) / dr
     dpdr[0] = 0.0 
-    dpdr[-1] = -p[-1] / dr[-1]
+    dpdr[-1] = -2 * p[-1] / dr[-1]
     
     # Plugs into Boundary Integral.
-    for n in range(Nt):
-        fPrime[n] = rHalf[n] * dpdr[n] - rHalf[n+1] * dpdr[n+1]
-        gPrime[n] = dpdr[n] - dpdr[n+1]
-    accel = (np.dot(K_P, fPrime) + 2 * np.dot(K_S, gPrime)) / CellWidth
+    f = rHalf * dpdr
+    fPrime = (f[:-1] - f[1:]) / CellWidth
+    gPrime = (dpdr[:-1] - dpdr[1:]) / CellWidth
+    d2hdt2 = (np.dot(K_P, fPrime) + 2 * np.dot(K_S, gPrime))
     
+    # # a = v/t. If the drop begins to accelerate
+    # MaxAccel = np.max(np.abs(d2hdt2))
+    # if MaxAccel > 1e-12:
+    #     Acceldt = np.max(np.abs(dhdt)) / MaxAccel
+    #     dt = min(dt, Acceldt * 0.1)
+        
+    dt_h = 0.01 * np.min(np.where(dhdt < 0, h / np.maximum(-dhdt, 1e-300), np.inf))
+    MaxAccel = np.max(np.abs(d2hdt2))
+    dt_u = 0.01 * np.max(np.abs(dhdt)) / MaxAccel if MaxAccel > 1e-12 else np.inf
+    dt = min(dt0, dt_h, dt_u)
+    
+    dhdt += d2hdt2 * dt
+    h += dhdt * dt
     
     # Saves results, so that they can be outputted. Note that we make everything symmetric also! :)
-    hResults.append(np.concatenate((h[::-1], h)))
-    pResults.append(np.concatenate((p[::-1], p)))
+    if (n % GlobalSpeedupMultiplier == 0):
+        hResults.append(np.concatenate((h[::-1], h)))
+        pResults.append(np.concatenate((p[::-1], p)))
     
-    # Adjusts the film via the force acting on the film. I derived this to be F = ma = -dh/dt * 6pi / St h. Force points in the opposite way, so this becomes a +.
-    # sol = solve_ivp(ODEForce, t_span=(0.0, dt), y0=dhdt, args=(h[0],))
-    # h += sol.y[:,-1] * dt
-    
-    # accel = np.sum((3/2) * p * r * CellWidth[0]) #? F = \int^\infty_0 p 2\pi r dr, but non-dimensionalised. My thoughts are that we therefore just multiply by each area element? :O
-    #print(accel)
-    
-    # r_faces = np.arange(1, Nr) * dr
-    # dpdr = (p[1:] - p[:-1]) / dr
-    # kernel = (2.0 * r_faces[None, :]) / (r_faces[None, :]**2 - r[:, None]**2)
-    # accel = -(1.0 / np.pi) * (kernel @ dpdr) * dr
-
-    dhdt += accel * dt
-    h += dhdt * dt
+    if np.min(h) < h_0 * 0.005:
+        print("\n" + "Breaking Early Due to Droplet Touching Solid.")
+        break
     
 ft = time.time()
 
@@ -167,18 +175,21 @@ DropletMesh = ax1.fill(DropletXVertices, DropletYVertices, color='paleturquoise'
 DropletBoundary, = ax1.plot(r, hResults[0], color='dodgerblue', lw=2.5, zorder=3)
 PressureMap, = ax2.plot(r, pResults[0], color='crimson', lw=2.5)
 
-ax1.set_xlim(r[0], r[-1])
-ax1.set_ylim(0, np.max(hResults))
+ax1.set_xlim(r[0] * ZoomFactor, r[-1] * ZoomFactor)
+ax1.set_xlabel(r'Position ($x/R$)')
+VisibleRegion = np.abs(r) <= RMax * ZoomFactor
+ax1.set_ylim(0, np.max(hResults[0][VisibleRegion]) * 0.8)
 ax1.set_ylabel(r'Dimensionless Height $h/R$')
 ax1.set_title('Interaction of a Droplet Colliding with a Thin Film')
 
+ax1.set_xlim(r[0] * ZoomFactor, r[-1] * ZoomFactor)
 ax2.set_ylim(0, np.max(pResults) * 1.1)
 ax2.set_xlabel(r'Position ($x/R$)')
-ax2.set_ylabel(r'Pressure ($p / (\rho U^2)$)')
+ax2.set_ylabel(r'Pressure ($p / (\rho U^2)$')
 ax2.grid(True, alpha=0.3)
 
 cbar = fig.colorbar(IMPlot, ax=ax1, pad=0.02)
-cbar.set_label(r'Pressure ($p / (\rho U^2)$)')
+cbar.set_label(r'Pressure ($p / (\rho U^2)$')
 plt.tight_layout()
 
 def DrawFrame(frame):
@@ -191,5 +202,5 @@ def DrawFrame(frame):
     PressureMap.set_ydata(p_f)
     return IMPlot, DropletMesh, DropletBoundary, PressureMap
 
-Animation = FuncAnimation(fig, DrawFrame, frames=Nt, interval=20, blit=True)
+Animation = FuncAnimation(fig, DrawFrame, frames=len(hResults), interval=20, blit=True)
 plt.show()
