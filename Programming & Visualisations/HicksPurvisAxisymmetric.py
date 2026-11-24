@@ -17,14 +17,14 @@ U = 1.0
 mu_g = 1.8e-5
 m = 1.0 # rho * np.pi * R**3 * 4/3
 
-ScalingFactor = 1e-4
+ScalingFactor = 1
 St = ScalingFactor * rho * R * U / mu_g
 print(f"Stokes Number: {St:.2e}")
 
-def MatrixPreElement(i):
-    h_iMinus1 = 0.5 * (h[i - 1]**3 + h[i]**3)
-    r_iMinus1 = i * dr[i]
-    return h_iMinus1 * r_iMinus1
+def FluxCoefficientMinusHalf(i):
+    hMinusHalf = 0.5 * (h[i - 1] + h[i]) # 0.5 * (h[i - 1]**3 + h[i]**3)???
+    rMinusHalf = r[i - 1]
+    return hMinusHalf**3 * rMinusHalf
 
 def InitMatrix(i, j):
     MatrixElement = 0.0
@@ -33,31 +33,39 @@ def InitMatrix(i, j):
     #if i == N - 1: return -InitMatrix(i - 1, j) # Boundary conditions: sets p_N = -p_{N-1} s.t the pressure at the edge of the final cell is 0.
     match i - j:
         case -1:
-            MatrixElement = MatrixPreElement(i + 1)
+            MatrixElement = FluxCoefficientMinusHalf(i + 1)
         case 0:
             # Boundary conditions: q_{n + 1/2} = 0. We then enforce p_N = -p_{N-1} s.t the pressure at the edge of the final cell is 0.
             if (i == Nr - 1):
-                MatrixElement = -2.0 * MatrixPreElement(i)
+                MatrixElement = -2.0 * FluxCoefficientMinusHalf(i)
             elif (i == Nr - 2):
-                MatrixElement = -2.0 * MatrixPreElement(i + 1)
+                MatrixElement = -2.0 * FluxCoefficientMinusHalf(i + 1)
             else:
-                MatrixElement = -MatrixPreElement(i + 1)
-            MatrixElement -= (0.0 if i == 0 else MatrixPreElement(i)) # Boundary conditions: q_{-1/2} = 0 - no pressure gradient along the central line (symmetry).
+                MatrixElement = -FluxCoefficientMinusHalf(i + 1)
+            MatrixElement -= (0.0 if i == 0 else FluxCoefficientMinusHalf(i)) # Boundary conditions: q_{-1/2} = 0 - no pressure gradient along the central line (symmetry).
         case 1:
-            MatrixElement = MatrixPreElement(i)
+            MatrixElement = FluxCoefficientMinusHalf(i)
     return St * MatrixElement / (12 * r[i] * dr[i] * dr[i])
 
 # def ODEForce(t, dhdt, h0_val):
 #     return -dhdt * 6 * np.pi / (St * h0_val * m) #TODO: +??
 
 ZoomFactor = 1/4
-Nr = 1000
-dr = np.ones(Nr) * (ZoomFactor / Nr)
-r = (np.arange(Nr) + 0.5) * dr # Data taken at cell centres.
+Nr = 500
+
+rHalf = np.linspace(0, ZoomFactor, Nr + 1) # Values of r, defined at the edges (eg: r_{i - 1/2})
+CellWidth = np.diff(rHalf) # The width of each cell.
+r = rHalf[:-1] + CellWidth / 2 # Size Nr, the cell centers
+dr = np.diff(r) # The distance from the centre of each cell to the next.
+dpdr = np.zeros(Nr + 1) # dp/dr, held at cell edges.
+
 h_0 = 5e-2 # h_0 << R for weak parabolic effect.
 h = h_0 + 0.5 * r**2
-dhdt_0 = np.full(Nr, -1.0)
-dhdt = dhdt_0.copy()
+dhdt = np.full(Nr, -1.0)
+d2hdt2 = np.zeros(Nr)
+
+fPrime = np.zeros(Nr + 1)
+gPrime = np.zeros(Nr + 1)
 
 Nt = 500
 dt = (3.0 * h_0 / 1.0) / Nt
@@ -65,8 +73,8 @@ dt = (3.0 * h_0 / 1.0) / Nt
 hResults = []
 pResults = []
 
-K_R = np.zeros((Nr, Nr), dtype=np.float64)
-K_1 = np.zeros((Nr, Nr), dtype=np.float64)
+K_P = np.zeros((Nr, Nr), dtype=np.float64)
+K_S = np.zeros((Nr, Nr), dtype=np.float64)
 t, w = np.polynomial.legendre.leggauss(20)
 twopi = 2 / np.pi
 def Kernel(r, ri):
@@ -80,17 +88,15 @@ st = time.time()
 for i in range(Nr):
     print(f"Precomputing Kernel Data: Row {i+1} / {Nr}...", end="\r", flush=True)
     for j in range(Nr):
-        HalfSpacing = dr[j] / 2
-        rMinusHalf = r[j] - HalfSpacing
-        rPlussHalf = r[j] + HalfSpacing
+        HalfSpacing = CellWidth[j] / 2
         if i == j: # Use scipy quad.
-            K_R[i,j], _ = quad(Kernel, rMinusHalf, rPlussHalf, args=(r[i],), points=[r[j]], epsabs=0, epsrel=1e-13)
-            K_1[i,j], _ = quad(K1, rMinusHalf, rPlussHalf, args=(r[i], r[j]), points=[r[j]], epsabs=0, epsrel=1e-13)
+            K_P[i,j], _ = quad(Kernel, rHalf[j], rHalf[j+1], args=(r[i],), points=[r[j]], epsabs=0, epsrel=1e-13)
+            K_S[i,j], _ = quad(K1, rHalf[j], rHalf[j+1], args=(r[i], r[j]), points=[r[j]], epsabs=0, epsrel=1e-13)
         else: # Use legendre leggauss
             KernelEvalPoints = HalfSpacing * t + r[j]
-            K_R[i,j] = HalfSpacing * np.dot(w, Kernel(KernelEvalPoints, r[i]))
-            K_1[i,j] = HalfSpacing * np.dot(w, K1(KernelEvalPoints, r[i], r[j]))
-            # K1Value = (dr[j]**2 / 12) * (Kernel(rPlussHalf, r[i]) - Kernel(rMinusHalf, r[i]))
+            K_P[i,j] = HalfSpacing * np.dot(w, Kernel(KernelEvalPoints, r[i]))
+            K_S[i,j] = HalfSpacing * np.dot(w, K1(KernelEvalPoints, r[i], r[j]))
+            # K1Value = (dr[j]**2 / 12) * (Kernel(rHalf[j+1], r[i]) - Kernel(rHalf[j], r[i]))
             # if abs(K_1[i,j] - K1Value) > 1e10:
             #     print(f"ahh! {K1Value} vs {K_1[i,j]} at index [{i},{j}]")
                         
@@ -109,8 +115,18 @@ for n in range(Nt):
     AB[1, :] = [InitMatrix(i, i) for i in range(Nr)]
     AB[2, :-1] = [InitMatrix(j + 1, j) for j in range(Nr - 1)]
     p = solve_banded((1, 1), AB, dhdt)
+
+    # Calculates dp/dr (note: why can't we just embed this inside the matrix construction? Van der Walls??).
+    # Boundary conditions (as in InitMatrix: no-flux at r = 0, p(r=N) = 0).
+    dpdr[1:-1] = np.diff(p) / dr
+    dpdr[0] = 0.0 
+    dpdr[-1] = -p[-1] / dr[-1]
     
-    # Boundary Integral.
+    # Plugs into Boundary Integral.
+    for n in range(Nt):
+        fPrime[n] = rHalf[n] * dpdr[n] - rHalf[n+1] * dpdr[n+1]
+        gPrime[n] = dpdr[n] - dpdr[n+1]
+    accel = (np.dot(K_P, fPrime) + 2 * np.dot(K_S, gPrime)) / CellWidth
     
     
     # Saves results, so that they can be outputted. Note that we make everything symmetric also! :)
@@ -121,7 +137,7 @@ for n in range(Nt):
     # sol = solve_ivp(ODEForce, t_span=(0.0, dt), y0=dhdt, args=(h[0],))
     # h += sol.y[:,-1] * dt
     
-    accel = np.sum((3/2) * p * r * dr[0]) #? F = \int^\infty_0 p 2\pi r dr, but non-dimensionalised. My thoughts are that we therefore just multiply by each area element? :O
+    # accel = np.sum((3/2) * p * r * CellWidth[0]) #? F = \int^\infty_0 p 2\pi r dr, but non-dimensionalised. My thoughts are that we therefore just multiply by each area element? :O
     #print(accel)
     
     # r_faces = np.arange(1, Nr) * dr
