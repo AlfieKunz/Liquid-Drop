@@ -1,5 +1,4 @@
 import time
-
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
@@ -9,6 +8,11 @@ from scipy.integrate import quad
 from scipy.linalg import solve_banded
 from scipy.special import ellipkm1
 from tqdm import tqdm
+import datetime
+from scipy.integrate import cumulative_trapezoid
+# import warnings
+# from scipy.integrate import IntegrationWarning
+# warnings.filterwarnings("ignore", category=IntegrationWarning)
 
 # Note: use numba-scipy for scipy function! :)
 
@@ -19,9 +23,18 @@ def Kernel(r, ri):
     return twopi * ellipkm1(k1 * k1) / rSum
 def KS(r, ri, rj):
     return (r - rj) * Kernel(r, ri)
+def KernelSym(s, ri):
+    r1Sum, r2Sum = 2.0*ri + s, 2.0*ri - s
+    k11, k12 = s / r1Sum, s / r2Sum # k11 should be -..., but this gets squares so we're fine :)
+    return twopi * ((ellipkm1(k11 * k11) / r1Sum) + (ellipkm1(k12 * k12) / r2Sum))
+    return Kernel(ri + s, ri) + Kernel(ri - s, ri)
+def KSSym(s, ri):
+    r1Sum, r2Sum = 2.0*ri + s, 2.0*ri - s
+    k11, k12 = s / r1Sum, s / r2Sum # k11 should be -..., but this gets squares so we're fine :)
+    return twopi * s * ((ellipkm1(k11 * k11) / r1Sum) - (ellipkm1(k12 * k12) / r2Sum))
+    return s * (Kernel(ri + s, ri) - Kernel(ri - s, ri))
 
 def ConstructKernel():
-    #TODO: Saw something about writing s = |r' - r_i| to make the K_S integral a lot easier... chuck s * (Kernel(ri + s, ri) - Kernel(ri - s, ri)) into quad, from 0 to delta/2
     K_P = np.zeros((Nr, Nr))
     K_S = np.zeros((Nr, Nr))
     Points, Weights = np.polynomial.legendre.leggauss(20)
@@ -40,15 +53,16 @@ def ConstructKernel():
     
         # Fill in the i = j areas to deal with the Logarithmic Singularity, using Scipy Quad.
         # Note that I use epsabs=1e-16 in the second of these as there is lots of symmetry around the pole.
-        K_P[i,i], _ = quad(Kernel, rHalf[i], rHalf[i+1], args=(r[i],), points=[r[i]], epsabs=0, epsrel=1e-12)
-        K_S[i,i], _ = quad(KS, rHalf[i], rHalf[i+1], args=(r[i], r[i]), points=[r[i]], epsabs=1e-16, epsrel=1e-12)
+        K_P[i,i], _ = quad(KernelSym, 0, HalfSpacing[i], args=(r[i],), epsabs=0, epsrel=1e-13)
+        K_S[i,i], _ = quad(KSSym, 0, HalfSpacing[i], args=(r[i]), epsabs=0, epsrel=1e-13)
+        # K_P[i,i], _ = quad(Kernel, rHalf[i], rHalf[i+1], args=(r[i],), points=[r[i]], epsabs=1e-14, epsrel=1e-12)
+        # K_S[i,i], _ = quad(KS, rHalf[i], rHalf[i+1], args=(r[i], r[i]), points=[r[i]], epsabs=1e-14, epsrel=1e-12)
     return K_P, K_S
 
 
 def ConstructBandedMatrix():
     AB = np.zeros((3, Nr))
-    FluxCoefficientMap = FluxCoefficientMinusHalf(np.arange(1, Nr)) # Calculates the half-cell index matrix, from a matrix of indices.
-    FVMMultiplier = St / (12.0 * r * CellWidth * CellWidth)
+    FluxCoefficientMap = FluxCoefficientMinusHalf(np.arange(1, Nr)) / dr # Calculates the half-cell index matrix, from a matrix of indices.
     
     AB[0, 1:] = FluxCoefficientMap * FVMMultiplier[:-1]
     # Boundary conditions: q_{-1/2} = 0 - no pressure gradient along the central line (symmetry).
@@ -57,7 +71,7 @@ def ConstructBandedMatrix():
     # Boundary conditions: q_{n + 1/2} = 0. We then enforce p_N = -p_{N-1} s.t the pressure at the edge of the final cell is 0.
     # To do this, we must interpolate h_N to h_{N+1/2} = h[N] + 0.5*(h[N] - h[N-1]), or h[N] + (h[N] - h[N-1/2]). 
     hRightEdge = 2 * h[-1] - hIndexMinusHalf(-1)
-    AB[1, -1] = -(FluxCoefficientMap[-1] + (2.0 * (hRightEdge**3 * rHalf[-1]))) * FVMMultiplier[-1]
+    AB[1, -1] = -(FluxCoefficientMap[-1] + (2.0 * (hRightEdge**3 * rHalf[-1] / CellWidth[-1]))) * FVMMultiplier[-1]
     AB[2, :-1] = FluxCoefficientMap * FVMMultiplier[1:]
     # # Sanity Check: compare against old InitMatrix Function.
     # for i in range(1, Nr):
@@ -71,15 +85,24 @@ def ConstructBandedMatrix():
     #         print("Ahhhh")
     return AB
 
-def hIndexMinusHalf(i):
-    hMinusInterp = h[i - 1] + 0.5 * CellWidth[i - 1]
-    hPlusInterp = h[i] - 0.5 * CellWidth[i]
-    return 0.5 * (hMinusInterp + hPlusInterp)
+def hIndexMinusHalf(i): # Uses a level design to interpolate h to the edges. This should all be CellWidth / 2 but they all cancel out :)
+    hMinusInterp = h[i - 1] * CellWidth[i]
+    hPlusInterp = h[i] * CellWidth[i - 1]
+    return (hMinusInterp + hPlusInterp) / (CellWidth[i - 1] + CellWidth[i])
 def FluxCoefficientMinusHalf(i):
     # 0.5 * (h[i - 1]**3 + h[i]**3)???
     return hIndexMinusHalf(i)**3 * rHalf[i]
 
 
+def CellWidthWeightingFunction(r, r_0 = 0.18075432): #r_0 is the location of the pressure asymptote (where the droplet touches the surface).
+    return np.exp(-2.0 * r) + 2.0 * np.exp(-(25.0 * (r - r_0))**2) #TODO: Replace 2.0 with 10.0 - 20.0 when we find out exactly where the asymptote is!!
+    return 1
+
+
+
+# (Relative) file path to retieve data from. Set to '' for full simulation mode.
+SAVEFILE = ''#'SimulationResults25112026-145410,Nr=25000,Nt=10000'
+SAVESIMULATION = False
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
 rho = 1e3
@@ -94,13 +117,20 @@ print(f"Stokes Number: {St:.2e}")
 
 
 ZoomFactor = 1/4
-Nr = 500
+Nr = 2500
 
-rHalf = np.linspace(0, 1, Nr + 1) # Values of r, defined at the edges (eg: r_{i - 1/2}). Non-dimensionalisation make r from 0 to 1.
+# Use the equidistribution principle to distribute CellWidth, using CellWidthWeightingFunction(r) for r from 0 to 1.
+# Get a really good mesh of the CellWidthWeightingFunction function, rho(r)
+rFine = np.linspace(0, 1, (Nr * 100) + 1)
+rho = cumulative_trapezoid(CellWidthWeightingFunction(rFine), rFine, initial=0.0)
+rho /= rho[-1] # Normalises the mesh density function.
+rHalf = np.interp(np.linspace(0, 1, Nr + 1), rho, rFine) 
 CellWidth = np.diff(rHalf) # The width of each cell.
+
 r = rHalf[:-1] + CellWidth / 2 # Size Nr, the cell centers
 dr = np.diff(r) # The distance from the centre of each cell to the next.
 dpdr = np.zeros(Nr + 1) # dp/dr, held at cell edges.
+FVMMultiplier = St / (12.0 * r * CellWidth)
 
 h_0 = 5e-2 # h_0 << R for weak parabolic effect.
 h = h_0 + 0.5 * r**2
@@ -110,7 +140,7 @@ d2hdt2 = np.zeros(Nr)
 fPrime = np.zeros(Nr)
 gPrime = np.zeros(Nr)
 
-NtMax = 2000
+NtMax = 5000
 t = 0
 dt0 = (3.0 * h_0 / 1.0) / (NtMax / 5)  # Time for a rigid drop to descent 3x its height. TODO: replace 5 with 1
 GlobalSpeedupMultiplier = 4
@@ -120,65 +150,90 @@ pResults = []
 tResults = []
 dtResults = []
 EXITCode = 0 # 0 for all good, 1 for exit early due to droplet touching solid.
-                
-st = time.time()
-K_P, K_S = ConstructKernel()          
-ft = time.time()
-print(f"Precomputed Kernel Data in {ft - st:.2f}s!")
+     
+if SAVEFILE == "":           
+    st = time.time()
+    K_P, K_S = ConstructKernel()          
+    ft = time.time()
+    print(f"Precomputed Kernel Data in {ft - st:.2f}s!")
 
 
-st = time.time()
-for n in tqdm(range(NtMax), desc="Running Lubrication + Boundary Integral Time Iteration"):     
-    # Lubrication Method.
-    AB = ConstructBandedMatrix()
-    p = solve_banded((1, 1), AB, dhdt, check_finite=False)
+    st = time.time()
+    for n in tqdm(range(NtMax), desc="Running Lubrication + Boundary Integral Time Iteration"):     
+        # Lubrication Method.
+        AB = ConstructBandedMatrix()
+        p = solve_banded((1, 1), AB, dhdt, check_finite=False)
 
-    # Calculates dp/dr (note: why can't we just embed this inside the matrix construction? Van der Walls??).
-    # Boundary conditions (as in InitMatrix: no-flux at r = 0, p(r=N) = 0).
-    dpdr[0] = 0.0 
-    dpdr[1:-1] = np.diff(p) / dr
-    dpdr[-1] = -2 * p[-1] / dr[-1]
-    
-    # Plugs into Boundary Integral.
-    f = rHalf * dpdr
-    fPrime = (f[:-1] - f[1:]) / CellWidth
-    gPrime = (dpdr[:-1] - dpdr[1:]) / CellWidth
-    d2hdt2 = (np.dot(K_P, fPrime) + 2 * np.dot(K_S, gPrime))
-    
-    # # a = v/t. If the drop begins to accelerate
-    # MaxAccel = np.max(np.abs(d2hdt2))
-    # if MaxAccel > 1e-12:
-    #     Acceldt = np.max(np.abs(dhdt)) / MaxAccel
-    #     dt = min(dt, Acceldt * 0.1)
-    
-    dt_h = 0.01 * np.min(np.where(dhdt < 0, h / np.maximum(-dhdt, 1e-300), np.inf))
-    MaxAccel = np.max(np.abs(d2hdt2))
-    dt_u = 0.01 * np.max(np.abs(dhdt)) / MaxAccel if MaxAccel > 1e-12 else np.inf
-    dt = min(dt0, dt_h, dt_u)
-    
-    # Saves results for the p[t = n] and h[t = n] update, so that they can be outputted. Note that we make everything symmetric also! :)
-    if (n % GlobalSpeedupMultiplier == 0):
-        hResults.append(np.concatenate((h[::-1], h)))
-        pResults.append(np.concatenate((p[::-1], p)))
-        dtResults.append(dt)
-        tResults.append(t)
-    
-    # Calculates h[t = n+1]
-    dhdt += d2hdt2 * dt
-    h += dhdt * dt
-    t += dt
-    
-    if np.min(h) < h_0 * 0.005:
-        EXITCode = 1
-        break
-    
-ft = time.time()
-match EXITCode:
-    case 0: print("Simulation Completed Normally.")
-    case 1: print("Simulation Exited Early Due to Droplet Touching Solid.")
+        # Calculates dp/dr (note: why can't we just embed this inside the matrix construction? Van der Walls??).
+        # Boundary conditions (as in InitMatrix: no-flux at r = 0, p(r=N) = 0).
+        dpdr[0] = 0.0 
+        dpdr[1:-1] = np.diff(p) / dr
+        dpdr[-1] = -2 * p[-1] / CellWidth[-1]
         
-print(f"Simulation Completed in {ft - st:.2f}s! Simulation Time: {tResults[-1]:.4f}")
-print(f"Predicted Pressure Asymptote at r = {(np.where(pResults[-1] == np.max(pResults[-1]))[-1][-1] - Nr) / Nr}")
+        # Plugs into Boundary Integral. #TODO: verify this :).
+        f = rHalf * dpdr
+        fPrime = (f[:-1] - f[1:]) / CellWidth
+        gPrime = (dpdr[:-1] - dpdr[1:]) / CellWidth
+        d2hdt2 = (np.dot(K_P, fPrime) + 2 * np.dot(K_S, gPrime))
+        
+        # # a = v/t. If the drop begins to accelerate
+        # MaxAccel = np.max(np.abs(d2hdt2))
+        # if MaxAccel > 1e-12:
+        #     Acceldt = np.max(np.abs(dhdt)) / MaxAccel
+        #     dt = min(dt, Acceldt * 0.1)
+        
+        dt_h = 0.01 * np.min(np.where(dhdt < 0, h / np.maximum(-dhdt, 1e-300), np.inf))
+        MaxAccel = np.max(np.abs(d2hdt2))
+        dt_u = 0.01 * np.max(np.abs(dhdt)) / MaxAccel if MaxAccel > 1e-12 else np.inf
+        dt = min(dt0, dt_h, dt_u)
+        
+        # Saves results for the p[t = n] and h[t = n] update, so that they can be outputted. Note that we make everything symmetric also! :)
+        if (n % GlobalSpeedupMultiplier == 0):
+            hResults.append(np.concatenate((h[::-1], h)))
+            pResults.append(np.concatenate((p[::-1], p)))
+            dtResults.append(dt)
+            tResults.append(t)
+        
+        # Calculates h[t = n+1]
+        dhdt += d2hdt2 * dt
+        h += dhdt * dt
+        t += dt
+        
+        if np.min(h) < h_0 * 2.5e-3:
+            EXITCode = 1
+            break
+        
+    ft = time.time()
+    match EXITCode:
+        case 0: print("Simulation Completed Normally.")
+        case 1: print("Simulation Exited Early Due to Droplet Touching Solid.")
+            
+    print(f"Simulation Completed in {ft - st:.2f}s! Simulation Time: {tResults[-1]:.4f}")
+
+    # Saves data to a new file.
+    rPlot = np.concatenate((-r[::-1], r))
+    hResults, pResults, tResults, dtResults = np.array(hResults), np.array(pResults), np.array(tResults), np.array(dtResults)
+    if SAVESIMULATION:
+        NewSaveFile = f'SimulationResults{datetime.datetime.now().strftime("%d%m%Y-%H%M%S")},Nr={Nr},Nt={NtMax}.npz'
+        np.savez_compressed('./Programming & Visualisations/SavedSimulations/' + NewSaveFile, rPlot=rPlot, hResults=hResults, pResults=pResults, tResults=tResults, dtResults=dtResults)
+        print(f"Successfully Saved Simulation Results into file: {NewSaveFile}")
+    
+    print(f"Predicted Pressure Asymptote at r = {rPlot[np.where(pResults[-1] == np.max(pResults[-1]))[-1]]}.")
+
+else: # Retrieve data from save file.
+    SaveData = np.load(f'./Programming & Visualisations/SavedSimulations/{SAVEFILE}.npz')
+    rPlot = SaveData['rPlot']
+    hResults = SaveData['hResults']
+    pResults = SaveData['pResults']
+    tResults = SaveData['tResults']
+    dtResults = SaveData['dtResults']
+    print(f"Successfully Loaded Simulation Results from file: {SAVEFILE}.npz")
+        
+        
+
+#TODO: research analytical solution, check dt conditions, study St^1/3 scaling and put on graph, dynamic dr (make sure BI method is well-accustomed for this! :D)
+
+
 
 
 
@@ -190,8 +245,6 @@ print(f"Predicted Pressure Asymptote at r = {(np.where(pResults[-1] == np.max(pR
 
 
 print("Plotting...")
-rPlot = np.concatenate((-r[::-1], r))
-hResults, pResults, tResults, dtResults = np.array(hResults), np.array(pResults), np.array(tResults), np.array(dtResults)
 hMax = hResults.max()
 pMiddlePlot = np.array([result[len(result) // 2] for result in pResults])
 pMaxPlot = np.array([np.max(result) for result in pResults])
@@ -213,8 +266,8 @@ DropletXVertices = np.concatenate(([rPlot[0]], rPlot, [rPlot[-1]]))
 DropletMesh = ax1.fill(DropletXVertices, np.concatenate(([hMax], hResults[0], [hMax])), color='paleturquoise', zorder=2)[0]
 DropletBoundary, = ax1.plot(rPlot, hResults[0], color='dodgerblue', lw=2.5, zorder=3)
 
-cbar = fig.colorbar(IMPlot, ax=ax1, fraction=0.035, pad=0.01)
-fig.colorbar(IMPlot, ax=ax2, fraction=0.035, pad=0.01).ax.set_visible(False) # Places an identical colourbar on the second axis, such that the two figures align.
+cbar = fig.colorbar(IMPlot, ax=ax1, fraction=0.035, pad=-0.05)
+fig.colorbar(IMPlot, ax=ax2, fraction=0.035, pad=-0.05).ax.set_visible(False) # Places an identical colourbar on the second axis, such that the two figures align.
 # Makes the scale for the pressure heatmap logarithmic and global, so that we can visually see pressure updating.
 cbar.ax.yaxis.set_major_formatter(ScalarFormatter())
 cbar.ax.yaxis.set_major_locator(LogLocator(base=10, subs=(1, 2, 5)))
@@ -230,12 +283,16 @@ ax1.set_title('Droplet Interface Evolution')
 # Bottom-Left: Global Pressure Map (with analytic solution).
 PressureMap, = ax2.plot(rPlot, pResults[0], color='darkorange', lw=2.5, label='Simulation')
 RigidPressure, = ax2.plot(rPlot, Rigidp(tResults[0], rPlot), 'k--', lw=1.4, alpha=0.7, label='Rigid Interface')
+ax2Twin = ax2.twinx()
+CellWidthLine, = ax2Twin.plot(rPlot, 1 / (Nr * np.concatenate((CellWidth[::-1], CellWidth))), color='grey', ls=':', lw=1.4, alpha=0.6, label=r'Domain Cell Distribution $(1 / \Delta r)$')
 
 ax2.set_ylim(0, np.max(pResults) * 1.05)
 ax2.set_xlabel(r'Position ($r/R$)')
 ax2.set_ylabel(r'Pressure ($p / \rho U^2$)')
+ax2Twin.set_ylabel(r'Cells per $N_r^{-1}$ Region')
 ax2.grid(True, alpha=0.3)
-ax2.legend(loc='upper right', fontsize=8)
+lines = [PressureMap, RigidPressure, CellWidthLine]
+ax2.legend(lines, [l.get_label() for l in lines], loc='upper right', fontsize=8)
 ax2.set_title('Local Pressure Across the Interface')
 
 
@@ -279,6 +336,8 @@ ax4.grid(True, which='both', alpha=0.3)
 # Middle-right: linear time bar.
 TimeBar = axT.barh(0.5, 0, height=1, color='darkorange')[0]
 axT.set(xlim=(0, 1), ylim=(0, 1), xticks=[], yticks=[], facecolor='0.93')
+#axT.set_title(r"Linear Progression of Simulation time $t$")
+axT.set_xlabel(r"Linear Progression of Simulation time $t$")
 Frames = range(0, len(hResults))
 
 
