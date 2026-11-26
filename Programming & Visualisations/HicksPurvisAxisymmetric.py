@@ -199,7 +199,7 @@ if SAVEFILE == "":
         h += dhdt * dt
         t += dt
         
-        if np.min(h) < h_0 * 2.5e-3:
+        if np.min(h) < h_0 * 1e-3:
             EXITCode = 1
             break
         
@@ -231,7 +231,7 @@ else: # Retrieve data from save file.
         
         
 
-#TODO: research analytical solution, check dt conditions, study St^1/3 scaling and put on graph, dynamic dr (make sure BI method is well-accustomed for this! :D)
+#TODO: research analytical solution, check dt conditions, study St^1/3 scaling and put on graph
 
 
 

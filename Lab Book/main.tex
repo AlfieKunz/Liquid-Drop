@@ -512,6 +512,7 @@
 	
 	To increase floating-point accuracy for scipy quadrature integration (in the $i = j$ cases), we use the transform $s = |r' - r_i|$, which gives:
 	$$\mathbf{K}^P_{ii} = \int^{\Delta r_i / 2}_0 \mathcal{K}(r_i, r_i + s) + \mathcal{K}(r_i, r_i - s)\ ds \qquad \mathbf{K}^S_{ii} = \int^{\Delta r_i / 2}_0 s \left[\mathcal{K}(r_i, r_i + s) - \mathcal{K}(r_i, r_i - s)\right] ds.$$
+	Despite evaluating the kernel $\mathcal{K}$ at twice the number of points per quadrature integration step, moving the singularity to the edge $s = 0$ is more optimised for \texttt{QUADPACK}, allowing fewer integration steps overall and improving performance by approximately $17\%$ (for 2500 uniformly distributed points).
 	
 	\todo[inline, color=pink]{COMPARE THE TWO METHODS AND WRITE ABOUT IT HERE!!!!!}
 	
