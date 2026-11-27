@@ -106,14 +106,14 @@ def CellWidthWeightingFunction(r, r_0 = 0.18075432): #r_0 is the location of the
 
 #! ~~~~~~~~~~~~~~~~~~~~ PROGRAM SETTINGS ~~~~~~~~~~~~~~~~~~~~
 # (Relative) file path to retieve data from. Set to '' for full simulation mode.
-SAVEFILE = '' #'SimulationResults25112026-145410,Nr=25000,Nt=10000'
-SAVESIMULATION = False
-PlottingMode = 2 # 0 for both, 1 for only interface evolution, 2 for only HP comparison.
-GlobalSpeedupMultiplier = 4
+SAVEFILE = 'SimulationResults27112026-232818,Nr=10000,Nt=10000'
+SAVESIMULATION = True
+PlottingMode = 0 # 0 for both, 1 for only interface evolution, 2 for only HP comparison.
+GlobalSpeedupMultiplier = 5
 ZoomFactor = 1/4
 
-Nr = 1000
-NtMax = 2000
+Nr = 10000
+NtMax = 10000
 #! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
@@ -353,7 +353,7 @@ TimeBar = axT.barh(0.5, 0, height=1, color='darkorange')[0]
 axT.set(xlim=(0, 1), ylim=(0, 1), xticks=[], yticks=[], facecolor='0.93')
 #axT.set_title(r"Linear Progression of Simulation time $t$")
 axT.set_xlabel(r"Linear Progression of Simulation time $t$")
-Frames = range(0, len(hResults))
+Frames = range(0, len(hResults), 1 if SAVEFILE == '' else GlobalSpeedupMultiplier)
 
 
 
