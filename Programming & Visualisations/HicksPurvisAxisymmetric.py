@@ -108,8 +108,8 @@ PlottingMode = 2 # 0 for both, 1 for only interface evolution, 2 for only HP com
 GlobalSpeedupMultiplier = 4
 ZoomFactor = 1/4
 
-Nr = 1000
-NtMax = 2000
+Nr = 2500
+NtMax = 2500
 #! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
@@ -141,7 +141,7 @@ dpdr = np.zeros(Nr + 1) # dp/dr, held at cell edges.
 FVMMultiplier = St / (12.0 * r * CellWidth)
 
 #TODO: changing h_0 has massive variance! :()
-h_0 = 4e-2 # h_0 << R for weak parabolic effect. Note: HP has t = -8, corresponding to h_0 = 0.01098925673
+h_0 = 0.01098925673 # 4e-2 # h_0 << R for weak parabolic effect. Note: HP has t = -8, corresponding to h_0 = 0.01098925673
 h = h_0 + 0.5 * r**2 #TODO: HP uses h_0 + r**2, I use h_0 + 0.5 * r**2?
 dhdt = np.full(Nr, -U)
 d2hdt2 = np.zeros(Nr)
@@ -151,7 +151,7 @@ gPrime = np.zeros(Nr)
 
 t = 0
 TouchdownTime = h_0 / U
-dt0 = (3.0 * TouchdownTime) / (NtMax / 5)  # Time for a rigid drop to descent 3x its height. TODO: replace 5 with 1
+dt0 = 3.0 * TouchdownTime / NtMax  # Time for a rigid drop to descent 3x its height.
 
 hResults = []
 pResults = []
@@ -457,33 +457,24 @@ for t, col in zip(tPlotValues, colors):
     # Hicks & Purvis (2010) reference points
     r_ref_f, f_ref = HPFig3aResults[t]
     r_ref_p, p_ref = HPFig3bResults[t]
-    ax1.plot(r_ref_f, f_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8, label=f"HP t={t}")
-    ax2.plot(r_ref_p, p_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8)
+    ax1.plot(r_ref_f, f_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8)
+    ax2.plot(r_ref_p, p_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8, label=f"HP t={t}")
     
     # Finds closest datapoint in simulation and attempts to draw it.
     SimTimeIndex = np.abs(tResults - t).argmin()
-    ax1.plot(rPlot, hResults[SimTimeIndex], "-", color=col, lw=2.0, label=f"Sim t={tResults[SimTimeIndex]:.2f}")
-    ax2.plot(rPlot, pResults[SimTimeIndex], "-", color=col, lw=2.0)
-
-    # Your simulation: find closest snapshot to t_target
-    # if my_snapshots:
-    #     t_sim_target = h0_tilde + t * TIME_SCALE
-    #     t_s, r_t, f_t, p_t = min(my_snapshots, key=lambda s: abs(s[0] - t_sim_target))
-    #     r_hp, f_hp, t_hp_actual, p_hp = to_hp_units(r_t, f_t, t_s, p_t)
-
-    #     ax1.plot(r_hp, f_hp, "-", color=col, lw=2.0, label=f"Sim t={t_hp_actual:.2f}")
-    #     ax2.plot(r_hp, p_hp, "-", color=col, lw=2.0)
+    ax1.plot(rPlot, hResults[SimTimeIndex], "-", color=col, lw=2.0)
+    ax2.plot(rPlot, pResults[SimTimeIndex], "-", color=col, lw=2.0, label=f"Sim t={tResults[SimTimeIndex]:.2f}")
 
 # Match Hicks & Purvis Fig. 3 formatting
 ax1.set_ylabel("Free-surface height $f$")
 ax1.set_ylim(0, 10)
-ax1.legend(ncol=2, fontsize=8, loc="upper left", frameon=True)
 ax1.grid(alpha=0.25)
 
 ax2.set_xlabel("Radius $r$")
 ax2.set_ylabel("Pressure $p$")
 ax2.set_xlim(0, 5)
 ax2.set_ylim(0, 0.5)
+ax2.legend(ncol=2, fontsize=7, loc="upper right", frameon=True)
 ax2.grid(alpha=0.25)
 
 if (PlottingMode != 1):
