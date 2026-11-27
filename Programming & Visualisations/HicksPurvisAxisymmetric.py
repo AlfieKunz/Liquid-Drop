@@ -10,6 +10,7 @@ from scipy.special import ellipkm1
 from tqdm import tqdm
 import datetime
 from scipy.integrate import cumulative_trapezoid
+from matplotlib import cm
 # import warnings
 # from scipy.integrate import IntegrationWarning
 # warnings.filterwarnings("ignore", category=IntegrationWarning)
@@ -99,16 +100,24 @@ def CellWidthWeightingFunction(r, r_0 = 0.18075432): #r_0 is the location of the
     return 1
 
 
-
+#! ~~~~~~~~~~~~~~~~~~~~ PROGRAM SETTINGS ~~~~~~~~~~~~~~~~~~~~
 # (Relative) file path to retieve data from. Set to '' for full simulation mode.
 SAVEFILE = ''#'SimulationResults25112026-145410,Nr=25000,Nt=10000'
 SAVESIMULATION = False
+PlottingMode = 2 # 0 for both, 1 for only interface evolution, 2 for only HP comparison.
+GlobalSpeedupMultiplier = 4
+ZoomFactor = 1/4
+
+Nr = 1000
+NtMax = 2000
+#! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
 rho = 1e3
 R = 5e-4
 U = 1.0
 mu_g = 1.8e-5
+mu_l = 1e-3
 m = 1.0 # rho * np.pi * R**3 * 4/3
 
 ScalingFactor = 1.0
@@ -116,15 +125,14 @@ St = ScalingFactor * rho * R * U / mu_g
 print(f"Stokes Number: {St:.2e}")
 
 
-ZoomFactor = 1/4
-Nr = 2500
+
 
 # Use the equidistribution principle to distribute CellWidth, using CellWidthWeightingFunction(r) for r from 0 to 1.
 # Get a really good mesh of the CellWidthWeightingFunction function, rho(r)
 rFine = np.linspace(0, 1, (Nr * 100) + 1)
-rho = cumulative_trapezoid(CellWidthWeightingFunction(rFine), rFine, initial=0.0)
-rho /= rho[-1] # Normalises the mesh density function.
-rHalf = np.interp(np.linspace(0, 1, Nr + 1), rho, rFine) 
+CellMeshrho = cumulative_trapezoid(CellWidthWeightingFunction(rFine), rFine, initial=0.0)
+CellMeshrho /= CellMeshrho[-1] # Normalises the mesh density function.
+rHalf = np.interp(np.linspace(0, 1, Nr + 1), CellMeshrho, rFine) 
 CellWidth = np.diff(rHalf) # The width of each cell.
 
 r = rHalf[:-1] + CellWidth / 2 # Size Nr, the cell centers
@@ -132,18 +140,18 @@ dr = np.diff(r) # The distance from the centre of each cell to the next.
 dpdr = np.zeros(Nr + 1) # dp/dr, held at cell edges.
 FVMMultiplier = St / (12.0 * r * CellWidth)
 
-h_0 = 5e-2 # h_0 << R for weak parabolic effect.
-h = h_0 + 0.5 * r**2
-dhdt = np.full(Nr, -1.0)
+#TODO: changing h_0 has massive variance! :()
+h_0 = 4e-2 # h_0 << R for weak parabolic effect. Note: HP has t = -8, corresponding to h_0 = 0.01098925673
+h = h_0 + 0.5 * r**2 #TODO: HP uses h_0 + r**2, I use h_0 + 0.5 * r**2?
+dhdt = np.full(Nr, -U)
 d2hdt2 = np.zeros(Nr)
 
 fPrime = np.zeros(Nr)
 gPrime = np.zeros(Nr)
 
-NtMax = 5000
 t = 0
-dt0 = (3.0 * h_0 / 1.0) / (NtMax / 5)  # Time for a rigid drop to descent 3x its height. TODO: replace 5 with 1
-GlobalSpeedupMultiplier = 4
+TouchdownTime = h_0 / U
+dt0 = (3.0 * TouchdownTime) / (NtMax / 5)  # Time for a rigid drop to descent 3x its height. TODO: replace 5 with 1
 
 hResults = []
 pResults = []
@@ -195,6 +203,7 @@ if SAVEFILE == "":
             tResults.append(t)
         
         # Calculates h[t = n+1]
+        #TODO: yeah make this loads better pls :)
         dhdt += d2hdt2 * dt
         h += dhdt * dt
         t += dt
@@ -242,9 +251,7 @@ else: # Retrieve data from save file.
 
 
 
-
-
-print("Plotting...")
+print(f"{"Plotting" if PlottingMode != 2 else "Skipping Plotting for"} Interface Evolution...")
 hMax = hResults.max()
 pMiddlePlot = np.array([result[len(result) // 2] for result in pResults])
 pMaxPlot = np.array([np.max(result) for result in pResults])
@@ -361,11 +368,124 @@ def DrawFrame(frame):
     TRMarker.set_data([t_f], [pMiddlePlot[frame]])
     return Artists
 
-Animation = FuncAnimation(fig, DrawFrame, frames=Frames, interval=20, blit=True)
-# Suppresses some errors that appear during playback (exiting last frame early).
-_Step = Animation._step
-def QuietStep(*args):
-    return _Step(*args) if fig.canvas.manager is not None else False
-Animation.event_source.remove_callback(_Step)
-Animation.event_source.add_callback(QuietStep)
-plt.show()
+if (PlottingMode != 2):
+    Animation = FuncAnimation(fig, DrawFrame, frames=Frames, interval=20, blit=True)
+    # Suppresses some errors that appear during playback (exiting last frame early).
+    _Step = Animation._step
+    def QuietStep(*args):
+        return _Step(*args) if fig.canvas.manager is not None else False
+    Animation.event_source.remove_callback(_Step)
+    Animation.event_source.add_callback(QuietStep)
+    plt.show()
+plt.close('all')
+
+
+
+
+
+print(f"{"Plotting" if PlottingMode != 1 else "Skipping Plotting for"} Hicks & Purvis Comparison...")
+# Hicks & Purvis (2010), Figs. 3(a), 3(b): Free-surface height f(r, t) and Interfacial pressure p(r, t).
+# Visually extracted by Google Gemini (4 Neon, Extra High); left plot spine is at r ≈ 0.08.
+HPFig3aResults = {  -6: ( np.array([0.08, 0.50, 1.00, 1.40, 1.50, 1.80, 2.00]),
+                        np.array([6.03, 6.27, 7.03, 8.00, 8.27, 9.25, 10.00]), ),
+                    -5: ( np.array([0.08, 0.50, 1.00, 1.50, 1.72, 2.00, 2.24]),
+                        np.array([5.08, 5.31, 6.07, 7.28, 8.00, 9.03, 10.00]), ),
+                    -4: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.25, 2.45]),
+                        np.array([4.23, 4.44, 5.14, 6.32, 8.05, 9.10, 10.00]), ),
+                    -3: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.24, 2.50, 2.65]),
+                        np.array([3.47, 3.63, 4.24, 5.36, 7.05, 8.00, 9.25, 10.00]), ),
+                    -2: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 2.83]),
+                        np.array([2.83, 2.93, 3.41, 4.42, 6.06, 8.25, 10.00]), ),
+                    -1: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 2.65, 3.00]),
+                        np.array([2.38, 2.41, 2.65, 3.52, 5.08, 7.25, 8.00, 10.00]), ),
+                    0: ( np.array([0.08, 0.40, 0.70, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 2.83, 3.00, 3.17]),
+                        np.array([2.18, 2.16, 2.13, 2.18, 2.38, 2.75, 3.33, 4.10, 6.27, 8.00, 9.00, 10.00]), ),
+                    1: ( np.array([0.08, 0.50, 0.80, 1.00, 1.18, 1.50, 2.00, 2.50, 3.00, 3.33]),
+                        np.array([2.36, 2.15, 1.95, 1.86, 1.82, 2.03, 3.18, 5.25, 7.98, 10.00]), ),
+                    2: ( np.array([0.08, 0.50, 0.75, 1.00, 1.25, 1.55, 1.80, 2.00, 2.50, 3.00, 3.48]),
+                        np.array([2.49, 2.25, 2.05, 1.80, 1.62, 1.49, 1.72, 2.28, 4.28, 6.90, 10.00]), ),
+                    3: ( np.array([0.08, 0.50, 1.00, 1.50, 1.83, 2.00, 2.25, 2.50, 3.00, 3.50, 3.63]),
+                        np.array([2.61, 2.38, 1.85, 1.40, 1.22, 1.38, 2.05, 3.18, 5.75, 9.05, 10.00]), ),
+                    4: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.13, 2.30, 2.50, 2.75, 3.00, 3.50, 3.77]),
+                        np.array([2.74, 2.51, 1.88, 1.41, 1.03, 0.96, 1.15, 1.88, 3.12, 4.55, 7.95, 10.00]), ),
+                    5: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.40, 2.50, 2.60, 2.75, 3.00, 3.50, 3.91]),
+                        np.array([2.86, 2.61, 1.91, 1.41, 1.04, 0.74, 0.80, 1.05, 1.72, 3.25, 6.80, 10.00]),  ),
+                    6: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.40, 2.66, 2.75, 2.85, 3.00, 3.25, 3.50, 3.75, 4.00, 4.06]),
+                        np.array([2.91, 2.68, 1.94, 1.42, 1.05, 0.72, 0.56, 0.65, 1.05, 1.98, 3.70, 5.65, 7.65, 9.55, 10.00]), ), }
+
+HPFig3bResults = {  -6: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.041, 0.038, 0.031, 0.022, 0.015, 0.010, 0.007, 0.003]), ),
+                    -5: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.056, 0.051, 0.040, 0.028, 0.018, 0.012, 0.008, 0.003]), ),
+                    -4: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.079, 0.072, 0.054, 0.036, 0.023, 0.014, 0.009, 0.003]), ),
+                    -3: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.118, 0.104, 0.076, 0.048, 0.028, 0.017, 0.010, 0.004]), ),
+                    -2: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.177, 0.157, 0.110, 0.066, 0.036, 0.020, 0.011, 0.004]), ),
+                    -1: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00]),
+                        np.array([0.253, 0.233, 0.171, 0.095, 0.049, 0.025, 0.013, 0.004]), ),
+                    0: ( np.array([0.08, 0.50, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.00]),
+                        np.array([0.303, 0.295, 0.272, 0.246, 0.205, 0.155, 0.111, 0.075, 0.036, 0.018, 0.009, 0.005]), ),
+                    1: ( np.array([0.08, 0.50, 0.92, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00, 3.50, 4.00]),
+                        np.array([0.285, 0.292, 0.301, 0.300, 0.280, 0.233, 0.172, 0.114, 0.049, 0.022, 0.011, 0.006]), ),
+                    2: ( np.array([0.08, 0.50, 0.80, 1.00, 1.25, 1.44, 1.60, 1.80, 2.00, 2.25, 2.50, 3.00, 3.50, 4.00]),
+                        np.array([0.214, 0.221, 0.238, 0.260, 0.292, 0.304, 0.292, 0.245, 0.176, 0.107, 0.064, 0.026, 0.013, 0.006]), ),
+                    3: ( np.array([0.08, 0.50, 1.00, 1.25, 1.50, 1.70, 1.82, 2.00, 2.20, 2.40, 2.50, 2.75, 3.00, 3.50, 4.00]),
+                        np.array([0.145, 0.151, 0.181, 0.214, 0.268, 0.314, 0.325, 0.289, 0.195, 0.115, 0.088, 0.049, 0.031, 0.014, 0.007]), ),
+                    4: ( np.array([0.08, 0.50, 1.00, 1.50, 1.75, 2.00, 2.13, 2.25, 2.40, 2.50, 2.75, 3.00, 3.50, 4.00]),
+                        np.array([0.113, 0.118, 0.137, 0.193, 0.250, 0.340, 0.361, 0.335, 0.240, 0.168, 0.082, 0.044, 0.017, 0.008]), ),
+                    5: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.20, 2.30, 2.42, 2.50, 2.60, 2.70, 2.85, 3.00, 3.50, 4.00]),
+                        np.array([0.114, 0.117, 0.130, 0.162, 0.228, 0.305, 0.365, 0.408, 0.382, 0.295, 0.195, 0.105, 0.064, 0.021, 0.009]),  ),
+                    6: ( np.array([0.08, 0.50, 1.00, 1.50, 2.00, 2.30, 2.50, 2.60, 2.70, 2.78, 2.84, 2.91, 3.00, 3.15, 3.30, 3.50, 4.00, 4.50, 5.00]),
+                        np.array([0.117, 0.119, 0.125, 0.141, 0.165, 0.218, 0.312, 0.410, 0.471, 0.400, 0.300, 0.200, 0.115, 0.062, 0.039, 0.025, 0.011, 0.005, 0.003]), ), }
+
+# Converts our time domain to Hicks & Purvis time: shifts by TouchdownTime, and apply dimensions to the variables:
+# HP gives f = ~f * cbrt{2} / delta^2  ,  t = ~t * cbrt{2} / delta^2  ,  p = delta * cbrt{2} ~p  ,  x = cbrt{2}^2 x~ / delta           , where delta = cbrt{mu_g / mu_l Re}
+Re = rho * U * R / mu_l #? Is this mu_g or mu_l?
+delta = np.cbrt(mu_g / (mu_l * Re))
+rPlot = rPlot[len(rPlot)//2:] / (np.cbrt(2)**2 * delta)
+hResults = hResults[:, hResults.shape[1]//2:] / (np.cbrt(2) * delta**2)
+pResults = pResults[:, pResults.shape[1]//2:] * delta / np.cbrt(2)
+tResults = (tResults - TouchdownTime) / (np.cbrt(2) * delta**2)
+tPlotValues = np.arange(-6, 7)
+
+colors = cm.viridis(np.linspace(0.05, 0.92, len(tPlotValues)))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True, gridspec_kw={"hspace": 0.08})
+
+for t, col in zip(tPlotValues, colors):
+    # Hicks & Purvis (2010) reference points
+    r_ref_f, f_ref = HPFig3aResults[t]
+    r_ref_p, p_ref = HPFig3bResults[t]
+    ax1.plot(r_ref_f, f_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8, label=f"HP t={t}")
+    ax2.plot(r_ref_p, p_ref, "o--", color=col, ms=4, lw=1.0, alpha=0.8)
+    
+    # Finds closest datapoint in simulation and attempts to draw it.
+    SimTimeIndex = np.abs(tResults - t).argmin()
+    ax1.plot(rPlot, hResults[SimTimeIndex], "-", color=col, lw=2.0, label=f"Sim t={tResults[SimTimeIndex]:.2f}")
+    ax2.plot(rPlot, pResults[SimTimeIndex], "-", color=col, lw=2.0)
+
+    # Your simulation: find closest snapshot to t_target
+    # if my_snapshots:
+    #     t_sim_target = h0_tilde + t * TIME_SCALE
+    #     t_s, r_t, f_t, p_t = min(my_snapshots, key=lambda s: abs(s[0] - t_sim_target))
+    #     r_hp, f_hp, t_hp_actual, p_hp = to_hp_units(r_t, f_t, t_s, p_t)
+
+    #     ax1.plot(r_hp, f_hp, "-", color=col, lw=2.0, label=f"Sim t={t_hp_actual:.2f}")
+    #     ax2.plot(r_hp, p_hp, "-", color=col, lw=2.0)
+
+# Match Hicks & Purvis Fig. 3 formatting
+ax1.set_ylabel("Free-surface height $f$")
+ax1.set_ylim(0, 10)
+ax1.legend(ncol=2, fontsize=8, loc="upper left", frameon=True)
+ax1.grid(alpha=0.25)
+
+ax2.set_xlabel("Radius $r$")
+ax2.set_ylabel("Pressure $p$")
+ax2.set_xlim(0, 5)
+ax2.set_ylim(0, 0.5)
+ax2.grid(alpha=0.25)
+
+if (PlottingMode != 1):
+    plt.tight_layout()
+    plt.show()
