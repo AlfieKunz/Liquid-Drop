@@ -390,3 +390,34 @@ def _integrate_rk4_1d(r, cw, St, h_0, U, rhs_fn, t_end, dt_max, save_every):
     p, _ = rhs_fn(h, v)
     h_hist.append(h.copy()); p_hist.append(p.copy()); t_hist.append(t); dt_hist.append(dt)
     return dict(r=r, h=np.array(h_hist), p=np.array(p_hist), t=np.array(t_hist), dt=np.array(dt_hist))
+
+
+
+from scipy.special import ellipk, ellipe
+
+def test_kernel_z_to_0(r, rHalf, CellWidth, dr, K_P, K_S, R0=0.148, a=0.013):
+    """Tests DtN as z -> 0+ on a sharp off-axis ring peak (R0 ~ r_hp=2.82, a ~ 0.25)."""
+    def P_ring(r_arr, z):
+        ApB = (r_arr + R0)**2 + (z + a)**2
+        m = 4.0 * r_arr * R0 / ApB
+        return (2.0 / np.pi) * ellipk(m) / np.sqrt(ApB)
+
+    ApB = (r + R0)**2 + a**2
+    AmB = (r - R0)**2 + a**2
+    m = 4.0 * r * R0 / ApB
+    p_test = (2.0 * a / np.pi) * ellipe(m) / (AmB * np.sqrt(ApB))
+
+    # 4th-order exact d^2 P_ring / dz^2 at z = 0^+
+    eps = 1e-6
+    dtn_exact = (-P_ring(r, 2*eps) + 16*P_ring(r, eps) - 30*P_ring(r, 0.0)
+                 + 16*P_ring(r, -eps) - P_ring(r, -2*eps)) / (12 * eps**2)
+
+    dpdr = np.zeros(len(r) + 1)
+    dpdr[1:-1] = np.diff(p_test) / dr
+    dpdr[-1] = -2.0 * p_test[-1] / CellWidth[-1]
+    f = rHalf * dpdr
+    dtn_num = K_P @ ((f[:-1] - f[1:]) / CellWidth) + 2.0 * (K_S @ ((dpdr[:-1] - dpdr[1:]) / CellWidth))
+
+    mask = r < 0.5
+    rel_err = np.max(np.abs(dtn_num[mask] - dtn_exact[mask])) / np.max(np.abs(dtn_exact[mask]))
+    print(f"Ring-peak z->0+ max relative error (r < 0.5): {rel_err:.3e}")

@@ -100,20 +100,20 @@ def FluxCoefficientMinusHalf(i):
 
 
 def CellWidthWeightingFunction(r, r_0 = 0.18075432): #r_0 is the location of the pressure asymptote (where the droplet touches the surface).
-    return np.exp(-2.0 * r) + 2.0 * np.exp(-(25.0 * (r - r_0))**2) #TODO: Replace 2.0 with 10.0 - 20.0 when we find out exactly where the asymptote is!!
+    return np.exp(-2.0 * r) + 2.0 * np.exp(-(20.0 * (r - r_0))**2) #TODO: Replace 2.0 with 10.0 - 20.0 when we find out exactly where the asymptote is!!
     return 1
 
 
 #! ~~~~~~~~~~~~~~~~~~~~ PROGRAM SETTINGS ~~~~~~~~~~~~~~~~~~~~
 # (Relative) file path to retieve data from. Set to '' for full simulation mode.
-SAVEFILE = 'SimulationResults27112026-232818,Nr=10000,Nt=10000'
+SAVEFILE = '' #'SimulationResults27112026-232818,Nr=10000,Nt=10000'
 SAVESIMULATION = True
-PlottingMode = 0 # 0 for both, 1 for only interface evolution, 2 for only HP comparison.
+PlottingMode = 2 # 0 for both, 1 for only interface evolution, 2 for only HP comparison.
 GlobalSpeedupMultiplier = 5
 ZoomFactor = 1/4
 
-Nr = 10000
-NtMax = 10000
+Nr = 1000
+NtMax = 1000
 #! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Sets up water-like configuration into a non-dimensionless constant. Afer this, we can remove all dimensions from further points.
@@ -133,10 +133,11 @@ print(f"Stokes Number: {St:.2e}")
 
 # Use the equidistribution principle to distribute CellWidth, using CellWidthWeightingFunction(r) for r from 0 to 1.
 # Get a really good mesh of the CellWidthWeightingFunction function, rho(r).
+rMax = 1 # 0.3141361257 #for HP
 rFine = np.linspace(0, 1, (Nr * 100) + 1)
 CellMeshrho = cumulative_trapezoid(CellWidthWeightingFunction(rFine), rFine, initial=0.0)
 CellMeshrho /= CellMeshrho[-1] # Normalises the mesh density function.
-rHalf = np.interp(np.linspace(0, 1, Nr + 1), CellMeshrho, rFine) 
+rHalf = np.interp(np.linspace(0, 1, Nr + 1), CellMeshrho, rFine) * rMax
 CellWidth = np.diff(rHalf) # The width of each cell.
 
 r = rHalf[:-1] + CellWidth / 2 # Size Nr, the cell centers
